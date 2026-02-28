@@ -15,360 +15,248 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace;height:100vh;overflow:hidden;user-select:none;}
 input,select,textarea{user-select:text!important;-webkit-user-select:text!important;}
-
-/* ═══════════════════════════════════
-   SCREENS
-═══════════════════════════════════ */
 .screen{position:fixed;inset:0;display:none;z-index:100;}
 .screen.active{display:flex;}
 
-/* ═══════════════════════════════════
-   MENU SCREEN
-═══════════════════════════════════ */
-#screen-menu{
-  flex-direction:column;align-items:center;justify-content:center;
+/* ── MENU ── */
+#screen-menu{flex-direction:column;align-items:center;justify-content:center;
   background:radial-gradient(ellipse at 20% 30%,rgba(34,197,94,.07) 0%,transparent 50%),
-             radial-gradient(ellipse at 80% 70%,rgba(59,130,246,.05) 0%,transparent 50%),
-             var(--bg);
-}
-.menu-bg-grid{
-  position:absolute;inset:0;
-  background-image:linear-gradient(rgba(34,197,94,.04) 1px,transparent 1px),
-                   linear-gradient(90deg,rgba(34,197,94,.04) 1px,transparent 1px);
-  background-size:40px 40px;
-  mask-image:radial-gradient(ellipse at center,black 40%,transparent 80%);
-}
-.menu-logo{
-  position:relative;z-index:1;text-align:center;margin-bottom:48px;
-}
-.menu-logo-top{
-  font-family:'Oswald',sans-serif;font-size:11px;font-weight:400;
-  color:var(--green);letter-spacing:8px;text-transform:uppercase;
-  margin-bottom:8px;opacity:.7;
-}
-.menu-logo-title{
-  font-family:'Oswald',sans-serif;font-size:58px;font-weight:700;
-  line-height:.9;letter-spacing:2px;
-  background:linear-gradient(135deg,#fff 30%,var(--green2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  text-shadow:none;
-}
-.menu-logo-sub{
-  font-size:12px;color:var(--dim);letter-spacing:4px;margin-top:10px;
-}
-.menu-btns{
-  position:relative;z-index:1;
-  display:flex;flex-direction:column;gap:10px;width:320px;
-}
-.mbtn{
-  background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);
-  color:var(--text);font-family:'Oswald',sans-serif;font-size:15px;
-  font-weight:500;letter-spacing:2px;padding:14px 24px;cursor:pointer;
-  transition:all .2s;text-align:left;position:relative;overflow:hidden;
-  border-radius:4px;
-}
-.mbtn::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:var(--green);transform:scaleY(0);transition:transform .2s;
-}
-.mbtn:hover{
-  border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05);
-  color:#fff;
-}
+             radial-gradient(ellipse at 80% 70%,rgba(59,130,246,.05) 0%,transparent 50%),var(--bg);}
+.menu-bg-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(34,197,94,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,.04) 1px,transparent 1px);
+  background-size:40px 40px;mask-image:radial-gradient(ellipse at center,black 40%,transparent 80%);}
+.menu-logo{position:relative;z-index:1;text-align:center;margin-bottom:40px;}
+.menu-logo-top{font-family:'Oswald',sans-serif;font-size:11px;font-weight:400;color:var(--green);letter-spacing:8px;margin-bottom:8px;opacity:.7;}
+.menu-logo-title{font-family:'Oswald',sans-serif;font-size:56px;font-weight:700;line-height:.9;letter-spacing:2px;
+  background:linear-gradient(135deg,#fff 30%,var(--green2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.menu-logo-sub{font-size:12px;color:var(--dim);letter-spacing:4px;margin-top:10px;}
+.menu-user{position:relative;z-index:1;margin-bottom:20px;padding:8px 20px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:20px;
+  font-size:11px;color:var(--dim);display:flex;align-items:center;gap:8px;}
+.menu-user-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-family:'Oswald',sans-serif;letter-spacing:1px;}
+.badge-admin{background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.3);}
+.badge-anon{background:rgba(100,116,139,.1);color:var(--dim);border:1px solid rgba(100,116,139,.2);}
+.menu-btns{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;width:320px;}
+.mbtn{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);color:var(--text);
+  font-family:'Oswald',sans-serif;font-size:15px;font-weight:500;letter-spacing:2px;padding:13px 24px;
+  cursor:pointer;transition:all .2s;text-align:left;position:relative;overflow:hidden;border-radius:4px;}
+.mbtn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green);transform:scaleY(0);transition:transform .2s;}
+.mbtn:hover{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05);color:#fff;}
 .mbtn:hover::before{transform:scaleY(1);}
 .mbtn .mico{margin-right:14px;font-size:16px;}
-.mbtn.primary{
-  background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.4);
-  color:var(--green2);
-}
+.mbtn.primary{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.4);color:var(--green2);}
 .mbtn.primary:hover{background:rgba(34,197,94,.2);}
+.mbtn.admin-btn{background:rgba(245,158,11,.05);border-color:rgba(245,158,11,.2);color:var(--gold);}
+.mbtn.admin-btn:hover{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.4);}
+.menu-auth-btns{position:relative;z-index:1;display:flex;gap:8px;margin-top:8px;}
 .menu-ver{position:absolute;bottom:16px;right:20px;font-size:10px;color:#1a2a1a;}
 
-/* ═══════════════════════════════════
-   LOBBY SCREEN
-═══════════════════════════════════ */
-#screen-lobby{
-  flex-direction:column;align-items:center;justify-content:center;
-  background:var(--bg);
-}
-.lobby-box{
-  background:rgba(8,12,16,.9);border:1px solid var(--border);
-  border-radius:12px;padding:32px;width:100%;max-width:480px;
-  position:relative;
-}
-.lobby-title{
-  font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;
-  color:var(--green2);letter-spacing:2px;margin-bottom:24px;
-}
-.lobby-code-display{
-  background:rgba(34,197,94,.08);border:2px solid rgba(34,197,94,.3);
-  border-radius:8px;padding:20px;text-align:center;margin-bottom:20px;
-}
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;
+  align-items:center;justify-content:center;z-index:8000;backdrop-filter:blur(6px);}
+.modal-overlay.vis{display:flex;}
+.modal-box{background:rgba(8,12,16,.98);border:1px solid var(--border);border-radius:12px;
+  padding:28px;width:100%;max-width:400px;margin:16px;}
+.modal-title{font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;color:var(--green2);letter-spacing:2px;margin-bottom:20px;}
+.modal-tabs{display:flex;gap:0;margin-bottom:20px;border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;}
+.modal-tab{flex:1;padding:9px;text-align:center;cursor:pointer;font-family:'Oswald',sans-serif;
+  font-size:13px;font-weight:600;letter-spacing:1px;color:var(--dim);transition:.2s;}
+.modal-tab.active{background:rgba(34,197,94,.12);color:var(--green2);}
+.modal-tab-content{display:none;}
+.modal-tab-content.active{display:block;}
+
+/* ── LOBBY ── */
+.lobby-box{background:rgba(8,12,16,.9);border:1px solid var(--border);border-radius:12px;padding:28px;width:100%;max-width:480px;}
+.lobby-title{font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;color:var(--green2);letter-spacing:2px;margin-bottom:20px;}
+.lobby-code-display{background:rgba(34,197,94,.08);border:2px solid rgba(34,197,94,.3);border-radius:8px;padding:18px;text-align:center;margin-bottom:16px;}
 .lcd-label{font-size:10px;color:var(--dim);letter-spacing:3px;margin-bottom:6px;}
-.lcd-code{
-  font-family:'Oswald',sans-serif;font-size:42px;font-weight:700;
-  color:var(--green);letter-spacing:8px;
-}
-.lcd-sub{font-size:11px;color:var(--dim);margin-top:6px;}
-.lobby-players{display:flex;gap:12px;margin-bottom:20px;}
-.lp-slot{
-  flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
-  border-radius:8px;padding:14px;text-align:center;
-}
+.lcd-code{font-family:'Oswald',sans-serif;font-size:40px;font-weight:700;color:var(--green);letter-spacing:8px;}
+.lcd-sub{font-size:11px;color:var(--dim);margin-top:4px;}
+.lobby-players{display:flex;gap:10px;margin-bottom:16px;}
+.lp-slot{flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:12px;text-align:center;}
 .lp-slot.filled{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05);}
 .lp-slot.p1{border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.05);}
-.lps-icon{font-size:24px;margin-bottom:6px;}
+.lps-icon{font-size:22px;margin-bottom:4px;}
 .lps-label{font-size:10px;color:var(--dim);letter-spacing:2px;}
-.lps-name{font-size:13px;font-weight:700;margin-top:4px;color:#fff;}
-.form-row{display:flex;gap:10px;margin-bottom:12px;}
-.form-input{
-  flex:1;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);
-  color:#fff;padding:10px 14px;border-radius:6px;
-  font-family:'Share Tech Mono',monospace;font-size:14px;outline:none;
-  transition:.2s;
-}
-.form-input:focus{border-color:var(--green);}
-.btn-primary{
-  background:var(--green);color:#000;border:none;padding:11px 20px;
-  border-radius:6px;font-family:'Oswald',sans-serif;font-weight:700;
-  font-size:14px;letter-spacing:1px;cursor:pointer;transition:.2s;
-  white-space:nowrap;
-}
-.btn-primary:hover{background:var(--green2);}
-.btn-secondary{
-  background:transparent;color:var(--dim);border:1px solid rgba(255,255,255,.1);
-  padding:11px 20px;border-radius:6px;font-family:'Oswald',sans-serif;
-  font-weight:600;font-size:14px;letter-spacing:1px;cursor:pointer;transition:.2s;
-}
-.btn-secondary:hover{border-color:rgba(255,255,255,.3);color:#fff;}
-.btn-danger{
-  background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.3);
-  padding:11px 20px;border-radius:6px;font-family:'Oswald',sans-serif;
-  font-weight:700;font-size:14px;letter-spacing:1px;cursor:pointer;transition:.2s;
-}
-.btn-danger:hover{background:var(--red);color:#fff;}
-.lobby-map-section{
-  border-top:1px solid rgba(255,255,255,.06);padding-top:16px;margin-top:4px;
-}
-.lms-title{font-size:10px;color:var(--dim);letter-spacing:3px;margin-bottom:10px;}
-.map-upload-area{
-  border:2px dashed rgba(255,255,255,.1);border-radius:8px;padding:20px;
-  text-align:center;cursor:pointer;transition:.2s;
-}
-.map-upload-area:hover{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.03);}
-.mua-icon{font-size:24px;margin-bottom:6px;}
-.mua-text{font-size:12px;color:var(--dim);}
-.map-preview{
-  width:100%;height:80px;object-fit:cover;border-radius:6px;
-  border:1px solid var(--border);display:none;
-}
-.lobby-status{
-  padding:8px 14px;border-radius:6px;font-size:12px;margin-bottom:12px;
-  background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);
-  color:var(--gold);display:none;
-}
-.lobby-status.vis{display:block;}
-.lobby-status.ok{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.2);color:var(--green2);}
-.lobby-status.err{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2);color:#f87171;}
+.lps-name{font-size:12px;font-weight:700;margin-top:3px;color:#fff;}
 
-/* ═══════════════════════════════════
-   GAME SCREEN
-═══════════════════════════════════ */
-#screen-game{
-  flex-direction:column;background:#000;
+/* ── FORM ── */
+.form-row{display:flex;gap:8px;margin-bottom:10px;}
+.form-input{flex:1;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);color:#fff;
+  padding:9px 13px;border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:13px;outline:none;transition:.2s;}
+.form-input:focus{border-color:var(--green);}
+.form-label{font-size:10px;color:var(--dim);letter-spacing:2px;margin-bottom:5px;display:block;}
+.btn-primary{background:var(--green);color:#000;border:none;padding:10px 18px;border-radius:6px;
+  font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;cursor:pointer;transition:.2s;white-space:nowrap;}
+.btn-primary:hover{background:var(--green2);}
+.btn-secondary{background:transparent;color:var(--dim);border:1px solid rgba(255,255,255,.1);padding:10px 18px;
+  border-radius:6px;font-family:'Oswald',sans-serif;font-weight:600;font-size:13px;letter-spacing:1px;cursor:pointer;transition:.2s;}
+.btn-secondary:hover{border-color:rgba(255,255,255,.3);color:#fff;}
+.btn-gold{background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.3);padding:10px 18px;
+  border-radius:6px;font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;cursor:pointer;transition:.2s;}
+.btn-gold:hover{background:rgba(245,158,11,.25);}
+.status-box{padding:7px 12px;border-radius:6px;font-size:11px;margin-bottom:10px;display:none;}
+.status-box.vis{display:block;}
+.status-box.ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:var(--green2);}
+.status-box.err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171;}
+.status-box.warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--gold);}
+.lobby-map-section{border-top:1px solid rgba(255,255,255,.06);padding-top:14px;margin-top:4px;}
+.lms-title{font-size:10px;color:var(--dim);letter-spacing:3px;margin-bottom:8px;}
+.map-upload-area{border:2px dashed rgba(255,255,255,.1);border-radius:8px;padding:16px;text-align:center;cursor:pointer;transition:.2s;}
+.map-upload-area:hover{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.03);}
+.map-preview{width:100%;height:70px;object-fit:cover;border-radius:6px;border:1px solid var(--border);display:none;}
+.map-saved-list{display:flex;flex-direction:column;gap:6px;max-height:120px;overflow-y:auto;}
+.map-saved-item{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);cursor:pointer;transition:.2s;}
+.map-saved-item:hover,.map-saved-item.active{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05);}
+.msi-thumb{width:40px;height:28px;object-fit:cover;border-radius:4px;flex-shrink:0;}
+.msi-info{flex:1;}
+.msi-name{font-size:12px;font-weight:700;color:#fff;}
+.msi-date{font-size:10px;color:var(--dim);}
+
+/* ── DISCONNECT BANNER ── */
+.disconnect-banner{
+  position:fixed;top:0;left:0;right:0;z-index:7000;
+  background:rgba(239,68,68,.95);padding:12px 20px;
+  display:none;flex-direction:column;align-items:center;gap:6px;
+  border-bottom:2px solid #f87171;
 }
-.game-hud{
-  height:48px;background:rgba(4,6,8,.97);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 14px;gap:12px;flex-shrink:0;
-  position:relative;z-index:50;
-}
-.hud-logo{
-  font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;
-  color:var(--green);letter-spacing:2px;flex-shrink:0;
-}
-.hud-sep{width:1px;height:20px;background:rgba(255,255,255,.08);}
-.hud-stat{
-  display:flex;align-items:center;gap:6px;font-size:12px;
-}
-.hud-stat-label{color:var(--dim);font-size:10px;letter-spacing:1px;}
-.hud-stat-val{font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;}
+.disconnect-banner.vis{display:flex;}
+.dc-title{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;color:#fff;letter-spacing:2px;}
+.dc-timer{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:#fff;}
+.dc-sub{font-size:11px;color:rgba(255,255,255,.8);}
+
+/* ── ADMIN PANEL ── */
+#screen-admin{flex-direction:column;background:var(--bg);}
+.admin-header{height:52px;background:rgba(8,12,16,.98);border-bottom:1px solid rgba(245,158,11,.2);
+  display:flex;align-items:center;padding:0 20px;gap:14px;flex-shrink:0;}
+.admin-title{font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:var(--gold);letter-spacing:3px;}
+.admin-body{flex:1;display:flex;gap:0;overflow:hidden;}
+.admin-sidebar{width:200px;background:rgba(4,6,8,.8);border-right:1px solid rgba(255,255,255,.06);
+  padding:16px;display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
+.admin-nav-btn{padding:9px 12px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--dim);
+  transition:.2s;border:1px solid transparent;}
+.admin-nav-btn:hover,.admin-nav-btn.active{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);color:var(--gold);}
+.admin-content{flex:1;padding:20px;overflow-y:auto;}
+.admin-section{display:none;}
+.admin-section.active{display:block;}
+.admin-card{background:rgba(8,12,16,.8);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:20px;margin-bottom:16px;}
+.admin-card-title{font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;color:var(--gold);letter-spacing:2px;margin-bottom:14px;}
+.admin-maps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+.admin-map-card{border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;cursor:pointer;
+  transition:.2s;background:rgba(0,0,0,.3);}
+.admin-map-card:hover{border-color:rgba(245,158,11,.4);}
+.admin-map-card.active-map{border-color:var(--green);box-shadow:0 0 12px rgba(34,197,94,.2);}
+.amc-img{width:100%;height:100px;object-fit:cover;}
+.amc-info{padding:8px 10px;}
+.amc-name{font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;}
+.amc-meta{font-size:10px;color:var(--dim);}
+.amc-actions{display:flex;gap:4px;margin-top:6px;}
+.amc-btn{flex:1;padding:4px 8px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:10px;
+  font-weight:700;letter-spacing:1px;cursor:pointer;border:none;transition:.2s;}
+.amc-btn.set{background:rgba(34,197,94,.2);color:var(--green2);}
+.amc-btn.set:hover{background:var(--green);color:#000;}
+.amc-btn.del{background:rgba(239,68,68,.1);color:#f87171;}
+.amc-btn.del:hover{background:var(--red);color:#fff;}
+
+/* ── MAP EDITOR ── */
+.map-editor-wrap{display:flex;gap:16px;height:100%;}
+.map-editor-canvas-wrap{flex:1;position:relative;border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;background:#111;}
+#adminMapCanvas{width:100%;height:100%;display:block;}
+.map-editor-tools{width:180px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;}
+.tool-btn{padding:8px 12px;border-radius:6px;font-family:'Oswald',sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:1px;cursor:pointer;border:1px solid rgba(255,255,255,.1);color:var(--dim);background:transparent;transition:.2s;}
+.tool-btn:hover,.tool-btn.active{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:var(--gold);}
+.color-row{display:flex;gap:4px;flex-wrap:wrap;}
+.color-swatch{width:24px;height:24px;border-radius:4px;cursor:pointer;border:2px solid transparent;transition:.15s;}
+.color-swatch:hover,.color-swatch.active{border-color:#fff;}
+
+/* ── GAME SCREEN ── */
+#screen-game{flex-direction:column;background:#000;}
+.game-hud{height:46px;background:rgba(4,6,8,.97);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 12px;gap:10px;flex-shrink:0;position:relative;z-index:50;}
+.hud-logo{font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;color:var(--green);letter-spacing:2px;flex-shrink:0;}
+.hud-sep{width:1px;height:18px;background:rgba(255,255,255,.08);}
+.hud-stat{display:flex;align-items:center;gap:5px;font-size:11px;}
+.hud-stat-label{color:var(--dim);font-size:9px;letter-spacing:1px;}
+.hud-stat-val{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;}
 .hud-stat-val.blue{color:#60a5fa;}
 .hud-stat-val.red{color:#f87171;}
-.hud-center{
-  position:absolute;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:12px;
-}
-.hud-timer{
-  font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;
-  color:#fff;letter-spacing:2px;
-}
-.hud-turn{font-size:10px;color:var(--dim);letter-spacing:2px;}
-.hud-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
-.hud-btn{
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
-  color:var(--text);padding:5px 12px;border-radius:5px;
-  font-family:'Oswald',sans-serif;font-size:11px;font-weight:600;
-  letter-spacing:1px;cursor:pointer;transition:.2s;
-}
+.hud-center{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;flex-direction:column;}
+.hud-timer{font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:2px;}
+.hud-turn{font-size:9px;color:var(--dim);letter-spacing:2px;}
+.hud-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.hud-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--text);
+  padding:4px 10px;border-radius:5px;font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;
+  letter-spacing:1px;cursor:pointer;transition:.2s;}
 .hud-btn:hover{border-color:rgba(34,197,94,.4);color:var(--green2);}
-.hud-btn.active{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.4);color:var(--green2);}
 .hud-btn.danger:hover{border-color:rgba(239,68,68,.4);color:#f87171;}
-
-/* MAP AREA */
 .game-body{flex:1;display:flex;overflow:hidden;position:relative;}
-#mapCanvas{position:absolute;top:0;left:0;touch-action:none;}
-#unitsCanvas{position:absolute;top:0;left:0;pointer-events:none;}
-#frontCanvas{position:absolute;top:0;left:0;pointer-events:none;}
-#uiCanvas{position:absolute;top:0;left:0;pointer-events:none;}
-#interCanvas{position:absolute;top:0;left:0;touch-action:none;}
-
-/* SIDE PANEL */
-.side-panel{
-  width:220px;min-width:220px;background:rgba(4,6,8,.97);
-  border-left:1px solid var(--border);display:flex;flex-direction:column;
-  overflow-y:auto;flex-shrink:0;position:relative;z-index:10;
-}
-.sp-section{padding:12px;border-bottom:1px solid rgba(255,255,255,.04);}
-.sp-label{font-size:9px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
-.sp-unit-types{display:flex;flex-direction:column;gap:4px;}
-.sp-unit-btn{
-  display:flex;align-items:center;gap:8px;padding:8px 10px;
-  border-radius:6px;background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.06);cursor:pointer;transition:.2s;
-}
-.sp-unit-btn:hover,.sp-unit-btn.active{
-  background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.3);
-}
+#mapCanvas,#unitsCanvas,#frontCanvas,#uiCanvas,#interCanvas{position:absolute;top:0;left:0;}
+#interCanvas{touch-action:none;}
+#unitsCanvas,#frontCanvas,#uiCanvas{pointer-events:none;}
+.side-panel{width:210px;min-width:210px;background:rgba(4,6,8,.97);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;position:relative;z-index:10;}
+.sp-section{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);}
+.sp-label{font-size:9px;color:var(--dim);letter-spacing:3px;margin-bottom:7px;}
+.sp-unit-btn{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:6px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);cursor:pointer;transition:.2s;margin-bottom:4px;}
+.sp-unit-btn:hover,.sp-unit-btn.active{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.3);}
 .sp-unit-btn.active{border-color:var(--blue);}
-.sp-unit-icon{font-size:18px;width:24px;text-align:center;}
+.sp-unit-icon{font-size:16px;width:22px;text-align:center;}
 .sp-unit-info{flex:1;}
-.sp-unit-name{font-size:12px;font-weight:700;color:#fff;}
-.sp-unit-stat{font-size:10px;color:var(--dim);}
-.sp-unit-cost{
-  font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;color:var(--gold);
-}
-
-.sp-resources{display:flex;flex-direction:column;gap:6px;}
+.sp-unit-name{font-size:11px;font-weight:700;color:#fff;}
+.sp-unit-stat{font-size:9px;color:var(--dim);}
+.sp-unit-cost{font-family:'Oswald',sans-serif;font-size:12px;font-weight:700;color:var(--gold);}
+.sp-resources{display:flex;flex-direction:column;gap:5px;}
 .sp-res-row{display:flex;justify-content:space-between;align-items:center;}
-.sp-res-label{font-size:10px;color:var(--dim);}
-.sp-res-val{font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;}
-
-.sp-log{
-  flex:1;overflow-y:auto;padding:8px 12px;
-  display:flex;flex-direction:column;gap:3px;
-}
+.sp-res-label{font-size:9px;color:var(--dim);}
+.sp-res-val{font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;}
+.sp-log{flex:1;overflow-y:auto;padding:6px 10px;display:flex;flex-direction:column;gap:2px;}
 .log-entry{font-size:10px;color:var(--dim);line-height:1.4;padding:2px 0;}
-.log-entry.good{color:#4ade80;}
-.log-entry.bad{color:#f87171;}
-.log-entry.info{color:#60a5fa;}
-.log-entry.warn{color:var(--gold);}
-
-/* UNIT PLACEMENT MODE */
-.placement-hint{
-  position:absolute;bottom:16px;left:50%;transform:translateX(-50%);
-  background:rgba(4,6,8,.95);border:1px solid rgba(34,197,94,.4);
-  border-radius:8px;padding:10px 20px;font-size:13px;color:var(--green2);
-  pointer-events:none;z-index:100;display:none;letter-spacing:1px;
-  font-family:'Oswald',sans-serif;
-}
+.log-entry.good{color:#4ade80;}.log-entry.bad{color:#f87171;}.log-entry.info{color:#60a5fa;}.log-entry.warn{color:var(--gold);}
+.placement-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+  background:rgba(4,6,8,.95);border:1px solid rgba(34,197,94,.4);border-radius:8px;
+  padding:8px 18px;font-size:12px;color:var(--green2);pointer-events:none;z-index:100;
+  display:none;letter-spacing:1px;font-family:'Oswald',sans-serif;}
 .placement-hint.vis{display:block;}
-
-/* CASUALTIES OVERLAY */
-.casualties-overlay{
-  position:absolute;bottom:16px;left:16px;
-  background:rgba(4,6,8,.85);border:1px solid rgba(255,255,255,.08);
-  border-radius:8px;padding:12px 16px;pointer-events:none;z-index:30;
-}
-.co-title{font-size:9px;color:var(--dim);letter-spacing:3px;margin-bottom:6px;}
-.co-row{display:flex;align-items:center;gap:10px;font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;}
-.co-blue{color:#60a5fa;}
-.co-red{color:#f87171;}
-
-/* FUNDS OVERLAY */
-.funds-overlay{
-  position:absolute;top:8px;right:8px;
-  background:rgba(4,6,8,.85);border:1px solid rgba(255,255,255,.08);
-  border-radius:8px;padding:10px 14px;pointer-events:none;z-index:30;
-}
-.fo-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;}
-.fo-label{font-size:9px;color:var(--dim);}
-
-/* ZOOM INDICATOR */
-.zoom-ind{
-  position:absolute;bottom:16px;right:230px;
-  background:rgba(4,6,8,.8);border:1px solid rgba(255,255,255,.06);
-  border-radius:6px;padding:5px 10px;font-size:10px;color:var(--dim);
-  pointer-events:none;z-index:30;
-}
-
-/* SELECTION INFO */
-.sel-info{
-  position:absolute;top:8px;left:16px;
-  background:rgba(4,6,8,.93);border:1px solid var(--border);
-  border-radius:8px;padding:12px 16px;min-width:160px;
-  pointer-events:none;z-index:30;display:none;
-}
+.casualties-overlay{position:absolute;bottom:14px;left:14px;
+  background:rgba(4,6,8,.85);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 14px;pointer-events:none;z-index:30;}
+.co-title{font-size:9px;color:var(--dim);letter-spacing:3px;margin-bottom:5px;}
+.co-row{display:flex;align-items:center;gap:10px;font-family:'Oswald',sans-serif;font-size:15px;font-weight:700;}
+.co-blue{color:#60a5fa;}.co-red{color:#f87171;}
+.sel-info{position:absolute;top:8px;left:14px;background:rgba(4,6,8,.93);border:1px solid var(--border);
+  border-radius:8px;padding:10px 14px;min-width:150px;pointer-events:none;z-index:30;display:none;}
 .sel-info.vis{display:block;}
-.si-name{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;color:#fff;}
-.si-hp-wrap{margin-top:6px;}
-.si-hp-bar{height:4px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;}
+.si-name{font-family:'Oswald',sans-serif;font-size:15px;font-weight:700;color:#fff;}
+.si-hp-bar{height:4px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;margin-top:5px;}
 .si-hp-fill{height:100%;background:var(--green);border-radius:4px;transition:width .3s;}
-.si-stats{display:flex;gap:10px;margin-top:6px;font-size:10px;color:var(--dim);}
-.si-stat{display:flex;flex-direction:column;align-items:center;gap:2px;}
-.si-stat b{font-family:'Oswald',sans-serif;font-size:13px;color:#fff;}
-
-/* WIN/LOSE OVERLAY */
-.result-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.85);
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  z-index:9000;backdrop-filter:blur(10px);
-}
+.si-stats{display:flex;gap:8px;margin-top:5px;font-size:10px;color:var(--dim);}
+.si-stat{display:flex;flex-direction:column;align-items:center;gap:1px;}
+.si-stat b{font-family:'Oswald',sans-serif;font-size:12px;color:#fff;}
+.zoom-ind{position:absolute;bottom:14px;right:224px;background:rgba(4,6,8,.8);border:1px solid rgba(255,255,255,.06);
+  border-radius:6px;padding:4px 8px;font-size:10px;color:var(--dim);pointer-events:none;z-index:30;}
+.result-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;flex-direction:column;
+  align-items:center;justify-content:center;z-index:9000;backdrop-filter:blur(10px);}
 .result-overlay.vis{display:flex;}
-.result-box{
-  background:rgba(8,12,16,.98);border:1px solid var(--border);
-  border-radius:16px;padding:40px;text-align:center;max-width:400px;
-}
-.result-emoji{font-size:64px;margin-bottom:16px;}
-.result-title{
-  font-family:'Oswald',sans-serif;font-size:36px;font-weight:700;
-  letter-spacing:3px;margin-bottom:10px;
-}
-.result-sub{font-size:14px;color:var(--dim);margin-bottom:24px;line-height:1.6;}
-
-/* TOAST */
-.toast{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  background:rgba(8,12,16,.97);border:1px solid var(--green);
-  padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;
-  color:var(--green2);z-index:9999;display:none;
-  box-shadow:0 0 20px rgba(34,197,94,.2);white-space:nowrap;
-}
-
-/* LOADING */
-.loading-screen{
-  position:fixed;inset:0;background:var(--bg);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  z-index:9999;
-}
+.result-box{background:rgba(8,12,16,.98);border:1px solid var(--border);border-radius:16px;padding:36px;text-align:center;max-width:380px;}
+.result-emoji{font-size:58px;margin-bottom:14px;}
+.result-title{font-family:'Oswald',sans-serif;font-size:34px;font-weight:700;letter-spacing:3px;margin-bottom:8px;}
+.result-sub{font-size:13px;color:var(--dim);margin-bottom:22px;line-height:1.8;white-space:pre-line;}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:rgba(8,12,16,.97);
+  border:1px solid var(--green);padding:9px 18px;border-radius:8px;font-size:12px;font-weight:700;
+  color:var(--green2);z-index:9999;display:none;box-shadow:0 0 20px rgba(34,197,94,.2);white-space:nowrap;}
+.loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;z-index:9999;}
 .loading-screen.hidden{display:none;}
-.ld-title{font-family:'Oswald',sans-serif;font-size:32px;font-weight:700;color:var(--green);letter-spacing:4px;margin-bottom:20px;}
-.ld-bar{width:200px;height:3px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;}
+.ld-title{font-family:'Oswald',sans-serif;font-size:30px;font-weight:700;color:var(--green);letter-spacing:4px;margin-bottom:18px;}
+.ld-bar{width:180px;height:3px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;}
 .ld-fill{height:100%;background:var(--green);animation:ldanim 1.4s ease-in-out infinite;}
 @keyframes ldanim{0%{width:0;margin-left:0}50%{width:100%;margin-left:0}100%{width:0;margin-left:100%}}
-.ld-text{margin-top:12px;font-size:11px;color:var(--dim);letter-spacing:2px;}
-
-/* SCROLLBAR */
-::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-track{background:transparent;}
+.ld-text{margin-top:10px;font-size:10px;color:var(--dim);letter-spacing:2px;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:rgba(34,197,94,.2);border-radius:4px;}
-
-/* MOBILE */
-@media(max-width:700px){
-  .side-panel{display:none;}
-  .menu-logo-title{font-size:38px;}
-  .menu-btns{width:90%;}
-  .lobby-box{margin:16px;padding:20px;}
-}
+@media(max-width:700px){.side-panel{display:none;}.menu-logo-title{font-size:38px;}.menu-btns{width:90%;}}
 </style>
 </head>
 <body>
@@ -380,6 +268,13 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
   <div class="ld-text" id="ldText">ЗАВАНТАЖЕННЯ...</div>
 </div>
 
+<!-- DISCONNECT BANNER -->
+<div class="disconnect-banner" id="dcBanner">
+  <div class="dc-title">⚠️ ОПОНЕНТ ВІДКЛЮЧИВСЯ</div>
+  <div class="dc-timer" id="dcTimer">60</div>
+  <div class="dc-sub">Очікування повернення... Гра завершиться якщо опонент не повернеться</div>
+</div>
+
 <!-- MENU -->
 <div class="screen" id="screen-menu">
   <div class="menu-bg-grid"></div>
@@ -388,25 +283,65 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
     <div class="menu-logo-title">СТРАТЕГІЯ</div>
     <div class="menu-logo-sub">ТАКТИЧНА БОЙОВА СИСТЕМА</div>
   </div>
-  <div class="menu-btns">
-    <button class="mbtn primary" onclick="showLobbyCreate()">
-      <span class="mico">⚔️</span>СТВОРИТИ ЛОБІ
-    </button>
-    <button class="mbtn" onclick="showLobbyJoin()">
-      <span class="mico">🔗</span>ПРИЄДНАТИСЬ
-    </button>
-    <button class="mbtn" onclick="startVsAI()">
-      <span class="mico">🤖</span>ПРОТИ ІІ
-    </button>
+  <div class="menu-user" id="menuUser">
+    <span id="menuUserName">Анонім</span>
+    <span class="menu-user-badge badge-anon" id="menuUserBadge">ГІСТЬ</span>
   </div>
-  <div class="menu-ver">v1.0 | СТРАТЕГІЯ</div>
+  <div class="menu-btns">
+    <button class="mbtn primary" onclick="showLobbyCreate()"><span class="mico">⚔️</span>СТВОРИТИ ЛОБІ</button>
+    <button class="mbtn" onclick="showLobbyJoin()"><span class="mico">🔗</span>ПРИЄДНАТИСЬ</button>
+    <button class="mbtn" onclick="startVsAI()"><span class="mico">🤖</span>ПРОТИ ІІ</button>
+    <button class="mbtn admin-btn" id="adminMenuBtn" style="display:none" onclick="showScreen('screen-admin');adminNav('maps')"><span class="mico">👑</span>АДМІН ПАНЕЛЬ</button>
+  </div>
+  <div class="menu-auth-btns">
+    <button class="btn-secondary" id="authMenuBtn" onclick="showAuthModal()">🔐 Увійти / Реєстрація</button>
+    <button class="btn-secondary" id="logoutBtn" style="display:none" onclick="doLogout()">Вийти</button>
+  </div>
+  <div class="menu-ver">v2.0 | СТРАТЕГІЯ</div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <div class="modal-title">🔐 АВТОРИЗАЦІЯ</div>
+    <div class="modal-tabs">
+      <div class="modal-tab active" onclick="switchAuthTab('login')">УВІЙТИ</div>
+      <div class="modal-tab" onclick="switchAuthTab('register')">РЕЄСТРАЦІЯ</div>
+    </div>
+    <!-- Login -->
+    <div class="modal-tab-content active" id="tab-login">
+      <div id="loginStatus" class="status-box"></div>
+      <div class="form-label">EMAIL</div>
+      <div class="form-row"><input class="form-input" id="loginEmail" type="email" placeholder="email@example.com"></div>
+      <div class="form-label">ПАРОЛЬ</div>
+      <div class="form-row"><input class="form-input" id="loginPass" type="password" placeholder="••••••••"></div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <button class="btn-primary" onclick="doLogin()" style="flex:1">▶ УВІЙТИ</button>
+        <button class="btn-secondary" onclick="closeAuthModal()">✕</button>
+      </div>
+    </div>
+    <!-- Register -->
+    <div class="modal-tab-content" id="tab-register">
+      <div id="registerStatus" class="status-box"></div>
+      <div class="form-label">ПОЗИВНИЙ</div>
+      <div class="form-row"><input class="form-input" id="regName" placeholder="Ваш позивний" maxlength="20"></div>
+      <div class="form-label">EMAIL</div>
+      <div class="form-row"><input class="form-input" id="regEmail" type="email" placeholder="email@example.com"></div>
+      <div class="form-label">ПАРОЛЬ</div>
+      <div class="form-row"><input class="form-input" id="regPass" type="password" placeholder="мін. 6 символів"></div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <button class="btn-primary" onclick="doRegister()" style="flex:1">✅ ЗАРЕЄСТРУВАТИСЬ</button>
+        <button class="btn-secondary" onclick="closeAuthModal()">✕</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- LOBBY CREATE -->
 <div class="screen" id="screen-lobby-create">
   <div class="lobby-box">
     <div class="lobby-title">⚔️ НОВЕ ЛОБІ</div>
-    <div id="lcStatus" class="lobby-status">⟳ Створення лобі...</div>
+    <div id="lcStatus" class="status-box vis warn">⟳ Створення лобі...</div>
     <div class="lobby-code-display">
       <div class="lcd-label">КОД ЛОБІ</div>
       <div class="lcd-code" id="lcCode">----</div>
@@ -424,24 +359,22 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
         <div class="lps-name" id="lcP2Name">Очікування...</div>
       </div>
     </div>
-
-    <!-- Map Upload -->
     <div class="lobby-map-section">
       <div class="lms-title">КАРТА</div>
+      <!-- Global maps from admin -->
+      <div id="lobbyGlobalMaps" class="map-saved-list" style="margin-bottom:10px;"></div>
+      <!-- Upload own -->
       <input type="file" id="mapFileInput" accept="image/*" style="display:none" onchange="handleMapUpload(this)">
       <div class="map-upload-area" onclick="document.getElementById('mapFileInput').click()" id="mapUploadArea">
-        <div class="mua-icon">🗺️</div>
-        <div class="mua-text">Натисніть щоб завантажити фото карти</div>
+        <div style="font-size:22px;margin-bottom:4px">📁</div>
+        <div style="font-size:11px;color:var(--dim)">Або завантажте своє фото карти</div>
       </div>
-      <img id="mapPreview" class="map-preview" alt="Map preview">
-      <div style="font-size:10px;color:var(--dim);margin-top:6px;text-align:center" id="mapUploadStatus"></div>
+      <img id="mapPreview" class="map-preview" alt="">
+      <div style="font-size:10px;color:var(--dim);margin-top:5px;text-align:center" id="mapUploadStatus"></div>
     </div>
-
-    <div style="display:flex;gap:8px;margin-top:16px;">
-      <button class="btn-primary" id="lcStartBtn" onclick="hostStartGame()" disabled style="flex:1">
-        ▶ СТАРТ
-      </button>
-      <button class="btn-secondary" onclick="showScreen('screen-menu')">← НАЗАД</button>
+    <div style="display:flex;gap:8px;margin-top:14px;">
+      <button class="btn-primary" id="lcStartBtn" onclick="hostStartGame()" disabled style="flex:1">▶ СТАРТ</button>
+      <button class="btn-secondary" onclick="leaveLobby()">← НАЗАД</button>
     </div>
   </div>
 </div>
@@ -450,10 +383,9 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
 <div class="screen" id="screen-lobby-join">
   <div class="lobby-box">
     <div class="lobby-title">🔗 ПРИЄДНАТИСЬ</div>
-    <div id="ljStatus" class="lobby-status">Введіть код лобі</div>
+    <div id="ljStatus" class="status-box vis warn">Введіть код лобі</div>
     <div class="form-row">
-      <input type="text" class="form-input" id="joinCodeInput"
-        placeholder="Код лобі (наприклад: ALFA7)"
+      <input type="text" class="form-input" id="joinCodeInput" placeholder="КОД ЛОБІ"
         maxlength="8" style="text-transform:uppercase;letter-spacing:4px;font-size:18px;text-align:center">
     </div>
     <div class="form-row">
@@ -462,6 +394,71 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
     <div style="display:flex;gap:8px;margin-top:8px;">
       <button class="btn-primary" onclick="joinLobby()" style="flex:1">🔗 ПРИЄДНАТИСЬ</button>
       <button class="btn-secondary" onclick="showScreen('screen-menu')">← НАЗАД</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="screen" id="screen-admin">
+  <div class="admin-header">
+    <span class="admin-title">👑 АДМІН ПАНЕЛЬ</span>
+    <div style="margin-left:auto;display:flex;gap:8px;">
+      <button class="hud-btn" onclick="showScreen('screen-menu')">← МЕНЮ</button>
+    </div>
+  </div>
+  <div class="admin-body">
+    <div class="admin-sidebar">
+      <div class="admin-nav-btn active" onclick="adminNav('maps')" id="anav-maps">🗺️ Карти</div>
+      <div class="admin-nav-btn" onclick="adminNav('editor')" id="anav-editor">✏️ Редактор</div>
+      <div class="admin-nav-btn" onclick="adminNav('users')" id="anav-users">👥 Гравці</div>
+    </div>
+    <div class="admin-content">
+      <!-- MAPS -->
+      <div class="admin-section active" id="asec-maps">
+        <div class="admin-card">
+          <div class="admin-card-title">🗺️ ГЛОБАЛЬНІ КАРТИ</div>
+          <p style="font-size:11px;color:var(--dim);margin-bottom:14px;">Карти які будуть доступні всім гравцям у лобі та ІІ режимі.</p>
+          <div style="display:flex;gap:8px;margin-bottom:14px;">
+            <input type="file" id="adminMapUpload" accept="image/*" style="display:none" onchange="adminUploadMap(this)">
+            <button class="btn-gold" onclick="document.getElementById('adminMapUpload').click()">+ Завантажити карту</button>
+          </div>
+          <div id="adminMapsGrid" class="admin-maps-grid"></div>
+          <div id="adminMapUploadStatus" style="font-size:11px;color:var(--dim);margin-top:8px;"></div>
+        </div>
+      </div>
+      <!-- EDITOR -->
+      <div class="admin-section" id="asec-editor">
+        <div class="admin-card" style="height:calc(100vh - 160px);">
+          <div class="admin-card-title" style="margin-bottom:10px">✏️ РЕДАКТОР КАРТИ</div>
+          <div class="map-editor-wrap" style="height:calc(100% - 40px);">
+            <div class="map-editor-canvas-wrap">
+              <canvas id="adminMapCanvas"></canvas>
+            </div>
+            <div class="map-editor-tools">
+              <div class="sp-label">ІНСТРУМЕНТ</div>
+              <button class="tool-btn active" onclick="setEditorTool('draw')" id="tool-draw">✏️ Малювати</button>
+              <button class="tool-btn" onclick="setEditorTool('erase')" id="tool-erase">🧹 Стерти</button>
+              <button class="tool-btn" onclick="setEditorTool('line')" id="tool-line">📏 Лінія</button>
+              <div class="sp-label" style="margin-top:10px">КОЛІР</div>
+              <div class="color-row" id="colorSwatches"></div>
+              <div class="sp-label" style="margin-top:10px">РОЗМІР</div>
+              <input type="range" id="brushSize" min="2" max="40" value="8" style="width:100%">
+              <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">
+                <button class="tool-btn" onclick="clearEditorCanvas()">🗑️ Очистити</button>
+                <button class="btn-gold" onclick="saveEditorAsMap()" style="width:100%">💾 Зберегти карту</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- USERS -->
+      <div class="admin-section" id="asec-users">
+        <div class="admin-card">
+          <div class="admin-card-title">👥 УПРАВЛІННЯ ГРАВЦЯМИ</div>
+          <div id="adminUsersList" style="display:flex;flex-direction:column;gap:8px;"></div>
+          <button class="btn-gold" style="margin-top:12px" onclick="loadAdminUsers()">🔄 Оновити</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -477,92 +474,65 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
     </div>
     <div class="hud-sep"></div>
     <div class="hud-center">
-      <div style="text-align:center">
-        <div class="hud-timer" id="hudTimer">00:00</div>
-        <div class="hud-turn" id="hudPhase">РОЗМІЩЕННЯ</div>
-      </div>
+      <div class="hud-timer" id="hudTimer">00:00</div>
+      <div class="hud-turn" id="hudPhase">РОЗМІЩЕННЯ</div>
     </div>
     <div class="hud-right">
-      <div class="hud-stat">
-        <span style="color:#60a5fa">🔵</span>
-        <span class="hud-stat-val blue" id="hudBlueUnits">0</span>
-      </div>
-      <div class="hud-stat">
-        <span style="color:#f87171">🔴</span>
-        <span class="hud-stat-val red" id="hudRedUnits">0</span>
-      </div>
+      <div class="hud-stat"><span style="color:#60a5fa">🔵</span><span class="hud-stat-val blue" id="hudBlueUnits">0</span></div>
+      <div class="hud-stat"><span style="color:#f87171">🔴</span><span class="hud-stat-val red" id="hudRedUnits">0</span></div>
       <div class="hud-sep"></div>
-      <button class="hud-btn" onclick="resetView()" title="Скинути вид">↺</button>
+      <button class="hud-btn" onclick="resetView()">↺</button>
       <button class="hud-btn danger" onclick="confirmQuit()">ВИЙТИ</button>
     </div>
   </div>
-
   <div class="game-body" id="gameBody">
     <canvas id="mapCanvas"></canvas>
     <canvas id="unitsCanvas"></canvas>
     <canvas id="frontCanvas"></canvas>
     <canvas id="uiCanvas"></canvas>
     <canvas id="interCanvas"></canvas>
-
-    <!-- Overlays -->
-    <div class="casualties-overlay" id="casualtiesOverlay">
+    <div class="casualties-overlay">
       <div class="co-title">ВТРАТИ</div>
       <div class="co-row">
-        <span class="co-blue">🔵 ~<span id="casBlue">0</span></span>
-        <span class="co-red">🔴 ~<span id="casRed">0</span></span>
+        <span class="co-blue">🔵 <span id="casBlue">0</span></span>
+        <span class="co-red">🔴 <span id="casRed">0</span></span>
       </div>
     </div>
-
     <div class="sel-info" id="selInfo">
       <div class="si-name" id="siName">—</div>
-      <div class="sp-res-row" style="margin-top:4px">
-        <span style="font-size:10px;color:var(--dim)">HP</span>
-        <span style="font-family:'Oswald',sans-serif;font-size:12px" id="siHPText">—</span>
+      <div style="display:flex;justify-content:space-between;margin-top:3px;">
+        <span style="font-size:9px;color:var(--dim)">HP</span>
+        <span style="font-family:'Oswald',sans-serif;font-size:11px" id="siHPText">—</span>
       </div>
-      <div class="si-hp-wrap">
-        <div class="si-hp-bar"><div class="si-hp-fill" id="siHPBar" style="width:100%"></div></div>
-      </div>
+      <div class="si-hp-bar"><div class="si-hp-fill" id="siHPBar" style="width:100%"></div></div>
       <div class="si-stats">
         <div class="si-stat"><span>АТК</span><b id="siAtk">—</b></div>
-        <div class="si-stat"><span>ЗАХИСТ</span><b id="siDef">—</b></div>
+        <div class="si-stat"><span>ЗАХ</span><b id="siDef">—</b></div>
         <div class="si-stat"><span>ШВ</span><b id="siSpd">—</b></div>
       </div>
     </div>
-
     <div class="zoom-ind" id="zoomInd">100%</div>
-    <div class="placement-hint" id="placementHint">КЛІКНІТЬ НА СВОЇЙ ПОЛОВИНІ КАРТИ</div>
+    <div class="placement-hint" id="placementHint">КЛІКНІТЬ НА СВОЇЙ ПОЛОВИНІ</div>
   </div>
-
-  <div class="side-panel" id="sidePanel">
+  <div class="side-panel">
     <div class="sp-section">
       <div class="sp-label">РЕСУРСИ</div>
       <div class="sp-resources">
-        <div class="sp-res-row">
-          <span class="sp-res-label">💰 ФОНДИ</span>
-          <span class="sp-res-val" style="color:var(--gold)" id="spFunds">0</span>
-        </div>
-        <div class="sp-res-row">
-          <span class="sp-res-label">⚔️ ЮНІТИ</span>
-          <span class="sp-res-val" style="color:var(--blue)" id="spUnits">0</span>
-        </div>
-        <div class="sp-res-row">
-          <span class="sp-res-label">💀 ВТРАТИ</span>
-          <span class="sp-res-val" style="color:var(--red)" id="spCasualties">0</span>
-        </div>
+        <div class="sp-res-row"><span class="sp-res-label">💰 ФОНДИ</span><span class="sp-res-val" style="color:var(--gold)" id="spFunds">0</span></div>
+        <div class="sp-res-row"><span class="sp-res-label">⚔️ ЮНІТИ</span><span class="sp-res-val" style="color:var(--blue)" id="spUnits">0</span></div>
+        <div class="sp-res-row"><span class="sp-res-label">💀 ВТРАТИ</span><span class="sp-res-val" style="color:var(--red)" id="spCasualties">0</span></div>
       </div>
     </div>
     <div class="sp-section">
       <div class="sp-label">РОЗМІСТИТИ ЮНІТ</div>
-      <div class="sp-unit-types" id="unitTypesList"></div>
+      <div id="unitTypesList"></div>
+      <button class="hud-btn" style="width:100%;margin-top:6px;padding:8px" onclick="startBattle()">▶ ПОЧАТИ БІЙ (Space)</button>
     </div>
-    <div class="sp-section">
-      <div class="sp-label">БОЙОВИЙ ЖУРНАл</div>
-    </div>
+    <div class="sp-section"><div class="sp-label">БОЙОВИЙ ЖУРНАЛ</div></div>
     <div class="sp-log" id="spLog"></div>
   </div>
 </div>
 
-<!-- RESULT OVERLAY -->
 <div class="result-overlay" id="resultOverlay">
   <div class="result-box">
     <div class="result-emoji" id="resultEmoji">🏆</div>
@@ -571,16 +541,12 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
     <button class="btn-primary" style="width:100%" onclick="backToMenu()">← ГОЛОВНЕ МЕНЮ</button>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script type="module">
-// ═══════════════════════════════════════════
-//  FIREBASE
-// ═══════════════════════════════════════════
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import{getFirestore,doc,setDoc,getDoc,updateDoc,onSnapshot,deleteDoc,serverTimestamp,increment}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import{getAuth,signInAnonymously,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import{getFirestore,doc,setDoc,getDoc,updateDoc,onSnapshot,deleteDoc,collection,getDocs,query,orderBy,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import{getAuth,signInAnonymously,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const fbApp=initializeApp({
   apiKey:"AIzaSyAXTOcA4I5AYP0jfbVWb1de-lZjwf1DRhc",
@@ -592,124 +558,408 @@ const fbApp=initializeApp({
 });
 const db=getFirestore(fbApp);
 const auth=getAuth(fbApp);
+const CL_CLOUD='dimpa9w8w',CL_PRESET='ctratigia_map';
 
-// Cloudinary
-const CL_CLOUD='dimpa9w8w';
-const CL_PRESET='ctratigia_map'; // Will be updated when user provides preset name
-
-// ═══════════════════════════════════════════
-//  GLOBAL STATE
-// ═══════════════════════════════════════════
-let uid=null,myName='Пілот',lobbyId=null,myRole=null; // 'blue'|'red'
-let lobbyUnsub=null,gameUnsub=null;
+// ═══════ STATE ═══════
+let uid=null,myName='Гравець',isAdmin=false,isAnon=true;
+let lobbyId=null,myRole=null;
+let lobbyUnsub=null,gameUnsub=null,presenceUnsub=null;
 let isAI=false;
-let G={}; // game state
+let G={};
 let mapBg=null,mapBgW=0,mapBgH=0;
 let camX=0,camY=0,camScale=1;
 let isDragging=false,dragLX=0,dragLY=0;
-let selectedUnitId=null;
-let placingType=null; // unit type being placed
-let gamePhase='placement'; // 'placement'|'battle'
+let selectedUnitId=null,placingType=null;
+let gamePhase='placement';
 let gameTimer=0,timerInterval=null;
 let animFrame=null;
-let lastBattle=0;
+let gameOver=false;
+// Disconnect
+let dcCountdown=null,dcSeconds=0;
 
-// ═══════════════════════════════════════════
-//  UNIT DEFINITIONS
-// ═══════════════════════════════════════════
 const UNIT_DEFS={
-  infantry:{name:'Піхота',emoji:'👥',color:'',radius:8,hp:100,maxHp:100,atk:12,def:5,speed:18,range:40,cost:150,desc:'Базовий юніт'},
-  apc:{name:'БТР',emoji:'🚛',color:'',radius:10,hp:200,maxHp:200,atk:20,def:15,speed:28,range:50,cost:350,desc:'Броньований'},
-  tank:{name:'Танк',emoji:'🛡️',color:'',radius:12,hp:350,maxHp:350,atk:40,def:30,speed:20,range:60,cost:600,desc:'Важка броня'},
-  heli:{name:'Вертоліт',emoji:'🚁',color:'',radius:9,hp:150,maxHp:150,atk:35,def:5,speed:55,range:80,cost:500,desc:'Повітряний'},
-  artillery:{name:'Артилерія',emoji:'💥',color:'',radius:8,hp:120,maxHp:120,atk:70,def:3,speed:10,range:200,cost:700,desc:'Далекобійна'},
+  infantry:{name:'Піхота',emoji:'👥',radius:8,hp:100,maxHp:100,atk:12,def:5,speed:18,range:40,cost:150},
+  apc:{name:'БТР',emoji:'🚛',radius:10,hp:200,maxHp:200,atk:20,def:15,speed:28,range:50,cost:350},
+  tank:{name:'Танк',emoji:'🛡️',radius:12,hp:350,maxHp:350,atk:40,def:30,speed:20,range:60,cost:600},
+  heli:{name:'Гелікоптер',emoji:'🚁',radius:9,hp:150,maxHp:150,atk:35,def:5,speed:55,range:80,cost:500},
+  artillery:{name:'Артилерія',emoji:'💥',radius:8,hp:120,maxHp:120,atk:70,def:3,speed:10,range:200,cost:700},
 };
 
-// ═══════════════════════════════════════════
-//  AUTH + INIT
-// ═══════════════════════════════════════════
+// ════════════════════════════════
+//  AUTH
+// ════════════════════════════════
 window.addEventListener('DOMContentLoaded',async()=>{
   setLdText('Авторизація...');
-  try{
-    await signInAnonymously(auth);
-  }catch(e){setLdText('Помилка авторизації');}
+  await signInAnonymously(auth).catch(()=>{});
 });
-onAuthStateChanged(auth,user=>{
+
+onAuthStateChanged(auth,async user=>{
   if(user){
     uid=user.uid;
-    myName='Гравець_'+uid.slice(-4).toUpperCase();
+    isAnon=user.isAnonymous;
+    myName=user.displayName||(isAnon?'Гравець_'+uid.slice(-4).toUpperCase():user.email?.split('@')[0]||'Гравець');
+    // Check admin role
+    if(!isAnon){
+      const usnap=await getDoc(doc(db,'users',uid)).catch(()=>null);
+      isAdmin=usnap?.data()?.role==='admin';
+    }else{isAdmin=false;}
+    updateMenuUI();
     document.getElementById('loadingScreen').classList.add('hidden');
     showScreen('screen-menu');
     initGameCanvases();
     buildUnitList();
+    loadGlobalMaps();
   }
 });
-function setLdText(t){document.getElementById('ldText').textContent=t;}
 
-// ═══════════════════════════════════════════
+function updateMenuUI(){
+  document.getElementById('menuUserName').textContent=myName;
+  const badge=document.getElementById('menuUserBadge');
+  if(isAdmin){badge.textContent='АДМІН';badge.className='menu-user-badge badge-admin';}
+  else if(!isAnon){badge.textContent='ГРАВЕЦЬ';badge.className='menu-user-badge';}
+  else{badge.textContent='ГІСТЬ';badge.className='menu-user-badge badge-anon';}
+  document.getElementById('adminMenuBtn').style.display=isAdmin?'block':'none';
+  document.getElementById('authMenuBtn').style.display=isAnon?'block':'none';
+  document.getElementById('logoutBtn').style.display=!isAnon?'block':'none';
+}
+
+window.showAuthModal=()=>document.getElementById('authModal').classList.add('vis');
+window.closeAuthModal=()=>document.getElementById('authModal').classList.remove('vis');
+window.switchAuthTab=tab=>{
+  document.querySelectorAll('.modal-tab').forEach((t,i)=>t.classList.toggle('active',i===(tab==='login'?0:1)));
+  document.querySelectorAll('.modal-tab-content').forEach((t,i)=>t.classList.toggle('active',i===(tab==='login'?0:1)));
+};
+
+window.doLogin=async()=>{
+  const em=document.getElementById('loginEmail').value.trim();
+  const pw=document.getElementById('loginPass').value;
+  setStatus('loginStatus','⟳ Вхід...','warn');
+  try{
+    await signInWithEmailAndPassword(auth,em,pw);
+    closeAuthModal();
+  }catch(e){setStatus('loginStatus','❌ '+friendlyAuthErr(e),'err');}
+};
+
+window.doRegister=async()=>{
+  const nm=document.getElementById('regName').value.trim();
+  const em=document.getElementById('regEmail').value.trim();
+  const pw=document.getElementById('regPass').value;
+  if(!nm){setStatus('registerStatus','❌ Введіть позивний','err');return;}
+  if(pw.length<6){setStatus('registerStatus','❌ Пароль мін. 6 символів','err');return;}
+  setStatus('registerStatus','⟳ Реєстрація...','warn');
+  try{
+    const cred=await createUserWithEmailAndPassword(auth,em,pw);
+    await updateProfile(cred.user,{displayName:nm});
+    // Save user doc
+    await setDoc(doc(db,'users',cred.user.uid),{
+      name:nm,email:em,role:'player',createdAt:serverTimestamp()
+    });
+    closeAuthModal();
+  }catch(e){setStatus('registerStatus','❌ '+friendlyAuthErr(e),'err');}
+};
+
+window.doLogout=async()=>{
+  await signOut(auth);
+  await signInAnonymously(auth);
+};
+
+function friendlyAuthErr(e){
+  if(e.code==='auth/email-already-in-use')return'Email вже використовується';
+  if(e.code==='auth/wrong-password'||e.code==='auth/invalid-credential')return'Невірний email або пароль';
+  if(e.code==='auth/too-many-requests')return'Забагато спроб. Спробуйте пізніше';
+  return e.message||'Помилка';
+}
+
+function setStatus(id,msg,type){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.textContent=msg;el.className='status-box vis';
+  if(type)el.classList.add(type);
+}
+
+// ════════════════════════════════
+//  GLOBAL MAPS (admin → all)
+// ════════════════════════════════
+let globalMaps=[];
+async function loadGlobalMaps(){
+  try{
+    const snap=await getDoc(doc(db,'appData','globalMaps'));
+    globalMaps=snap.exists()?(snap.data().maps||[]):[];
+    renderLobbyGlobalMaps();
+    if(isAdmin)renderAdminMaps();
+    // Auto-load first map for AI mode
+    if(globalMaps.length>0&&!mapBgW){
+      loadMapFromUrl(globalMaps[0].url);
+    }
+  }catch(e){}
+}
+
+function renderLobbyGlobalMaps(){
+  const el=document.getElementById('lobbyGlobalMaps');
+  if(!el)return;
+  if(!globalMaps.length){el.innerHTML='<div style="font-size:10px;color:var(--dim);text-align:center;padding:8px">Немає збережених карт</div>';return;}
+  el.innerHTML=globalMaps.map((m,i)=>`
+    <div class="map-saved-item" onclick="selectGlobalMap(${i})" id="gmap_${i}">
+      <img src="${m.url}" class="msi-thumb" onerror="this.style.display='none'">
+      <div class="msi-info">
+        <div class="msi-name">${m.name}</div>
+        <div class="msi-date">${m.date||''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.selectGlobalMap=async(i)=>{
+  const m=globalMaps[i];
+  document.querySelectorAll('.map-saved-item').forEach(e=>e.classList.remove('active'));
+  document.getElementById('gmap_'+i)?.classList.add('active');
+  loadMapFromUrl(m.url);
+  if(lobbyId){
+    await updateDoc(doc(db,'lobbies',lobbyId),{mapUrl:m.url,mapVer:Date.now().toString()}).catch(()=>{});
+  }
+  document.getElementById('mapPreview').style.display='none';
+  document.getElementById('mapUploadArea').style.display='block';
+  toast('✅ Карта вибрана: '+m.name);
+};
+
+// ════════════════════════════════
+//  ADMIN - MAPS
+// ════════════════════════════════
+window.adminUploadMap=async(input)=>{
+  const file=input.files[0];if(!file)return;
+  const st=document.getElementById('adminMapUploadStatus');
+  st.textContent='⟳ Стискаємо...';
+  try{
+    const comp=await compressImage(file,3000,3000,.85);
+    st.textContent='⟳ Завантажуємо на Cloudinary...';
+    const url=await uploadCloudinary(comp,'admin_map_'+Date.now());
+    const name=file.name.replace(/\.[^.]+$/,'').slice(0,30);
+    const date=new Date().toLocaleDateString('uk-UA');
+    globalMaps.push({url,name,date});
+    await setDoc(doc(db,'appData','globalMaps'),{maps:globalMaps});
+    st.textContent='✅ Карта збережена для всіх!';
+    renderAdminMaps();
+    renderLobbyGlobalMaps();
+    toast('✅ Карта додана!');
+    input.value='';
+  }catch(e){st.textContent='❌ '+e.message;}
+};
+
+function renderAdminMaps(){
+  const el=document.getElementById('adminMapsGrid');
+  if(!el)return;
+  if(!globalMaps.length){el.innerHTML='<div style="font-size:11px;color:var(--dim)">Карт немає. Завантажте першу!</div>';return;}
+  el.innerHTML=globalMaps.map((m,i)=>`
+    <div class="admin-map-card" id="amc_${i}">
+      <img src="${m.url}" class="amc-img" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22/>'">
+      <div class="amc-info">
+        <div class="amc-name">${m.name}</div>
+        <div class="amc-meta">${m.date||''}</div>
+        <div class="amc-actions">
+          <button class="amc-btn set" onclick="adminSetActiveMap(${i})">✅ Активна</button>
+          <button class="amc-btn del" onclick="adminDeleteMap(${i})">🗑️</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.adminSetActiveMap=async(i)=>{
+  // Move to front
+  const m=globalMaps.splice(i,1)[0];
+  globalMaps.unshift(m);
+  await setDoc(doc(db,'appData','globalMaps'),{maps:globalMaps});
+  renderAdminMaps();
+  renderLobbyGlobalMaps();
+  toast('✅ Карта встановлена активною');
+};
+
+window.adminDeleteMap=async(i)=>{
+  if(!confirm('Видалити карту "'+globalMaps[i].name+'"?'))return;
+  globalMaps.splice(i,1);
+  await setDoc(doc(db,'appData','globalMaps'),{maps:globalMaps});
+  renderAdminMaps();
+  renderLobbyGlobalMaps();
+  toast('🗑️ Карту видалено');
+};
+
+// ════════════════════════════════
+//  ADMIN - EDITOR
+// ════════════════════════════════
+let editorCtx,editorTool='draw',editorColor='#22c55e',editorSize=8;
+let editorDrawing=false,editorLastX=0,editorLastY=0;
+const EDITOR_COLORS=['#22c55e','#3b82f6','#ef4444','#f59e0b','#8b5cf6','#06b6d4','#ffffff','#1a2810','#5c3d1a','#1e3a5f','#000000'];
+
+window.adminNav=section=>{
+  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.admin-nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('asec-'+section)?.classList.add('active');
+  document.getElementById('anav-'+section)?.classList.add('active');
+  if(section==='editor')initEditor();
+  if(section==='maps'){renderAdminMaps();loadGlobalMaps();}
+  if(section==='users')loadAdminUsers();
+};
+
+function initEditor(){
+  const cv=document.getElementById('adminMapCanvas');
+  if(!cv)return;
+  const wrap=cv.parentElement;
+  cv.width=wrap.clientWidth||800;cv.height=wrap.clientHeight||500;
+  editorCtx=cv.getContext('2d');
+  editorCtx.fillStyle='#1a2810';editorCtx.fillRect(0,0,cv.width,cv.height);
+  // Draw grid
+  editorCtx.strokeStyle='rgba(255,255,255,.05)';editorCtx.lineWidth=1;
+  for(let x=0;x<cv.width;x+=40){editorCtx.beginPath();editorCtx.moveTo(x,0);editorCtx.lineTo(x,cv.height);editorCtx.stroke();}
+  for(let y=0;y<cv.height;y+=40){editorCtx.beginPath();editorCtx.moveTo(0,y);editorCtx.lineTo(cv.width,y);editorCtx.stroke();}
+  // Divider
+  editorCtx.strokeStyle='rgba(255,255,255,.15)';editorCtx.lineWidth=2;editorCtx.setLineDash([8,8]);
+  editorCtx.beginPath();editorCtx.moveTo(cv.width/2,0);editorCtx.lineTo(cv.width/2,cv.height);editorCtx.stroke();
+  editorCtx.setLineDash([]);
+  // Zones
+  editorCtx.fillStyle='rgba(59,130,246,.08)';editorCtx.fillRect(0,0,cv.width/2,cv.height);
+  editorCtx.fillStyle='rgba(239,68,68,.08)';editorCtx.fillRect(cv.width/2,0,cv.width/2,cv.height);
+
+  // Build color swatches
+  const sw=document.getElementById('colorSwatches');
+  sw.innerHTML=EDITOR_COLORS.map(c=>`<div class="color-swatch ${c===editorColor?'active':''}" style="background:${c}" onclick="setEditorColor('${c}')"></div>`).join('');
+
+  cv.onmousedown=e=>{editorDrawing=true;editorLastX=e.offsetX;editorLastY=e.offsetY;};
+  cv.onmousemove=e=>{
+    if(!editorDrawing)return;
+    editorCtx.strokeStyle=editorTool==='erase'?'#1a2810':editorColor;
+    editorCtx.lineWidth=editorTool==='erase'?editorSize*3:editorSize;
+    editorCtx.lineCap='round';editorCtx.lineJoin='round';
+    editorCtx.beginPath();editorCtx.moveTo(editorLastX,editorLastY);editorCtx.lineTo(e.offsetX,e.offsetY);
+    editorCtx.stroke();
+    editorLastX=e.offsetX;editorLastY=e.offsetY;
+  };
+  cv.onmouseup=cv.onmouseleave=()=>editorDrawing=false;
+  document.getElementById('brushSize').oninput=e=>editorSize=+e.target.value;
+}
+
+window.setEditorTool=t=>{
+  editorTool=t;
+  document.querySelectorAll('.tool-btn[id^="tool-"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tool-'+t)?.classList.add('active');
+};
+window.setEditorColor=c=>{
+  editorColor=c;
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.toggle('active',s.style.background===c||s.style.backgroundColor===c));
+};
+window.clearEditorCanvas=()=>{
+  if(!editorCtx)return;
+  const cv=document.getElementById('adminMapCanvas');
+  editorCtx.fillStyle='#1a2810';editorCtx.fillRect(0,0,cv.width,cv.height);
+};
+window.saveEditorAsMap=async()=>{
+  const cv=document.getElementById('adminMapCanvas');if(!cv)return;
+  const dataUrl=cv.toDataURL('image/jpeg',.9);
+  const name='Редактор_'+new Date().toLocaleDateString('uk-UA');
+  const st=document.getElementById('adminMapUploadStatus');
+  st.textContent='⟳ Збереження...';
+  try{
+    const url=await uploadCloudinary(dataUrl,'editor_map_'+Date.now());
+    const date=new Date().toLocaleDateString('uk-UA');
+    globalMaps.push({url,name,date});
+    await setDoc(doc(db,'appData','globalMaps'),{maps:globalMaps});
+    st.textContent='✅ Карта з редактора збережена!';
+    toast('✅ Карта збережена для всіх!');
+    adminNav('maps');
+  }catch(e){st.textContent='❌ '+e.message;}
+};
+
+// ════════════════════════════════
+//  ADMIN - USERS
+// ════════════════════════════════
+window.loadAdminUsers=async()=>{
+  const el=document.getElementById('adminUsersList');
+  el.innerHTML='<div style="color:var(--dim);font-size:11px">Завантаження...</div>';
+  try{
+    const snaps=await getDocs(collection(db,'users'));
+    if(snaps.empty){el.innerHTML='<div style="color:var(--dim);font-size:11px">Немає зареєстрованих гравців</div>';return;}
+    el.innerHTML=snaps.docs.map(d=>{
+      const u=d.data();
+      return`<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);">
+        <span style="font-size:16px">${u.role==='admin'?'👑':'👤'}</span>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:700;color:#fff">${u.name||'—'}</div>
+          <div style="font-size:10px;color:var(--dim)">${u.email||'—'}</div>
+        </div>
+        <span style="font-size:10px;padding:2px 8px;border-radius:10px;${u.role==='admin'?'background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.3)':'background:rgba(100,116,139,.1);color:var(--dim);border:1px solid rgba(100,116,139,.2)'}">${u.role||'player'}</span>
+        ${u.role!=='admin'?`<button class="amc-btn set" onclick="grantAdmin('${d.id}')">👑 Адмін</button>`:''}
+      </div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div style="color:#f87171;font-size:11px">❌ '+e.message+'</div>';}
+};
+
+window.grantAdmin=async(userId)=>{
+  if(!confirm('Надати права адміна цьому користувачу?'))return;
+  await updateDoc(doc(db,'users',userId),{role:'admin'});
+  toast('✅ Права адміна надано');
+  loadAdminUsers();
+};
+
+// ════════════════════════════════
 //  SCREENS
-// ═══════════════════════════════════════════
+// ════════════════════════════════
 window.showScreen=name=>{
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(name)?.classList.add('active');
 };
 
-// ═══════════════════════════════════════════
-//  LOBBY - CREATE
-// ═══════════════════════════════════════════
+// ════════════════════════════════
+//  LOBBY CREATE
+// ════════════════════════════════
 function genCode(){
-  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  return Array.from({length:5},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+  return Array.from({length:5},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
 }
 
 window.showLobbyCreate=async()=>{
   showScreen('screen-lobby-create');
-  setLobbyStatus('create','⟳ Створення лобі...','');
-  const code=genCode();
-  lobbyId=code;
-  myRole='blue';
-  const lbl=document.getElementById('lcCode');lbl.textContent=code;
+  setStatus('lcStatus','⟳ Створення лобі...','warn');
+  const code=genCode();lobbyId=code;myRole='blue';
+  document.getElementById('lcCode').textContent=code;
+  document.getElementById('lcP1Name').textContent=myName;
   try{
     await setDoc(doc(db,'lobbies',code),{
-      code,host:uid,hostName:myName,
-      guestUid:null,guestName:null,
-      mapUrl:null,mapVer:null,
-      status:'waiting',
-      createdAt:serverTimestamp()
+      code,host:uid,hostName:myName,guestUid:null,guestName:null,
+      mapUrl:globalMaps[0]?.url||null,mapVer:'0',status:'waiting',
+      createdAt:serverTimestamp(),
+      presence:{blue:Date.now(),red:0}
     });
-    setLobbyStatus('create','✅ Лобі створено! Код: '+code,'ok');
+    setStatus('lcStatus','✅ Лобі створено! Код: '+code,'ok');
     listenLobby(code,'host');
-  }catch(e){setLobbyStatus('create','❌ Помилка: '+e.message,'err');}
+    startPresencePing(code,'blue');
+  }catch(e){setStatus('lcStatus','❌ '+e.message,'err');}
 };
 
-window.showLobbyJoin=()=>{
-  showScreen('screen-lobby-join');
-  setLobbyStatus('join','Введіть код лобі','');
-};
+window.showLobbyJoin=()=>{showScreen('screen-lobby-join');};
 
 window.joinLobby=async()=>{
   const code=document.getElementById('joinCodeInput').value.trim().toUpperCase();
   const nm=document.getElementById('joinNameInput').value.trim()||myName;
-  if(!code){setLobbyStatus('join','❌ Введіть код!','err');return;}
-  myName=nm||myName;
-  setLobbyStatus('join','⟳ Пошук лобі...','');
+  if(!code){setStatus('ljStatus','❌ Введіть код!','err');return;}
+  myName=nm;
+  setStatus('ljStatus','⟳ Пошук...','warn');
   try{
     const snap=await getDoc(doc(db,'lobbies',code));
-    if(!snap.exists()){setLobbyStatus('join','❌ Лобі не знайдено!','err');return;}
+    if(!snap.exists()){setStatus('ljStatus','❌ Лобі не знайдено!','err');return;}
     const d=snap.data();
-    if(d.status!=='waiting'){setLobbyStatus('join','❌ Лобі вже не доступне!','err');return;}
-    if(d.guestUid&&d.guestUid!==uid){setLobbyStatus('join','❌ Лобі вже заповнене!','err');return;}
+    if(d.status!=='waiting'&&d.status!=='ready'){setStatus('ljStatus','❌ Лобі недоступне','err');return;}
+    if(d.guestUid&&d.guestUid!==uid){setStatus('ljStatus','❌ Лобі заповнене','err');return;}
     lobbyId=code;myRole='red';
-    await updateDoc(doc(db,'lobbies',code),{guestUid:uid,guestName:myName,status:'ready'});
-    setLobbyStatus('join','✅ Приєднались! Очікуємо старту...','ok');
+    await updateDoc(doc(db,'lobbies',code),{guestUid:uid,guestName:myName,status:'ready','presence.red':Date.now()});
     showScreen('screen-lobby-create');
     document.getElementById('lcCode').textContent=code;
     document.getElementById('lcP1Name').textContent=d.hostName||'Хост';
     document.getElementById('lcP2Name').textContent=myName;
     document.getElementById('lcP2Slot').classList.add('filled');
     document.getElementById('lcP2Slot').querySelector('.lps-icon').textContent='🔴';
+    setStatus('lcStatus','✅ Приєднались! Очікуємо старту...','ok');
     listenLobby(code,'guest');
-  }catch(e){setLobbyStatus('join','❌ '+e.message,'err');}
+    startPresencePing(code,'red');
+    if(d.mapUrl)loadMapFromUrl(d.mapUrl);
+  }catch(e){setStatus('ljStatus','❌ '+e.message,'err');}
 };
 
 function listenLobby(code,role){
@@ -723,12 +973,12 @@ function listenLobby(code,role){
       document.getElementById('lcP2Slot').querySelector('.lps-icon').textContent='🔴';
       if(role==='host'){
         document.getElementById('lcStartBtn').disabled=false;
-        setLobbyStatus('create','✅ '+d.guestName+' приєднався! Можна починати.','ok');
+        setStatus('lcStatus','✅ '+d.guestName+' приєднався! Натисніть СТАРТ.','ok');
       }
     }
     if(d.mapUrl&&mapBgW===0)loadMapFromUrl(d.mapUrl);
     if(d.status==='started'){
-      if(lobbyUnsub)lobbyUnsub();
+      if(lobbyUnsub){lobbyUnsub();lobbyUnsub=null;}
       startGame(code,role,d);
     }
   });
@@ -737,51 +987,94 @@ function listenLobby(code,role){
 window.hostStartGame=async()=>{
   if(!lobbyId)return;
   await updateDoc(doc(db,'lobbies',lobbyId),{status:'started'});
-  startGame(lobbyId,'blue',null);
 };
 
-function setLobbyStatus(which,msg,type){
-  const id=which==='create'?'lcStatus':'ljStatus';
-  const el=document.getElementById(id);
-  el.textContent=msg;el.className='lobby-status vis';
-  if(type==='ok')el.classList.add('ok');
-  if(type==='err')el.classList.add('err');
+window.leaveLobby=async()=>{
+  if(lobbyId&&myRole==='blue'){await deleteDoc(doc(db,'lobbies',lobbyId)).catch(()=>{});}
+  if(lobbyUnsub){lobbyUnsub();lobbyUnsub=null;}
+  if(presenceUnsub){clearInterval(presenceUnsub);presenceUnsub=null;}
+  lobbyId=null;myRole=null;
+  showScreen('screen-menu');
+};
+
+// ════════════════════════════════
+//  PRESENCE / DISCONNECT
+// ════════════════════════════════
+function startPresencePing(code,role){
+  if(presenceUnsub)clearInterval(presenceUnsub);
+  presenceUnsub=setInterval(async()=>{
+    if(!lobbyId)return;
+    await updateDoc(doc(db,'games',code),{['presence.'+role]:Date.now()}).catch(()=>{});
+  },5000);
 }
 
-// ═══════════════════════════════════════════
-//  AI MODE
-// ═══════════════════════════════════════════
+function monitorOpponentPresence(code){
+  const oppRole=myRole==='blue'?'red':'blue';
+  setInterval(async()=>{
+    if(gameOver||!lobbyId)return;
+    const snap=await getDoc(doc(db,'games',code)).catch(()=>null);
+    if(!snap?.exists())return;
+    const ts=snap.data()?.presence?.[oppRole]||0;
+    const elapsed=(Date.now()-ts)/1000;
+    if(elapsed>10&&elapsed<75){
+      showDcBanner(75-Math.floor(elapsed));
+    }else if(elapsed>=75){
+      hideDcBanner();
+      showResult(myRole,'Опонент не повернувся');
+    }else{
+      hideDcBanner();
+    }
+  },3000);
+}
+
+let dcInterval=null;
+function showDcBanner(sec){
+  dcSeconds=sec;
+  const b=document.getElementById('dcBanner');
+  b.classList.add('vis');
+  document.getElementById('dcTimer').textContent=sec;
+  if(dcInterval)return;
+  dcInterval=setInterval(()=>{
+    dcSeconds--;
+    document.getElementById('dcTimer').textContent=Math.max(0,dcSeconds);
+    if(dcSeconds<=0){clearInterval(dcInterval);dcInterval=null;}
+  },1000);
+}
+function hideDcBanner(){
+  document.getElementById('dcBanner').classList.remove('vis');
+  if(dcInterval){clearInterval(dcInterval);dcInterval=null;}
+}
+
+// ════════════════════════════════
+//  VS AI
+// ════════════════════════════════
 window.startVsAI=()=>{
   isAI=true;myRole='blue';lobbyId='ai_'+Date.now();
   initGameState();
   showScreen('screen-game');
   startGameLoop();
+  // Load global map for AI too
+  if(globalMaps.length>0)loadMapFromUrl(globalMaps[0].url);
 };
 
-// ═══════════════════════════════════════════
+// ════════════════════════════════
 //  GAME START
-// ═══════════════════════════════════════════
+// ════════════════════════════════
 function startGame(code,role,lobbyData){
   isAI=false;myRole=role;lobbyId=code;
   initGameState();
   showScreen('screen-game');
   startGameLoop();
   listenGameState(code);
+  startPresencePing(code,role);
+  monitorOpponentPresence(code);
   if(lobbyData?.mapUrl)loadMapFromUrl(lobbyData.mapUrl);
+  else if(globalMaps.length>0)loadMapFromUrl(globalMaps[0].url);
 }
 
 function initGameState(){
-  G={
-    units:[],
-    funds:{blue:2000,red:2000},
-    casualties:{blue:0,red:0},
-    phase:'placement',
-    wave:1,
-    startTime:Date.now(),
-    nextId:1,
-  };
-  gamePhase='placement';
-  gameTimer=0;
+  G={units:[],funds:{blue:2000,red:2000},casualties:{blue:0,red:0},phase:'placement',wave:1,startTime:Date.now(),nextId:1};
+  gamePhase='placement';gameOver=false;gameTimer=0;
   if(timerInterval)clearInterval(timerInterval);
   timerInterval=setInterval(tickTimer,1000);
   document.getElementById('hudPhase').textContent='РОЗМІЩЕННЯ';
@@ -792,13 +1085,12 @@ function initGameState(){
 function tickTimer(){
   gameTimer++;
   const m=Math.floor(gameTimer/60),s=gameTimer%60;
-  document.getElementById('hudTimer').textContent=
-    String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  document.getElementById('hudTimer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 }
 
-// ═══════════════════════════════════════════
-//  FIRESTORE GAME SYNC
-// ═══════════════════════════════════════════
+// ════════════════════════════════
+//  FIRESTORE SYNC
+// ════════════════════════════════
 let syncThrottle=null;
 function syncGameState(){
   if(!lobbyId||isAI)return;
@@ -806,19 +1098,12 @@ function syncGameState(){
   syncThrottle=setTimeout(async()=>{
     try{
       await setDoc(doc(db,'games',lobbyId),{
-        units:G.units.map(u=>({
-          id:u.id,type:u.type,owner:u.owner,
-          x:Math.round(u.x),y:Math.round(u.y),
-          hp:Math.round(u.hp),
-        })),
-        funds:G.funds,
-        casualties:G.casualties,
-        phase:gamePhase,
-        wave:G.wave,
-        ts:Date.now()
-      });
+        units:G.units.filter(u=>!u._dead).map(u=>({id:u.id,type:u.type,owner:u.owner,x:Math.round(u.x),y:Math.round(u.y),hp:Math.round(u.hp)})),
+        funds:G.funds,casualties:G.casualties,phase:gamePhase,wave:G.wave,ts:Date.now(),
+        ['presence.'+myRole]:Date.now()
+      },{merge:true});
     }catch(e){}
-  },200);
+  },150);
 }
 
 function listenGameState(code){
@@ -826,68 +1111,53 @@ function listenGameState(code){
   gameUnsub=onSnapshot(doc(db,'games',code),snap=>{
     if(!snap.exists())return;
     const d=snap.data();
-    // Merge remote units into local (units owned by opponent)
     const oppRole=myRole==='blue'?'red':'blue';
     const myUnits=G.units.filter(u=>u.owner===myRole);
-    const remoteOppUnits=(d.units||[]).filter(u=>u.owner===oppRole).map(u=>{
-      const existing=G.units.find(x=>x.id===u.id&&x.owner===oppRole);
-      if(existing){
-        // Smooth update
-        existing.hp=u.hp;
-        existing.tx=u.x;existing.ty=u.y;
-        return existing;
-      }
-      // New unit from opponent
+    const remOpp=(d.units||[]).filter(u=>u.owner===oppRole).map(u=>{
+      const ex=G.units.find(x=>x.id===u.id&&x.owner===oppRole);
+      if(ex){ex.hp=u.hp;ex.tx=u.x;ex.ty=u.y;return ex;}
       const def=UNIT_DEFS[u.type]||UNIT_DEFS.infantry;
-      return{...u,...def,x:u.x,y:u.y,tx:u.x,ty:u.y,vx:0,vy:0,state:'idle',attackTarget:null,lastAttack:0};
+      return{...def,...u,tx:u.x,ty:u.y,vx:0,vy:0,state:'idle',attackTarget:null,lastAttack:0,lastAttackAnim:0};
     });
-    G.units=[...myUnits,...remoteOppUnits];
+    G.units=[...myUnits,...remOpp];
     if(d.funds)G.funds=d.funds;
     if(d.casualties)G.casualties=d.casualties;
     if(d.phase&&d.phase!==gamePhase){
       gamePhase=d.phase;
-      if(gamePhase==='battle'){
-        document.getElementById('hudPhase').textContent='БІЙ';
-        document.getElementById('placementHint').classList.remove('vis');
-      }
+      if(gamePhase==='battle'){document.getElementById('hudPhase').textContent='БІЙ';document.getElementById('placementHint').classList.remove('vis');}
     }
     updateHUD();
   });
 }
 
-// ═══════════════════════════════════════════
-//  MAP - CLOUDINARY UPLOAD
-// ═══════════════════════════════════════════
+// ════════════════════════════════
+//  MAP UPLOAD
+// ════════════════════════════════
 window.handleMapUpload=async(input)=>{
   const file=input.files[0];if(!file)return;
   const st=document.getElementById('mapUploadStatus');
   st.textContent='⟳ Стискаємо...';
   try{
-    const compressed=await compressImage(file,3000,3000,.85);
+    const comp=await compressImage(file,3000,3000,.85);
     st.textContent='⟳ Завантажуємо...';
-    // Show preview immediately
     const prev=document.getElementById('mapPreview');
-    prev.src=compressed;prev.style.display='block';
+    prev.src=comp;prev.style.display='block';
     document.getElementById('mapUploadArea').style.display='none';
-    // Upload to Cloudinary
-    const url=await uploadCloudinary(compressed);
-    // Save to lobby
-    if(lobbyId){
-      await updateDoc(doc(db,'lobbies',lobbyId),{mapUrl:url,mapVer:Date.now().toString()});
-    }
+    const url=await uploadCloudinary(comp,'lobby_map_'+lobbyId);
+    if(lobbyId)await updateDoc(doc(db,'lobbies',lobbyId),{mapUrl:url,mapVer:Date.now().toString()}).catch(()=>{});
     loadMapFromUrl(url);
-    st.textContent='✅ Карта завантажена!';
+    st.textContent='✅ Завантажено!';
   }catch(e){st.textContent='❌ '+e.message;}
 };
 
-async function uploadCloudinary(base64){
+async function uploadCloudinary(base64,publicId){
   const fd=new FormData();
   fd.append('file',base64);
   fd.append('upload_preset',CL_PRESET);
-  fd.append('public_id','ctratigia_map_'+lobbyId);
+  if(publicId)fd.append('public_id',publicId);
   const r=await fetch(`https://api.cloudinary.com/v1_1/${CL_CLOUD}/image/upload`,{method:'POST',body:fd});
   if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'Upload failed');}
-  return (await r.json()).secure_url;
+  return(await r.json()).secure_url;
 }
 
 function compressImage(file,maxW,maxH,q){
@@ -896,8 +1166,7 @@ function compressImage(file,maxW,maxH,q){
     img.onload=()=>{
       URL.revokeObjectURL(url);
       let w=img.width,h=img.height;
-      const r=Math.min(maxW/w,maxH/h,1);
-      w=Math.round(w*r);h=Math.round(h*r);
+      const r=Math.min(maxW/w,maxH/h,1);w=Math.round(w*r);h=Math.round(h*r);
       const cv=document.createElement('canvas');cv.width=w;cv.height=h;
       cv.getContext('2d').drawImage(img,0,0,w,h);
       res(cv.toDataURL('image/jpeg',q));
@@ -912,123 +1181,56 @@ function loadMapFromUrl(url){
   img.src=url;
 }
 
-// ═══════════════════════════════════════════
-//  CANVAS SETUP
-// ═══════════════════════════════════════════
-let mapCtx,unitsCtx,frontCtx,uiCtx,interCtx;
-let CW=0,CH=0;
+// ════════════════════════════════
+//  CANVAS
+// ════════════════════════════════
+let mapCtx,unitsCtx,frontCtx,uiCtx,interCtx,CW=0,CH=0;
 
 function initGameCanvases(){
-  const canvases=['mapCanvas','unitsCanvas','frontCanvas','uiCanvas','interCanvas'];
-  [mapCtx,unitsCtx,frontCtx,uiCtx,interCtx]=canvases.map(id=>{
-    const cv=document.getElementById(id);
-    return cv.getContext('2d');
-  });
+  [mapCtx,unitsCtx,frontCtx,uiCtx,interCtx]=['mapCanvas','unitsCanvas','frontCanvas','uiCanvas','interCanvas'].map(id=>document.getElementById(id).getContext('2d'));
   resizeCanvases();
   window.addEventListener('resize',resizeCanvases);
   setupInteraction();
 }
 
 function resizeCanvases(){
-  const body=document.getElementById('gameBody');
-  if(!body)return;
+  const body=document.getElementById('gameBody');if(!body)return;
   CW=body.clientWidth;CH=body.clientHeight;
   ['mapCanvas','unitsCanvas','frontCanvas','uiCanvas','interCanvas'].forEach(id=>{
-    const cv=document.getElementById(id);
-    cv.width=CW;cv.height=CH;
+    const cv=document.getElementById(id);cv.width=CW;cv.height=CH;
   });
   drawAll();
 }
 
 function centerMap(){
   if(!mapBgW)return;
-  const sc=Math.min(CW/mapBgW,CH/mapBgH,1);
-  camScale=sc;
-  camX=(CW-mapBgW*camScale)/2;
-  camY=(CH-mapBgH*camScale)/2;
+  const sc=Math.min(CW/mapBgW,CH/mapBgH,.9);
+  camScale=sc;camX=(CW-mapBgW*camScale)/2;camY=(CH-mapBgH*camScale)/2;
 }
 
-function w2s(wx,wy){return{sx:wx*camScale+camX,sy:wy*camScale+camY};}
 function s2w(sx,sy){return{wx:(sx-camX)/camScale,wy:(sy-camY)/camScale};}
+window.resetView=()=>{camScale=1;camX=0;camY=0;if(mapBgW)centerMap();drawAll();};
 
-window.resetView=()=>{
-  camScale=1;camX=0;camY=0;
-  if(mapBgW)centerMap();
-  drawAll();
-};
-
-// ═══════════════════════════════════════════
+// ════════════════════════════════
 //  INTERACTION
-// ═══════════════════════════════════════════
+// ════════════════════════════════
 function setupInteraction(){
   const cv=document.getElementById('interCanvas');
-  cv.addEventListener('mousedown',onMD);
-  cv.addEventListener('mousemove',onMM);
-  cv.addEventListener('mouseup',onMU);
-  cv.addEventListener('wheel',onWheel,{passive:false});
-  cv.addEventListener('contextmenu',e=>e.preventDefault());
-  // Touch
-  cv.addEventListener('touchstart',onTStart,{passive:false});
-  cv.addEventListener('touchmove',onTMove,{passive:false});
-  cv.addEventListener('touchend',onTEnd,{passive:false});
-  // Keyboard
+  cv.addEventListener('mousedown',onMD);cv.addEventListener('mousemove',onMM);cv.addEventListener('mouseup',onMU);
+  cv.addEventListener('wheel',onWheel,{passive:false});cv.addEventListener('contextmenu',e=>e.preventDefault());
+  cv.addEventListener('touchstart',onTStart,{passive:false});cv.addEventListener('touchmove',onTMove,{passive:false});cv.addEventListener('touchend',onTEnd,{passive:false});
   window.addEventListener('keydown',onKey);
 }
 
 let pinchDist=0;
-function onTStart(e){
-  e.preventDefault();
-  if(e.touches.length===1){isDragging=false;dragLX=e.touches[0].clientX;dragLY=e.touches[0].clientY;}
-  else if(e.touches.length===2){pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}
-}
-function onTMove(e){
-  e.preventDefault();
-  if(e.touches.length===1){
-    const dx=e.touches[0].clientX-dragLX,dy=e.touches[0].clientY-dragLY;
-    if(Math.abs(dx)+Math.abs(dy)>4)isDragging=true;
-    if(isDragging){camX+=dx;camY+=dy;dragLX=e.touches[0].clientX;dragLY=e.touches[0].clientY;drawAll();}
-  }else if(e.touches.length===2){
-    const nd=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-    const d=nd/pinchDist;
-    const cx=(e.touches[0].clientX+e.touches[1].clientX)/2;
-    const cy=(e.touches[0].clientY+e.touches[1].clientY)/2;
-    zoom(d,cx,cy);pinchDist=nd;
-  }
-}
-function onTEnd(e){
-  e.preventDefault();
-  if(!isDragging&&e.changedTouches.length===1){
-    handleClick(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
-  }
-  isDragging=false;
-}
-function onMD(e){
-  if(e.button===2)return;
-  isDragging=false;dragLX=e.clientX;dragLY=e.clientY;
-}
-function onMM(e){
-  if(e.buttons===1){
-    const dx=e.clientX-dragLX,dy=e.clientY-dragLY;
-    if(Math.abs(dx)+Math.abs(dy)>4)isDragging=true;
-    if(isDragging){camX+=dx;camY+=dy;dragLX=e.clientX;dragLY=e.clientY;drawAll();}
-  }
-}
-function onMU(e){
-  if(!isDragging)handleClick(e.clientX,e.clientY);
-  isDragging=false;
-}
-function onWheel(e){
-  e.preventDefault();
-  zoom(e.deltaY<0?1.12:0.9,e.clientX,e.clientY);
-}
-function zoom(factor,mx,my){
-  const ns=Math.max(0.1,Math.min(8,camScale*factor));
-  camX=mx-(mx-camX)*(ns/camScale);
-  camY=my-(my-camY)*(ns/camScale);
-  camScale=ns;
-  document.getElementById('zoomInd').textContent=Math.round(camScale*100)+'%';
-  drawAll();
-}
+function onTStart(e){e.preventDefault();if(e.touches.length===1){isDragging=false;dragLX=e.touches[0].clientX;dragLY=e.touches[0].clientY;}else if(e.touches.length===2)pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}
+function onTMove(e){e.preventDefault();if(e.touches.length===1){const dx=e.touches[0].clientX-dragLX,dy=e.touches[0].clientY-dragLY;if(Math.abs(dx)+Math.abs(dy)>4)isDragging=true;if(isDragging){camX+=dx;camY+=dy;dragLX=e.touches[0].clientX;dragLY=e.touches[0].clientY;drawAll();}}else if(e.touches.length===2){const nd=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);zoom(nd/pinchDist,(e.touches[0].clientX+e.touches[1].clientX)/2,(e.touches[0].clientY+e.touches[1].clientY)/2);pinchDist=nd;}}
+function onTEnd(e){e.preventDefault();if(!isDragging&&e.changedTouches.length===1)handleClick(e.changedTouches[0].clientX,e.changedTouches[0].clientY);isDragging=false;}
+function onMD(e){if(e.button===2)return;isDragging=false;dragLX=e.clientX;dragLY=e.clientY;}
+function onMM(e){if(e.buttons===1){const dx=e.clientX-dragLX,dy=e.clientY-dragLY;if(Math.abs(dx)+Math.abs(dy)>4)isDragging=true;if(isDragging){camX+=dx;camY+=dy;dragLX=e.clientX;dragLY=e.clientY;drawAll();}}}
+function onMU(e){if(!isDragging)handleClick(e.clientX,e.clientY);isDragging=false;}
+function onWheel(e){e.preventDefault();zoom(e.deltaY<0?1.12:0.9,e.clientX,e.clientY);}
+function zoom(f,mx,my){const ns=Math.max(.1,Math.min(8,camScale*f));camX=mx-(mx-camX)*(ns/camScale);camY=my-(my-camY)*(ns/camScale);camScale=ns;document.getElementById('zoomInd').textContent=Math.round(camScale*100)+'%';drawAll();}
 function onKey(e){
   if(e.code==='Escape'){placingType=null;document.getElementById('placementHint').classList.remove('vis');document.querySelectorAll('.sp-unit-btn').forEach(b=>b.classList.remove('active'));}
   if(e.code==='Space'){e.preventDefault();if(gamePhase==='placement')startBattle();}
@@ -1037,103 +1239,64 @@ function onKey(e){
 function handleClick(sx,sy){
   if(!G.units)return;
   const{wx,wy}=s2w(sx,sy);
-
-  // Placing unit
-  if(placingType){
-    placeUnit(wx,wy);
-    return;
-  }
-
-  // Select unit
-  const clicked=G.units.find(u=>{
-    const d=Math.hypot(u.x-wx,u.y-wy);
-    return d<(UNIT_DEFS[u.type]?.radius||10)+4;
-  });
-  if(clicked){
-    selectedUnitId=clicked.id;
-    showSelInfo(clicked);
-  }else{
-    selectedUnitId=null;
-    document.getElementById('selInfo').classList.remove('vis');
-  }
+  if(placingType){placeUnit(wx,wy);return;}
+  const clicked=G.units.find(u=>Math.hypot(u.x-wx,u.y-wy)<(UNIT_DEFS[u.type]?.radius||10)+4);
+  if(clicked){selectedUnitId=clicked.id;showSelInfo(clicked);}
+  else{selectedUnitId=null;document.getElementById('selInfo').classList.remove('vis');}
   drawAll();
 }
 
-// ═══════════════════════════════════════════
+// ════════════════════════════════
 //  UNIT PLACEMENT
-// ═══════════════════════════════════════════
+// ════════════════════════════════
 function buildUnitList(){
-  const el=document.getElementById('unitTypesList');
-  el.innerHTML=Object.entries(UNIT_DEFS).map(([type,d])=>`
+  document.getElementById('unitTypesList').innerHTML=Object.entries(UNIT_DEFS).map(([type,d])=>`
     <div class="sp-unit-btn" onclick="selectUnitType('${type}')" id="ubtn_${type}">
       <span class="sp-unit-icon">${d.emoji}</span>
-      <div class="sp-unit-info">
-        <div class="sp-unit-name">${d.name}</div>
-        <div class="sp-unit-stat">HP:${d.hp} · АТК:${d.atk}</div>
-      </div>
+      <div class="sp-unit-info"><div class="sp-unit-name">${d.name}</div><div class="sp-unit-stat">HP:${d.hp} · АТК:${d.atk}</div></div>
       <span class="sp-unit-cost">${d.cost}</span>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-window.selectUnitType=(type)=>{
+window.selectUnitType=type=>{
   if(gamePhase!=='placement'){toast('❌ Лише під час розміщення!');return;}
   const def=UNIT_DEFS[type];
-  if(G.funds[myRole]<def.cost){toast('❌ Недостатньо фондів!');return;}
+  if(G.funds[myRole]<def.cost){toast('❌ Недостатньо фондів! ('+G.funds[myRole]+'/'+def.cost+')');return;}
   placingType=type;
   document.querySelectorAll('.sp-unit-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('ubtn_'+type)?.classList.add('active');
   document.getElementById('placementHint').classList.add('vis');
-  document.getElementById('placementHint').textContent=
-    'РОЗМІСТІТЬ '+def.name.toUpperCase()+' ('+def.cost+' фондів) | ESC = скасувати';
+  document.getElementById('placementHint').textContent='РОЗМІСТІТЬ '+def.name.toUpperCase()+' ('+def.cost+' ₴) | ESC = скасувати';
 };
 
 function placeUnit(wx,wy){
   if(!placingType)return;
-  const def=UNIT_DEFS[placingType];
-  if(!def){placingType=null;return;}
-
-  // Check valid side
-  const mapW=mapBgW||CW/camScale;
-  const halfW=mapW/2;
-  const isBlueZone=myRole==='blue'?wx<halfW:wx>=halfW;
-  if(!isBlueZone&&mapBgW>0){
-    toast('⚠️ Розміщуйте лише на своїй половині!');return;
-  }
-
+  const def=UNIT_DEFS[placingType];if(!def){placingType=null;return;}
+  const mapW=mapBgW||2000,halfW=mapW/2;
+  const validZone=myRole==='blue'?wx<halfW:wx>=halfW;
+  if(!validZone){toast('⚠️ Лише на своїй половині!');return;}
   if(G.funds[myRole]<def.cost){toast('❌ Недостатньо фондів!');return;}
-
-  const unit={
-    id:G.nextId++,
-    type:placingType,
-    owner:myRole,
-    x:wx,y:wy,tx:wx,ty:wy,
-    vx:0,vy:0,
-    hp:def.hp,maxHp:def.hp,
-    atk:def.atk,def:def.def,
-    speed:def.speed,range:def.range,
-    radius:def.radius,
-    state:'idle',
-    attackTarget:null,
-    lastAttack:0,
-    lastAttackAnim:0,
-  };
-  G.units.push(unit);
+  G.units.push({
+    id:G.nextId++,type:placingType,owner:myRole,
+    x:wx,y:wy,tx:wx,ty:wy,vx:0,vy:0,
+    hp:def.hp,maxHp:def.hp,atk:def.atk,def:def.def,
+    speed:def.speed,range:def.range,radius:def.radius,
+    state:'idle',attackTarget:null,lastAttack:0,lastAttackAnim:0,
+  });
   G.funds[myRole]-=def.cost;
   addLog('📍 '+def.name+' розміщено','info');
-  document.getElementById('spFunds').textContent=G.funds[myRole];
   placingType=null;
   document.querySelectorAll('.sp-unit-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('placementHint').classList.remove('vis');
-  syncGameState();
-  drawAll();
+  syncGameState();updateHUD();drawAll();
 }
 
-// ═══════════════════════════════════════════
-//  BATTLE PHASE
-// ═══════════════════════════════════════════
+// ════════════════════════════════
+//  BATTLE
+// ════════════════════════════════
 window.startBattle=()=>{
   if(gamePhase==='battle')return;
+  if(G.units.filter(u=>u.owner===myRole).length===0){toast('⚠️ Розмістіть хоча б 1 юніт!');return;}
   gamePhase='battle';
   document.getElementById('hudPhase').textContent='БІЙ';
   document.getElementById('placementHint').classList.remove('vis');
@@ -1142,90 +1305,59 @@ window.startBattle=()=>{
   syncGameState();
 };
 
-// AI unit spawning
 function spawnAIUnits(){
-  const mapW=mapBgW||1000;
-  const mapH=mapBgH||600;
-  const aiTypes=['infantry','infantry','apc','tank','artillery'];
-  aiTypes.forEach((t,i)=>{
+  const mapW=mapBgW||2000,mapH=mapBgH||1200;
+  ['infantry','infantry','apc','tank','artillery'].forEach((t,i)=>{
     const def=UNIT_DEFS[t];
-    G.units.push({
-      id:G.nextId++,type:t,owner:'red',
-      x:mapW*0.75+rnd(-60,60),y:mapH*0.2+i*80,
-      tx:0,ty:0,vx:0,vy:0,
-      hp:def.hp,maxHp:def.hp,atk:def.atk,def:def.def,
-      speed:def.speed,range:def.range,radius:def.radius,
-      state:'advance',attackTarget:null,lastAttack:0,lastAttackAnim:0,
-    });
+    G.units.push({id:G.nextId++,type:t,owner:'red',
+      x:mapW*.75+rnd(-60,60),y:mapH*.15+i*((mapH*.7)/5),
+      tx:0,ty:0,vx:0,vy:0,hp:def.hp,maxHp:def.hp,
+      atk:def.atk,def:def.def,speed:def.speed,range:def.range,radius:def.radius,
+      state:'advance',attackTarget:null,lastAttack:0,lastAttackAnim:0});
   });
 }
 
 function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1));}
 
-// ═══════════════════════════════════════════
+// ════════════════════════════════
 //  GAME LOOP
-// ═══════════════════════════════════════════
+// ════════════════════════════════
 let lastFrame=0;
 function startGameLoop(){
   if(animFrame)cancelAnimationFrame(animFrame);
   lastFrame=performance.now();
-  function loop(ts){
-    const dt=Math.min((ts-lastFrame)/1000,0.1);lastFrame=ts;
-    if(gamePhase==='battle'){
-      updateUnits(dt);
-      updateAI(dt);
-      checkWinCondition();
-    }
+  (function loop(ts){
+    const dt=Math.min((ts-lastFrame)/1000,.1);lastFrame=ts;
+    if(gamePhase==='battle'){updateUnits(dt);updateAI(dt);checkWinCondition();}
     drawAll();
     animFrame=requestAnimationFrame(loop);
-  }
-  animFrame=requestAnimationFrame(loop);
+  })(performance.now());
 }
 
-// ═══════════════════════════════════════════
-//  UNIT AI / MOVEMENT
-// ═══════════════════════════════════════════
+// ════════════════════════════════
+//  UNIT LOGIC
+// ════════════════════════════════
 function updateUnits(dt){
   const now=performance.now();
-  const myUnits=G.units.filter(u=>u.owner===myRole);
-  const oppUnits=G.units.filter(u=>u.owner!==myRole);
-
-  for(const u of myUnits){
-    // Find nearest enemy
-    let nearest=null,nDist=Infinity;
-    for(const e of oppUnits){
-      const d=Math.hypot(e.x-u.x,e.y-u.y);
-      if(d<nDist){nDist=d;nearest=e;}
-    }
-
-    if(!nearest){u.state='idle';u.vx=0;u.vy=0;continue;}
-
-    const range=u.range;
-
-    if(nDist<=range){
-      // Attack
+  for(const u of G.units.filter(u=>u.owner===myRole&&!u._dead)){
+    const opp=G.units.filter(e=>e.owner!==myRole&&!e._dead);
+    if(!opp.length){u.state='idle';continue;}
+    let nearest=null,nd=Infinity;
+    for(const e of opp){const d=Math.hypot(e.x-u.x,e.y-u.y);if(d<nd){nd=d;nearest=e;}}
+    if(nd<=u.range){
       u.state='attack';u.attackTarget=nearest.id;
-      u.vx=0;u.vy=0;
       if(now-u.lastAttack>1000){
         u.lastAttack=now;u.lastAttackAnim=now;
         const dmg=Math.max(1,u.atk-Math.floor(nearest.def/3)+rnd(-3,3));
         nearest.hp-=dmg;
-        if(nearest.hp<=0){
-          killUnit(nearest);
-        }
+        if(nearest.hp<=0)killUnit(nearest);
       }
     }else{
-      // Move toward enemy
       u.state='advance';
-      const dx=nearest.x-u.x,dy=nearest.y-u.y;
-      const dist=Math.sqrt(dx*dx+dy*dy);
-      u.vx=(dx/dist)*u.speed*dt;
-      u.vy=(dy/dist)*u.speed*dt;
-      u.x+=u.vx;u.y+=u.vy;
+      const dx=nearest.x-u.x,dy=nearest.y-u.y,dist=Math.sqrt(dx*dx+dy*dy);
+      u.x+=(dx/dist)*u.speed*dt;u.y+=(dy/dist)*u.speed*dt;
     }
   }
-
-  // Remove dead (marked for removal)
   G.units=G.units.filter(u=>!u._dead);
 }
 
@@ -1236,298 +1368,175 @@ function killUnit(u){
   updateHUD();
 }
 
-// AI logic for enemy units (vs AI mode)
 function updateAI(dt){
   if(!isAI)return;
   const now=performance.now();
-  const aiUnits=G.units.filter(u=>u.owner==='red');
-  const playerUnits=G.units.filter(u=>u.owner==='blue');
-
-  for(const u of aiUnits){
-    let nearest=null,nDist=Infinity;
-    for(const e of playerUnits){
-      const d=Math.hypot(e.x-u.x,e.y-u.y);
-      if(d<nDist){nDist=d;nearest=e;}
-    }
-
-    // If no player units, advance toward player base (left side)
-    if(!nearest){
-      const targetX=50,targetY=u.y;
-      const dx=targetX-u.x,dy=targetY-u.y;
-      const dist=Math.max(1,Math.sqrt(dx*dx+dy*dy));
-      u.x+=(dx/dist)*u.speed*dt;
-      u.y+=(dy/dist)*u.speed*dt;
-      continue;
-    }
-
-    if(nDist<=u.range){
-      u.state='attack';
-      if(now-u.lastAttack>1000){
-        u.lastAttack=now;u.lastAttackAnim=now;
-        const dmg=Math.max(1,u.atk-Math.floor(nearest.def/3)+rnd(-3,3));
-        nearest.hp-=dmg;
-        if(nearest.hp<=0)killUnit(nearest);
-      }
-    }else{
-      u.state='advance';
-      const dx=nearest.x-u.x,dy=nearest.y-u.y;
-      const dist=Math.sqrt(dx*dx+dy*dy);
-      u.x+=(dx/dist)*u.speed*dt;
-      u.y+=(dy/dist)*u.speed*dt;
-    }
+  const mapW=mapBgW||2000;
+  for(const u of G.units.filter(u=>u.owner==='red'&&!u._dead)){
+    const pl=G.units.filter(e=>e.owner==='blue'&&!e._dead);
+    if(!pl.length){const dx=mapW*.05-u.x;const dist=Math.max(1,Math.abs(dx));u.x+=Math.sign(dx)*u.speed*dt;continue;}
+    let nearest=null,nd=Infinity;
+    for(const e of pl){const d=Math.hypot(e.x-u.x,e.y-u.y);if(d<nd){nd=d;nearest=e;}}
+    if(nd<=u.range){
+      if(now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;const dmg=Math.max(1,u.atk-Math.floor(nearest.def/3)+rnd(-3,3));nearest.hp-=dmg;if(nearest.hp<=0)killUnit(nearest);}
+    }else{const dx=nearest.x-u.x,dy=nearest.y-u.y,dist=Math.sqrt(dx*dx+dy*dy);u.x+=(dx/dist)*u.speed*dt;u.y+=(dy/dist)*u.speed*dt;}
   }
 }
 
-// ═══════════════════════════════════════════
-//  WIN CONDITION
-// ═══════════════════════════════════════════
-let gameOver=false;
 function checkWinCondition(){
   if(gameOver)return;
-  const blue=G.units.filter(u=>u.owner==='blue');
-  const red=G.units.filter(u=>u.owner==='red');
-  if(blue.length===0&&red.length===0)return;
-  if(blue.length===0&&gamePhase==='battle'){showResult('red');return;}
-  if(red.length===0&&gamePhase==='battle'){showResult('blue');return;}
+  const bl=G.units.filter(u=>u.owner==='blue'&&!u._dead);
+  const rd=G.units.filter(u=>u.owner==='red'&&!u._dead);
+  if(!bl.length&&!rd.length)return;
+  if(!bl.length)showResult('red','Всі сині знищені');
+  else if(!rd.length)showResult('blue','Всі червоні знищені');
 }
 
-function showResult(winner){
-  gameOver=true;
+function showResult(winner,reason=''){
+  if(gameOver)return;gameOver=true;
   if(timerInterval)clearInterval(timerInterval);
   const isWinner=winner===myRole;
-  const overlay=document.getElementById('resultOverlay');
   document.getElementById('resultEmoji').textContent=isWinner?'🏆':'💀';
   document.getElementById('resultTitle').textContent=isWinner?'ПЕРЕМОГА!':'ПОРАЗКА';
   document.getElementById('resultTitle').style.color=isWinner?'var(--green)':'var(--red)';
   document.getElementById('resultSub').textContent=
-    `🔵 Втрати синіх: ${G.casualties.blue||0}\n🔴 Втрати червоних: ${G.casualties.red||0}\n⏱ Час: ${document.getElementById('hudTimer').textContent}`;
-  overlay.classList.add('vis');
+    (reason?reason+'\n':'')+`🔵 Втрати: ${G.casualties?.blue||0}\n🔴 Втрати: ${G.casualties?.red||0}\n⏱ ${document.getElementById('hudTimer').textContent}`;
+  document.getElementById('resultOverlay').classList.add('vis');
 }
 
 window.backToMenu=()=>{
   document.getElementById('resultOverlay').classList.remove('vis');
   if(animFrame)cancelAnimationFrame(animFrame);
   if(timerInterval)clearInterval(timerInterval);
-  if(lobbyUnsub)lobbyUnsub();
-  if(gameUnsub)gameUnsub();
-  G={};gameOver=false;placingType=null;isAI=false;
+  if(lobbyUnsub){lobbyUnsub();lobbyUnsub=null;}
+  if(gameUnsub){gameUnsub();gameUnsub=null;}
+  if(presenceUnsub){clearInterval(presenceUnsub);presenceUnsub=null;}
+  hideDcBanner();
+  G={};gameOver=false;placingType=null;isAI=false;lobbyId=null;
   showScreen('screen-menu');
 };
-
 window.confirmQuit=()=>{if(confirm('Вийти з гри?'))backToMenu();};
 
-// ═══════════════════════════════════════════
+// ════════════════════════════════
 //  DRAW ENGINE
-// ═══════════════════════════════════════════
-function drawAll(){
-  drawMap();
-  drawFrontLine();
-  drawUnits();
-  drawUI();
-}
+// ════════════════════════════════
+function drawAll(){drawMap();drawFrontLine();drawUnits();}
 
-// MAP LAYER
 function drawMap(){
+  if(!mapCtx)return;
   mapCtx.clearRect(0,0,CW,CH);
   mapCtx.fillStyle='#06090d';mapCtx.fillRect(0,0,CW,CH);
-
+  mapCtx.save();mapCtx.translate(camX,camY);mapCtx.scale(camScale,camScale);
+  const w=mapBgW||2000,h=mapBgH||1200;
   if(mapBg&&mapBgW>0){
-    mapCtx.save();
-    mapCtx.translate(camX,camY);
-    mapCtx.scale(camScale,camScale);
-    mapCtx.drawImage(mapBg,0,0,mapBgW,mapBgH);
-    mapCtx.restore();
+    mapCtx.drawImage(mapBg,0,0,w,h);
   }else{
-    // Default terrain grid
-    mapCtx.save();
-    mapCtx.translate(camX,camY);
-    mapCtx.scale(camScale,camScale);
-    const w=2000,h=1200;
-    // Base ground
-    mapCtx.fillStyle='#1a2810';mapCtx.fillRect(0,0,w,h);
+    // Default beautiful terrain
+    mapCtx.fillStyle='#141e0e';mapCtx.fillRect(0,0,w,h);
+    // Terrain patches
+    for(let i=0;i<30;i++){
+      mapCtx.fillStyle=`rgba(${20+Math.sin(i)*10},${35+Math.cos(i)*15},${10+Math.sin(i*2)*5},.6)`;
+      mapCtx.beginPath();mapCtx.ellipse(w*(.05+.9*(i%10)/10),h*(.1+.8*Math.floor(i/10)/3),w*.08,h*.06,i*.3,0,Math.PI*2);mapCtx.fill();
+    }
     // Grid
-    mapCtx.strokeStyle='rgba(34,197,94,.06)';mapCtx.lineWidth=1;
-    for(let x=0;x<w;x+=50){mapCtx.beginPath();mapCtx.moveTo(x,0);mapCtx.lineTo(x,h);mapCtx.stroke();}
-    for(let y=0;y<h;y+=50){mapCtx.beginPath();mapCtx.moveTo(0,y);mapCtx.lineTo(w,y);mapCtx.stroke();}
-    // Dividing line
-    mapCtx.strokeStyle='rgba(255,255,255,.08)';mapCtx.lineWidth=2;
-    mapCtx.setLineDash([10,10]);
-    mapCtx.beginPath();mapCtx.moveTo(w/2,0);mapCtx.lineTo(w/2,h);mapCtx.stroke();
-    mapCtx.setLineDash([]);
-    // Zone labels
-    mapCtx.fillStyle='rgba(59,130,246,.15)';mapCtx.fillRect(0,0,w/2,h);
-    mapCtx.fillStyle='rgba(239,68,68,.15)';mapCtx.fillRect(w/2,0,w/2,h);
-    mapCtx.restore();
+    mapCtx.strokeStyle='rgba(34,197,94,.04)';mapCtx.lineWidth=1;
+    for(let x=0;x<w;x+=80){mapCtx.beginPath();mapCtx.moveTo(x,0);mapCtx.lineTo(x,h);mapCtx.stroke();}
+    for(let y=0;y<h;y+=80){mapCtx.beginPath();mapCtx.moveTo(0,y);mapCtx.lineTo(w,y);mapCtx.stroke();}
+    // Center divider
+    mapCtx.strokeStyle='rgba(255,255,255,.1)';mapCtx.lineWidth=2;mapCtx.setLineDash([12,12]);
+    mapCtx.beginPath();mapCtx.moveTo(w/2,0);mapCtx.lineTo(w/2,h);mapCtx.stroke();mapCtx.setLineDash([]);
+    // Zone tint
+    mapCtx.fillStyle='rgba(59,130,246,.06)';mapCtx.fillRect(0,0,w/2,h);
+    mapCtx.fillStyle='rgba(239,68,68,.06)';mapCtx.fillRect(w/2,0,w/2,h);
+    // Labels
+    mapCtx.font='bold 48px Oswald';mapCtx.textAlign='center';mapCtx.textBaseline='middle';
+    mapCtx.fillStyle='rgba(59,130,246,.12)';mapCtx.fillText('СИНІЙ',w*.25,h/2);
+    mapCtx.fillStyle='rgba(239,68,68,.12)';mapCtx.fillText('ЧЕРВОНИЙ',w*.75,h/2);
   }
-
-  // Placement zone highlight
-  if(gamePhase==='placement'&&placingType&&mapBgW===0){
-    mapCtx.save();
-    mapCtx.translate(camX,camY);mapCtx.scale(camScale,camScale);
-    const w=2000,h=1200;
+  // Placement highlight
+  if(gamePhase==='placement'&&placingType){
     const zx=myRole==='blue'?0:w/2;
-    mapCtx.fillStyle='rgba(34,197,94,.07)';
-    mapCtx.fillRect(zx,0,w/2,h);
-    mapCtx.strokeStyle='rgba(34,197,94,.3)';
-    mapCtx.setLineDash([8,8]);mapCtx.lineWidth=2;
-    mapCtx.strokeRect(zx,0,w/2,h);
-    mapCtx.setLineDash([]);
-    mapCtx.restore();
+    mapCtx.fillStyle='rgba(34,197,94,.07)';mapCtx.fillRect(zx,0,w/2,h);
+    mapCtx.strokeStyle='rgba(34,197,94,.35)';mapCtx.lineWidth=3;mapCtx.setLineDash([10,8]);
+    mapCtx.strokeRect(zx+2,2,w/2-4,h-4);mapCtx.setLineDash([]);
   }
+  mapCtx.restore();
 }
 
-// FRONT LINE LAYER
 function drawFrontLine(){
   frontCtx.clearRect(0,0,CW,CH);
-  if(G.units?.length<2)return;
-
-  const blueUnits=G.units.filter(u=>u.owner==='blue');
-  const redUnits=G.units.filter(u=>u.owner==='red');
-  if(!blueUnits.length||!redUnits.length)return;
-
-  // Calculate midpoints between armies
-  const points=[];
+  const bl=G.units?.filter(u=>u.owner==='blue'&&!u._dead);
+  const rd=G.units?.filter(u=>u.owner==='red'&&!u._dead);
+  if(!bl?.length||!rd?.length)return;
   const mapH=mapBgH||1200;
-  const steps=20;
-  for(let i=0;i<=steps;i++){
-    const y=(mapH/steps)*i;
-    // Find closest blue and red on this y-band
-    const band=mapH/steps*2;
-    const bl=blueUnits.filter(u=>Math.abs(u.y-y)<band);
-    const rl=redUnits.filter(u=>Math.abs(u.y-y)<band);
-    if(!bl.length||!rl.length)continue;
-    const bx=bl.reduce((s,u)=>s+u.x,0)/bl.length;
-    const rx=rl.reduce((s,u)=>s+u.x,0)/rl.length;
-    points.push({x:(bx+rx)/2,y});
+  const pts=[];
+  for(let i=0;i<=16;i++){
+    const y=(mapH/16)*i,band=mapH/6;
+    const bn=bl.filter(u=>Math.abs(u.y-y)<band),rn=rd.filter(u=>Math.abs(u.y-y)<band);
+    if(!bn.length||!rn.length)continue;
+    pts.push({x:(bn.reduce((s,u)=>s+u.x,0)/bn.length+rn.reduce((s,u)=>s+u.x,0)/rn.length)/2,y});
   }
-
-  if(points.length<2)return;
-
-  frontCtx.save();
-  frontCtx.translate(camX,camY);frontCtx.scale(camScale,camScale);
-
-  // Smooth curve through midpoints
-  frontCtx.beginPath();
-  frontCtx.moveTo(points[0].x,points[0].y);
-  for(let i=1;i<points.length-1;i++){
-    const mx=(points[i].x+points[i+1].x)/2;
-    const my=(points[i].y+points[i+1].y)/2;
-    frontCtx.quadraticCurveTo(points[i].x,points[i].y,mx,my);
-  }
-  frontCtx.lineTo(points[points.length-1].x,points[points.length-1].y);
-
-  frontCtx.strokeStyle='rgba(255,255,255,.5)';
-  frontCtx.lineWidth=2.5/camScale;
-  frontCtx.stroke();
-
-  // Glow effect
-  frontCtx.shadowColor='rgba(255,200,0,.6)';
-  frontCtx.shadowBlur=8/camScale;
-  frontCtx.strokeStyle='rgba(255,220,50,.3)';
-  frontCtx.lineWidth=1.5/camScale;
-  frontCtx.stroke();
-  frontCtx.shadowBlur=0;
-
-  frontCtx.restore();
+  if(pts.length<2)return;
+  frontCtx.save();frontCtx.translate(camX,camY);frontCtx.scale(camScale,camScale);
+  frontCtx.beginPath();frontCtx.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length-1;i++){const mx=(pts[i].x+pts[i+1].x)/2,my=(pts[i].y+pts[i+1].y)/2;frontCtx.quadraticCurveTo(pts[i].x,pts[i].y,mx,my);}
+  frontCtx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);
+  frontCtx.shadowColor='rgba(255,220,0,.7)';frontCtx.shadowBlur=10/camScale;
+  frontCtx.strokeStyle='rgba(255,230,60,.7)';frontCtx.lineWidth=2.5/camScale;frontCtx.stroke();
+  frontCtx.shadowBlur=0;frontCtx.restore();
 }
 
-// UNITS LAYER
-const now_time=()=>performance.now();
 function drawUnits(){
   unitsCtx.clearRect(0,0,CW,CH);
-  if(!G.units)return;
-  const now=now_time();
-
-  unitsCtx.save();
-  unitsCtx.translate(camX,camY);
-  unitsCtx.scale(camScale,camScale);
-
+  if(!G.units?.length)return;
+  const now=performance.now();
+  unitsCtx.save();unitsCtx.translate(camX,camY);unitsCtx.scale(camScale,camScale);
   for(const u of G.units){
     if(u._dead)continue;
     const def=UNIT_DEFS[u.type]||UNIT_DEFS.infantry;
-    const r=def.radius;
-    const isBlue=u.owner==='blue';
-    const isSelected=u.id===selectedUnitId;
-    const hpRatio=u.hp/u.maxHp;
-    const isAttacking=now-u.lastAttackAnim<200;
-
-    // Attack flash
-    if(isAttacking){
-      unitsCtx.beginPath();unitsCtx.arc(u.x,u.y,r*2.2,0,Math.PI*2);
-      unitsCtx.fillStyle=isBlue?'rgba(59,130,246,.2)':'rgba(239,68,68,.2)';
-      unitsCtx.fill();
-    }
-
-    // Selection ring
-    if(isSelected){
-      unitsCtx.beginPath();unitsCtx.arc(u.x,u.y,r+5,0,Math.PI*2);
-      unitsCtx.strokeStyle='rgba(255,255,255,.8)';
-      unitsCtx.lineWidth=2/camScale;unitsCtx.stroke();
-    }
-
+    const r=def.radius,isBlue=u.owner==='blue',isSel=u.id===selectedUnitId;
+    const hp=u.hp/u.maxHp,isAtk=now-u.lastAttackAnim<250;
+    // Attack glow
+    if(isAtk){unitsCtx.beginPath();unitsCtx.arc(u.x,u.y,r*2.5,0,Math.PI*2);unitsCtx.fillStyle=isBlue?'rgba(59,130,246,.15)':'rgba(239,68,68,.15)';unitsCtx.fill();}
+    // Selection
+    if(isSel){unitsCtx.beginPath();unitsCtx.arc(u.x,u.y,r+6,0,Math.PI*2);unitsCtx.strokeStyle='rgba(255,255,255,.9)';unitsCtx.lineWidth=2/camScale;unitsCtx.stroke();}
     // Shadow
-    unitsCtx.beginPath();unitsCtx.arc(u.x+1,u.y+2,r,0,Math.PI*2);
-    unitsCtx.fillStyle='rgba(0,0,0,.4)';unitsCtx.fill();
-
-    // Main circle
+    unitsCtx.beginPath();unitsCtx.arc(u.x+1.5,u.y+2.5,r,0,Math.PI*2);unitsCtx.fillStyle='rgba(0,0,0,.5)';unitsCtx.fill();
+    // Body
     unitsCtx.beginPath();unitsCtx.arc(u.x,u.y,r,0,Math.PI*2);
-    const gradient=unitsCtx.createRadialGradient(u.x-r*.3,u.y-r*.3,0,u.x,u.y,r);
-    if(isBlue){
-      gradient.addColorStop(0,'#93c5fd');
-      gradient.addColorStop(1,'#1d4ed8');
-    }else{
-      gradient.addColorStop(0,'#fca5a5');
-      gradient.addColorStop(1,'#b91c1c');
-    }
-    unitsCtx.fillStyle=gradient;unitsCtx.fill();
-    unitsCtx.strokeStyle=isBlue?'#3b82f6':'#ef4444';
-    unitsCtx.lineWidth=1.5/camScale;unitsCtx.stroke();
-
+    const g=unitsCtx.createRadialGradient(u.x-r*.3,u.y-r*.35,0,u.x,u.y,r);
+    g.addColorStop(0,isBlue?'#93c5fd':'#fca5a5');g.addColorStop(1,isBlue?'#1d4ed8':'#b91c1c');
+    unitsCtx.fillStyle=g;unitsCtx.fill();
+    unitsCtx.strokeStyle=isBlue?'#3b82f6':'#ef4444';unitsCtx.lineWidth=1.5/camScale;unitsCtx.stroke();
+    // Emoji
+    unitsCtx.font=`bold ${r*1.2}px serif`;unitsCtx.textAlign='center';unitsCtx.textBaseline='middle';
+    unitsCtx.fillText(def.emoji,u.x,u.y+r*.05);
     // HP bar
-    const bw=r*2.4,bh=3/camScale;
-    const bx=u.x-bw/2,by=u.y-r-6/camScale;
-    unitsCtx.fillStyle='rgba(0,0,0,.5)';unitsCtx.fillRect(bx-1,by-1,bw+2,bh+2);
-    unitsCtx.fillStyle='#1a2a10';unitsCtx.fillRect(bx,by,bw,bh);
-    const hpColor=hpRatio>.5?'#22c55e':hpRatio>.25?'#f59e0b':'#ef4444';
-    unitsCtx.fillStyle=hpColor;unitsCtx.fillRect(bx,by,bw*hpRatio,bh);
-
-    // Unit type indicator (small icon using text)
-    unitsCtx.font=`bold ${r*1.1}px serif`;
-    unitsCtx.textAlign='center';unitsCtx.textBaseline='middle';
-    unitsCtx.fillText(def.emoji,u.x,u.y);
-
+    const bw=r*2.5,bh=Math.max(2,3/camScale),bx=u.x-bw/2,by=u.y-r-7/camScale;
+    unitsCtx.fillStyle='rgba(0,0,0,.6)';unitsCtx.fillRect(bx-1,by-1,bw+2,bh+2);
+    unitsCtx.fillStyle='#1a1a1a';unitsCtx.fillRect(bx,by,bw,bh);
+    unitsCtx.fillStyle=hp>.6?'#22c55e':hp>.3?'#f59e0b':'#ef4444';unitsCtx.fillRect(bx,by,bw*hp,bh);
     // Attack line
-    if(u.attackTarget&&isAttacking){
-      const target=G.units.find(x=>x.id===u.attackTarget);
-      if(target){
-        unitsCtx.beginPath();unitsCtx.moveTo(u.x,u.y);unitsCtx.lineTo(target.x,target.y);
-        unitsCtx.strokeStyle=isBlue?'rgba(59,130,246,.5)':'rgba(239,68,68,.5)';
-        unitsCtx.lineWidth=1.5/camScale;unitsCtx.setLineDash([3/camScale,3/camScale]);
-        unitsCtx.stroke();unitsCtx.setLineDash([]);
-      }
+    if(u.attackTarget&&isAtk){
+      const tgt=G.units.find(x=>x.id===u.attackTarget);
+      if(tgt){unitsCtx.beginPath();unitsCtx.moveTo(u.x,u.y);unitsCtx.lineTo(tgt.x,tgt.y);
+        unitsCtx.strokeStyle=isBlue?'rgba(96,165,250,.6)':'rgba(248,113,113,.6)';
+        unitsCtx.lineWidth=1.5/camScale;unitsCtx.setLineDash([4/camScale,4/camScale]);unitsCtx.stroke();unitsCtx.setLineDash([]);}
     }
   }
-
   unitsCtx.restore();
 }
 
-// UI LAYER (coords etc)
-function drawUI(){
-  uiCtx.clearRect(0,0,CW,CH);
-}
-
-// ═══════════════════════════════════════════
-//  HUD / SIDE PANEL
-// ═══════════════════════════════════════════
+// ════════════════════════════════
+//  HUD
+// ════════════════════════════════
 function updateHUD(){
   if(!G.units)return;
-  const blue=G.units.filter(u=>u.owner==='blue').length;
-  const red=G.units.filter(u=>u.owner==='red').length;
-  document.getElementById('hudBlueUnits').textContent=blue;
-  document.getElementById('hudRedUnits').textContent=red;
+  document.getElementById('hudBlueUnits').textContent=G.units.filter(u=>u.owner==='blue'&&!u._dead).length;
+  document.getElementById('hudRedUnits').textContent=G.units.filter(u=>u.owner==='red'&&!u._dead).length;
   document.getElementById('hudWave').textContent=G.wave||1;
   document.getElementById('spFunds').textContent=G.funds?.[myRole]||0;
-  document.getElementById('spUnits').textContent=G.units.filter(u=>u.owner===myRole).length;
+  document.getElementById('spUnits').textContent=G.units.filter(u=>u.owner===myRole&&!u._dead).length;
   document.getElementById('spCasualties').textContent=G.casualties?.[myRole]||0;
   document.getElementById('casBlue').textContent=G.casualties?.blue||0;
   document.getElementById('casRed').textContent=G.casualties?.red||0;
@@ -1539,8 +1548,7 @@ function showSelInfo(u){
   document.getElementById('siName').textContent=def.emoji+' '+def.name;
   document.getElementById('siHPText').textContent=Math.round(u.hp)+'/'+u.maxHp;
   document.getElementById('siHPBar').style.width=(u.hp/u.maxHp*100)+'%';
-  const hpR=u.hp/u.maxHp;
-  document.getElementById('siHPBar').style.background=hpR>.5?'var(--green)':hpR>.25?'var(--gold)':'var(--red)';
+  document.getElementById('siHPBar').style.background=u.hp/u.maxHp>.5?'var(--green)':u.hp/u.maxHp>.25?'var(--gold)':'var(--red)';
   document.getElementById('siAtk').textContent=u.atk;
   document.getElementById('siDef').textContent=u.def;
   document.getElementById('siSpd').textContent=u.speed;
@@ -1548,24 +1556,18 @@ function showSelInfo(u){
 
 function addLog(msg,type='info'){
   const el=document.getElementById('spLog');
-  const d=document.createElement('div');
-  d.className='log-entry '+type;d.textContent=msg;
-  el.appendChild(d);
-  el.scrollTop=el.scrollHeight;
-  if(el.children.length>50)el.removeChild(el.firstChild);
+  const d=document.createElement('div');d.className='log-entry '+type;d.textContent=msg;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+  if(el.children.length>60)el.removeChild(el.firstChild);
 }
 
-// ═══════════════════════════════════════════
-//  TOAST
-// ═══════════════════════════════════════════
 window.toast=(msg,dur=2500)=>{
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.style.display='block';
+  const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';
   clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',dur);
 };
 
-// Start render loop even before game
-requestAnimationFrame(function loop(){drawAll();requestAnimationFrame(loop);});
+// Render loop (runs always for smooth menu etc)
+requestAnimationFrame(function loop(){if(!document.getElementById('screen-game')?.classList.contains('active')){mapCtx?.clearRect(0,0,CW,CH);}drawAll();requestAnimationFrame(loop);});
 </script>
 </body>
 </html>
