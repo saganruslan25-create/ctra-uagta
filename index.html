@@ -588,6 +588,8 @@ const UNIT_DEFS={
 // ════════════════════════════════
 //  AUTH
 // ════════════════════════════════
+function setLdText(t){const el=document.getElementById('ldText');if(el)el.textContent=t;}
+
 window.addEventListener('DOMContentLoaded',async()=>{
   setLdText('Авторизація...');
   await signInAnonymously(auth).catch(()=>{});
@@ -1423,7 +1425,7 @@ window.confirmQuit=()=>{if(confirm('Вийти з гри?'))backToMenu();};
 function drawAll(){drawMap();drawFrontLine();drawUnits();}
 
 function drawMap(){
-  if(!mapCtx)return;
+  if(!mapCtx||!CW||!CH)return;
   mapCtx.clearRect(0,0,CW,CH);
   mapCtx.fillStyle='#06090d';mapCtx.fillRect(0,0,CW,CH);
   mapCtx.save();mapCtx.translate(camX,camY);mapCtx.scale(camScale,camScale);
@@ -1464,6 +1466,7 @@ function drawMap(){
 }
 
 function drawFrontLine(){
+  if(!frontCtx||!CW||!CH)return;
   frontCtx.clearRect(0,0,CW,CH);
   const bl=G.units?.filter(u=>u.owner==='blue'&&!u._dead);
   const rd=G.units?.filter(u=>u.owner==='red'&&!u._dead);
@@ -1487,6 +1490,7 @@ function drawFrontLine(){
 }
 
 function drawUnits(){
+  if(!unitsCtx||!CW||!CH)return;
   unitsCtx.clearRect(0,0,CW,CH);
   if(!G.units?.length)return;
   const now=performance.now();
@@ -1567,7 +1571,7 @@ window.toast=(msg,dur=2500)=>{
 };
 
 // Render loop (runs always for smooth menu etc)
-requestAnimationFrame(function loop(){if(!document.getElementById('screen-game')?.classList.contains('active')){mapCtx?.clearRect(0,0,CW,CH);}drawAll();requestAnimationFrame(loop);});
+requestAnimationFrame(function loop(){drawAll();requestAnimationFrame(loop);});
 </script>
 </body>
 </html>
