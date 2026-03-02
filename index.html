@@ -6,7 +6,7 @@
 <title>СТРАТЕГІЯ | ОПЕРАЦІЯ ДНІПРО</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Oswald:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#040608;--panel:#080c10;--border:rgba(34,197,94,.18);--green:#22c55e;--green2:#4ade80;--red:#ef4444;--blue:#3b82f6;--gold:#f59e0b;--teal:#14b8a6;--purple:#a855f7;--water:#1e40af;--text:#e2e8f0;--dim:#64748b;--dark:#020305;}
+:root{--bg:#040608;--panel:#080c10;--border:rgba(34,197,94,.18);--green:#22c55e;--green2:#4ade80;--red:#ef4444;--blue:#3b82f6;--gold:#f59e0b;--teal:#14b8a6;--purple:#a855f7;--text:#e2e8f0;--dim:#64748b;--dark:#020305;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace;height:100vh;overflow:hidden;user-select:none;}
 input,select,textarea{user-select:text!important;-webkit-user-select:text!important;}
@@ -237,13 +237,12 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
   <div class="dc-timer" id="dcTimer">60</div>
   <div class="dc-sub">Очікування повернення...</div>
 </div>
-<!-- MENU -->
 <div class="screen" id="screen-menu">
   <div class="menu-bg-grid"></div>
   <div class="menu-logo">
     <div class="menu-logo-top">Операція</div>
     <div class="menu-logo-title">СТРАТЕГІЯ</div>
-    <div class="menu-logo-sub">ТАКТИЧНА БОЙОВА СИСТЕМА v3.1</div>
+    <div class="menu-logo-sub">ТАКТИЧНА БОЙОВА СИСТЕМА v3.2</div>
   </div>
   <div class="menu-user" id="menuUser">
     <span id="menuUserName">Анонім</span>
@@ -260,9 +259,8 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
     <button class="btn-secondary" id="authMenuBtn" onclick="showAuthModal()">🔐 Увійти / Реєстрація</button>
     <button class="btn-secondary" id="logoutBtn" style="display:none" onclick="doLogout()">Вийти</button>
   </div>
-  <div class="menu-ver">v3.1 | СТРАТЕГІЯ</div>
+  <div class="menu-ver">v3.2 | СТРАТЕГІЯ</div>
 </div>
-<!-- AUTH MODAL -->
 <div class="modal-overlay" id="authModal">
   <div class="modal-box">
     <div class="modal-title">🔐 АВТОРИЗАЦІЯ</div>
@@ -296,7 +294,6 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
     </div>
   </div>
 </div>
-<!-- AI MODE MODAL -->
 <div class="modal-overlay" id="aiModeModal">
   <div class="modal-box" style="max-width:520px;">
     <div class="modal-title">🤖 РЕЖИМ ПРОТИ ІІ</div>
@@ -318,7 +315,6 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
     </div>
   </div>
 </div>
-<!-- STANDALONE MAP EDITOR -->
 <div class="screen" id="screen-editor">
   <div class="editor-topbar">
     <span class="editor-topbar-title">🗺️ РЕДАКТОР КАРТИ</span>
@@ -345,7 +341,6 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
   </div>
   <div class="editor-body">
     <div class="editor-canvas-area" id="editorCanvasArea">
-      <!-- FIX: wrap canvas in a zoomable container -->
       <div id="editorZoomWrap" style="position:absolute;top:0;left:0;transform-origin:0 0;">
         <canvas id="editorCanvas"></canvas>
         <div id="editorOverlay" style="position:absolute;top:0;left:0;pointer-events:none;"></div>
@@ -367,7 +362,7 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
         <button class="etool bridge-tool" id="etool-bridge" onclick="setETool('bridge')">🌉 Міст</button>
         <button class="etool forest-tool" id="etool-forest" onclick="setETool('forest')">🌲 Ліс</button>
         <button class="etool road-tool" id="etool-road" onclick="setETool('road')">🛣️ Дорога</button>
-        <button class="etool meadow-tool" id="etool-meadow" onclick="setETool('meadow')">🌿 Луг (поле)</button>
+        <button class="etool meadow-tool" id="etool-meadow" onclick="setETool('meadow')">🌿 Луг</button>
       </div>
       <div class="editor-tool-group">
         <div class="editor-group-label">ПОЗИЦІЇ</div>
@@ -405,19 +400,12 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
       <div class="editor-tool-group" style="margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);">
         <div class="editor-group-label">ЛЕГЕНДА</div>
         <div style="font-size:9px;color:var(--dim);line-height:2;">
-          <span style="display:inline-block;width:10px;height:10px;background:#1e40af;border-radius:2px;vertical-align:middle"></span> Вода = блокує рух<br>
-          <span style="display:inline-block;width:10px;height:10px;background:#92400e;border-radius:2px;vertical-align:middle"></span> Міст = прохід через воду<br>
-          <span style="display:inline-block;width:10px;height:10px;background:#166534;border-radius:2px;vertical-align:middle"></span> Ліс = -50% швидкості<br>
-          <span style="display:inline-block;width:10px;height:10px;background:#b45309;border-radius:2px;vertical-align:middle"></span> Дорога = +40% пріоритет<br>
-          <span style="display:inline-block;width:10px;height:10px;background:#86b350;border-radius:2px;vertical-align:middle"></span> Луг = норма<br>
-          ЛКМ на маркері = видалити<br>
-          🧹 Стерти = відновлює фото
+          🌊 Вода = блокує рух<br>🌉 Міст = прохід через воду<br>🌲 Ліс = -50% швидкості<br>🛣️ Дорога = +40% пріоритет<br>🌿 Луг = норма<br>ЛКМ на маркері = видалити<br>🧹 Стерти = відновлює фото
         </div>
       </div>
     </div>
   </div>
 </div>
-<!-- LOBBY CREATE -->
 <div class="screen" id="screen-lobby-create">
   <div class="lobby-box">
     <div class="lobby-title">⚔️ НОВЕ ЛОБІ</div>
@@ -449,7 +437,6 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
     </div>
   </div>
 </div>
-<!-- LOBBY JOIN -->
 <div class="screen" id="screen-lobby-join">
   <div class="lobby-box">
     <div class="lobby-title">🔗 ПРИЄДНАТИСЬ</div>
@@ -462,7 +449,6 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
     </div>
   </div>
 </div>
-<!-- ADMIN -->
 <div class="screen" id="screen-admin">
   <div class="admin-header">
     <span class="admin-title">👑 АДМІН ПАНЕЛЬ</span>
@@ -552,7 +538,6 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
     </div>
   </div>
 </div>
-<!-- GAME SCREEN -->
 <div class="screen" id="screen-game">
   <div class="game-hud">
     <div class="hud-logo">⚔ СТРАТЕГІЯ</div>
@@ -574,10 +559,8 @@ input,select,textarea{user-select:text!important;-webkit-user-select:text!import
   </div>
   <div class="game-body" id="gameBodyOuter">
     <div class="game-area" id="gameBody">
-      <canvas id="mapCanvas"></canvas>
-      <canvas id="unitsCanvas"></canvas>
-      <canvas id="frontCanvas"></canvas>
-      <canvas id="uiCanvas"></canvas>
+      <canvas id="mapCanvas"></canvas><canvas id="unitsCanvas"></canvas>
+      <canvas id="frontCanvas"></canvas><canvas id="uiCanvas"></canvas>
       <canvas id="interCanvas"></canvas>
       <div class="casualties-overlay">
         <div class="co-title">ВТРАТИ</div>
@@ -656,116 +639,119 @@ import{getFirestore,doc,setDoc,getDoc,updateDoc,onSnapshot,deleteDoc,collection,
 import{getAuth,signInAnonymously,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const fbApp=initializeApp({apiKey:"AIzaSyAXTOcA4I5AYP0jfbVWb1de-lZjwf1DRhc",authDomain:"ctratigia.firebaseapp.com",projectId:"ctratigia",storageBucket:"ctratigia.firebasestorage.app",messagingSenderId:"71283939831",appId:"1:71283939831:web:6725da39c4b58c0065b6f2"});
-const db=getFirestore(fbApp);const auth=getAuth(fbApp);
+const db=getFirestore(fbApp),auth=getAuth(fbApp);
 const CL_CLOUD='dimpa9w8w',CL_PRESET='ctratigia_map';
 
+// ── STATE ──────────────────────────────────────────────────
 let uid=null,myName='Гравець',isAdmin=false,isAnon=true;
 let lobbyId=null,myRole=null,lobbyUnsub=null,gameUnsub=null,presenceUnsub=null;
 let isAI=false,aiMode='defense',aiTeam='red';
 let G={};
 let mapBg=null,mapBgW=0,mapBgH=0;
-let camX=0,camY=0,camScale=1;
+let camX=0,camY=0,camScale=1,CW=0,CH=0;
 let isDragging=false,dragLX=0,dragLY=0;
 let selectedUnitId=null,placingType=null;
 let gamePhase='placement',gameTimer=0,timerInterval=null,animFrame=null,gameOver=false;
-let dcInterval=null,incomeInterval=null;
-let editorHistoryStack=[],editorBg=null;
-// ─── Editor zoom state ───
+let dcInterval=null,incomeInterval=null,dcSeconds=0;
+let inputMode='move',patrolPoint1=null,selectedUnitIds=new Set(),projectiles=[],missileTargetMode=false;
+let globalMaps=[];
+// Editor state
 let eCtx=null,eTool='draw',eDrawing=false,eLX=0,eLY=0;
 let eHistory=[],eBg=null,eBgX=0,eBgY=0,eBgW=0,eBgH=0;
 let eMarkers=[],eMapName='Нова карта',eMapIdx=-1;
-// NEW: editor uses CSS transform zoom instead of camera math
-let eScale=1,ePanX=0,ePanY=0,ePanning=false,ePanLX=0,ePanLY=0;
-let eTerrainCtx=null; // visual-only terrain canvas (for display)
-let eTerrainStrokes=[]; // editor stroke list [{type,color,pts,size,isErase}]
-let eCurrentStroke=null; // stroke being drawn right now
+let eScale=1,ePanX=0,ePanY=0,ePanning=false,ePanLX=0,ePanLY=0,eInitScale=1;
+let eTerrainCtx=null,eTerrainStrokes=[],eCurrentStroke=null;
 let editorEditingMapIdx=-1,editorMarkers=[],editorCtx=null,editorTool='draw',editorColor='#22c55e',editorSize=8,editorDrawing=false,editorLastX=0,editorLastY=0;
-let inputMode='move',patrolPoint1=null,selectedUnitIds=new Set(),projectiles=[],missileTargetMode=false;
-// G_terrain replaced by pixel-based system (G_terrainPixels)
+let editorHistoryStack=[];
+let mapCtx,unitsCtx,frontCtx,uiCtx,interCtx;
+// Terrain strokes loaded from Firestore for game
+let G_terrainStrokes=[];
+// AI memory
+let aiMemory={reinforcementCooldown:0};
 
+// ── UNIT DEFS ──────────────────────────────────────────────
 const UNIT_DEFS={
-  infantry:{name:'Піхота',emoji:'👥',radius:8,hp:100,maxHp:100,atk:12,def:5,speed:18,range:40,cost:150},
-  apc:{name:'БТР',emoji:'🚛',radius:10,hp:200,maxHp:200,atk:20,def:15,speed:28,range:50,cost:350},
-  tank:{name:'Танк',emoji:'🛡️',radius:12,hp:350,maxHp:350,atk:40,def:30,speed:20,range:60,cost:600},
-  heli:{name:'Гелікоптер',emoji:'🚁',radius:9,hp:150,maxHp:150,atk:35,def:5,speed:55,range:80,cost:500},
-  artillery:{name:'Артилерія',emoji:'💥',radius:8,hp:120,maxHp:120,atk:70,def:3,speed:10,range:200,cost:700},
-  stinger:{name:'Стрілець «Смерч»',emoji:'🚀',radius:8,hp:90,maxHp:90,atk:95,def:2,speed:8,range:380,cost:850,isMissile:true},
+  infantry:{name:'Піхота',emoji:'👥',radius:8,hp:100,maxHp:100,atk:12,def:5,speed:18,range:40,cost:150,isGround:true},
+  apc:{name:'БТР',emoji:'🚛',radius:10,hp:200,maxHp:200,atk:20,def:15,speed:28,range:50,cost:350,isGround:true},
+  tank:{name:'Танк',emoji:'🛡️',radius:12,hp:350,maxHp:350,atk:40,def:30,speed:20,range:60,cost:600,isGround:true},
+  heli:{name:'Гелікоптер',emoji:'🚁',radius:9,hp:150,maxHp:150,atk:35,def:5,speed:55,range:80,cost:500,isAir:true},
+  artillery:{name:'Артилерія',emoji:'💥',radius:8,hp:120,maxHp:120,atk:70,def:3,speed:10,range:200,cost:700,isGround:true},
+  stinger:{name:'Стрілець «Смерч»',emoji:'🚀',radius:8,hp:90,maxHp:90,atk:95,def:2,speed:8,range:380,cost:850,isMissile:true,isGround:true},
 };
 const CITY_INCOME=150,BASE_INCOME=50;
 const EDITOR_COLORS=['#22c55e','#3b82f6','#ef4444','#f59e0b','#8b5cf6','#06b6d4','#ffffff','#1a2810','#5c3d1a','#1e3a5f','#0d2d4a','#000000','#6b7280'];
-// Terrain paint colors — stored AS-IS in canvas pixels, sampled at runtime for logic
-const TERRAIN_COLORS={
-  water:  {r:30, g:64, b:175},   // #1e40af blue
-  forest: {r:22, g:101,b:52},    // #166534 dark green  
-  road:   {r:180,g:83, b:9},     // #b45309 amber
-  bridge: {r:146,g:64, b:14},    // #92400e dark amber
-  meadow: {r:134,g:179,b:80},    // #86b350 light green (normal speed field)
-};
-const ECOLORS_TERRAIN={
-  water:  '#1e40af',
-  forest: '#166534',
-  road:   '#b45309',
-  bridge: '#92400e',
-  meadow: '#86b350',
-  draw:   '#22c55e',
-  erase:  null
-};
-// ── TERRAIN STROKE SYSTEM ──────────────────────────────────────
-// Terrain stored as array of strokes with NORMALIZED coords (0-1)
-// Reliable across any resolution — no pixel conversion issues
-// ────────────────────────────────────────────────────────────────
-let G_terrainStrokes=[]; // [{type,color,pts:[{nx,ny}],size,isErase}]
+const ECOLORS_TERRAIN={water:'#1e40af',forest:'#166534',road:'#b45309',bridge:'#92400e',meadow:'#86b350',draw:'#22c55e',erase:null};
+const SPAWN_BASE_RADIUS=140,SPAWN_CITY_RADIUS=90;
+const EDITOR_NATIVE_W=3840,EDITOR_NATIVE_H=2160;
 
-// Convert world coords → terrain type by testing against stored strokes
+// ── TERRAIN SYSTEM ─────────────────────────────────────────
+// Strokes stored as normalized coords (0-1). Sampled at runtime.
 function sampleTerrainAt(wx,wy){
   const mw=mapBgW||2000,mh=mapBgH||1200;
   const nx=wx/mw,ny=wy/mh;
-  // Walk strokes in REVERSE (last drawn = highest priority)
   for(let i=G_terrainStrokes.length-1;i>=0;i--){
     const s=G_terrainStrokes[i];
-    // size_px is brush size on 3840px editor canvas
-    // normalized radius = size_px / EDITOR_NATIVE_W (pts normalized to 0-1 of bg area)
     const r=s.size/3840;
     for(let j=1;j<s.pts.length;j++){
-      const ax=s.pts[j-1].nx,ay=s.pts[j-1].ny;
-      const bx=s.pts[j].nx,by=s.pts[j].ny;
-      if(distPointSegNorm(nx,ny,ax,ay,bx,by)<r){
-        return s.isErase?'none':s.type;
-      }
+      const ax=s.pts[j-1].nx,ay=s.pts[j-1].ny,bx=s.pts[j].nx,by=s.pts[j].ny;
+      if(distPtSeg(nx,ny,ax,ay,bx,by)<r)return s.isErase?'none':s.type;
     }
-    if(s.pts.length===1){
-      if(Math.hypot(nx-s.pts[0].nx,ny-s.pts[0].ny)<r)
-        return s.isErase?'none':s.type;
-    }
+    if(s.pts.length===1&&Math.hypot(nx-s.pts[0].nx,ny-s.pts[0].ny)<r)return s.isErase?'none':s.type;
   }
   return'none';
 }
-function distPointSegNorm(px,py,ax,ay,bx,by){
-  const dx=bx-ax,dy=by-ay,len2=dx*dx+dy*dy;
-  if(len2===0)return Math.hypot(px-ax,py-ay);
-  const t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/len2));
+function distPtSeg(px,py,ax,ay,bx,by){
+  const dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy;
+  if(l2===0)return Math.hypot(px-ax,py-ay);
+  const t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/l2));
   return Math.hypot(px-(ax+t*dx),py-(ay+t*dy));
 }
+function getTerrain(wx,wy){return sampleTerrainAt(wx,wy);}
+function terrainSpeed(wx,wy){const t=getTerrain(wx,wy);if(t==='road')return 1.4;if(t==='forest')return 0.5;if(t==='water')return 0;if(t==='bridge')return 1.0;return 1.0;}
+function canMove(x,y,u){
+  if(u.isAir)return true;
+  const t=getTerrain(x,y);
+  if(t==='water')return false;
+  return true;
+}
+// Water-aware pathing: try alternate angles when blocked
+function moveUnit(u,tx,ty,dt){
+  const dx=tx-u.x,dy=ty-u.y,dist=Math.sqrt(dx*dx+dy*dy);
+  if(dist<4){u.x=tx;u.y=ty;return;}
+  const mw=mapBgW||2000,mh=mapBgH||1200;
+  const base=Math.atan2(dy,dx);
+  const sm=Math.max(0.05,terrainSpeed(u.x,u.y));
+  const step=u.speed*dt*sm;
+  // Try direct + 8 alternate angles to navigate around water
+  const angles=[0,-0.35,0.35,-0.7,0.7,-1.1,1.1,-1.6,1.6];
+  for(const off of angles){
+    const a=base+off;
+    const nx=u.x+Math.cos(a)*step,ny=u.y+Math.sin(a)*step;
+    const cx=Math.max(0,Math.min(mw,nx)),cy=Math.max(0,Math.min(mh,ny));
+    if(canMove(cx,cy,u)){u.x=cx;u.y=cy;return;}
+  }
+  // Completely stuck — heli always moves
+  if(u.isAir){u.x=Math.max(0,Math.min(mw,u.x+Math.cos(base)*step));u.y=Math.max(0,Math.min(mh,u.y+Math.sin(base)*step));}
+}
 
-// ══════════════════════════════════
-//  AUTH
-// ══════════════════════════════════
-function setLdText(t){const el=document.getElementById('ldText');if(el)el.textContent=t;}
-window.addEventListener('DOMContentLoaded',async()=>{setLdText('Авторизація...');await new Promise(r=>setTimeout(r,500));if(!auth.currentUser)await signInAnonymously(auth).catch(()=>{});});
+// ── AUTH ───────────────────────────────────────────────────
+function setLd(t){const e=document.getElementById('ldText');if(e)e.textContent=t;}
+window.addEventListener('DOMContentLoaded',async()=>{setLd('Авторизація...');await new Promise(r=>setTimeout(r,500));if(!auth.currentUser)await signInAnonymously(auth).catch(()=>{});});
 onAuthStateChanged(auth,async user=>{
   if(user){
     uid=user.uid;isAnon=user.isAnonymous;
     myName=user.displayName||(isAnon?'Гравець_'+uid.slice(-4).toUpperCase():user.email?.split('@')[0]||'Гравець');
-    if(!isAnon){const usnap=await getDoc(doc(db,'users',uid)).catch(()=>null);isAdmin=usnap?.data()?.role==='admin';}else{isAdmin=false;}
+    if(!isAnon){const s=await getDoc(doc(db,'users',uid)).catch(()=>null);isAdmin=s?.data()?.role==='admin';}
+    else isAdmin=false;
     updateMenuUI();document.getElementById('loadingScreen').classList.add('hidden');showScreen('screen-menu');initGameCanvases();buildUnitList();loadGlobalMaps();
   }
 });
 function updateMenuUI(){
   document.getElementById('menuUserName').textContent=myName;
-  const badge=document.getElementById('menuUserBadge');
-  if(isAdmin){badge.textContent='АДМІН';badge.className='menu-user-badge badge-admin';}
-  else if(!isAnon){badge.textContent='ГРАВЕЦЬ';badge.className='menu-user-badge';}
-  else{badge.textContent='ГІСТЬ';badge.className='menu-user-badge badge-anon';}
+  const b=document.getElementById('menuUserBadge');
+  if(isAdmin){b.textContent='АДМІН';b.className='menu-user-badge badge-admin';}
+  else if(!isAnon){b.textContent='ГРАВЕЦЬ';b.className='menu-user-badge';}
+  else{b.textContent='ГІСТЬ';b.className='menu-user-badge badge-anon';}
   document.getElementById('adminMenuBtn').style.display=isAdmin?'block':'none';
   document.getElementById('authMenuBtn').style.display=isAnon?'block':'none';
   document.getElementById('logoutBtn').style.display=!isAnon?'block':'none';
@@ -776,39 +762,34 @@ window.switchAuthTab=tab=>{
   document.querySelectorAll('.modal-tab').forEach((t,i)=>t.classList.toggle('active',i===(tab==='login'?0:1)));
   document.querySelectorAll('.modal-tab-content').forEach((t,i)=>t.classList.toggle('active',i===(tab==='login'?0:1)));
 };
-window.doLogin=async()=>{const em=document.getElementById('loginEmail').value.trim(),pw=document.getElementById('loginPass').value;setStatus('loginStatus','⟳ Вхід...','warn');try{await signInWithEmailAndPassword(auth,em,pw);closeAuthModal();}catch(e){setStatus('loginStatus','❌ '+friendlyAuthErr(e),'err');}};
+window.doLogin=async()=>{const em=document.getElementById('loginEmail').value.trim(),pw=document.getElementById('loginPass').value;setStatus('loginStatus','⟳ Вхід...','warn');try{await signInWithEmailAndPassword(auth,em,pw);closeAuthModal();}catch(e){setStatus('loginStatus','❌ '+fae(e),'err');}};
 window.doRegister=async()=>{
   const nm=document.getElementById('regName').value.trim(),em=document.getElementById('regEmail').value.trim(),pw=document.getElementById('regPass').value;
   if(!nm){setStatus('registerStatus','❌ Введіть позивний','err');return;}
   if(pw.length<6){setStatus('registerStatus','❌ Пароль мін. 6 символів','err');return;}
   setStatus('registerStatus','⟳ Реєстрація...','warn');
-  try{const cred=await createUserWithEmailAndPassword(auth,em,pw);await updateProfile(cred.user,{displayName:nm});await setDoc(doc(db,'users',cred.user.uid),{name:nm,email:em,role:'player',createdAt:serverTimestamp()});closeAuthModal();}
-  catch(e){setStatus('registerStatus','❌ '+friendlyAuthErr(e),'err');}
+  try{const c=await createUserWithEmailAndPassword(auth,em,pw);await updateProfile(c.user,{displayName:nm});await setDoc(doc(db,'users',c.user.uid),{name:nm,email:em,role:'player',createdAt:serverTimestamp()});closeAuthModal();}
+  catch(e){setStatus('registerStatus','❌ '+fae(e),'err');}
 };
 window.doLogout=async()=>{await signOut(auth);await signInAnonymously(auth);};
-function friendlyAuthErr(e){
+function fae(e){
   if(e.code==='auth/email-already-in-use')return'Email вже використовується';
   if(e.code==='auth/wrong-password'||e.code==='auth/invalid-credential')return'Невірний email або пароль';
-  if(e.code==='auth/too-many-requests')return'Забагато спроб. Спробуйте пізніше';
+  if(e.code==='auth/too-many-requests')return'Забагато спроб';
   return e.message||'Помилка';
 }
 function setStatus(id,msg,type){const el=document.getElementById(id);if(!el)return;el.textContent=msg;el.className='status-box vis';if(type)el.classList.add(type);}
 
-// ══════════════════════════════════
-//  AI MODE
-// ══════════════════════════════════
-let selectedAIMode='defense',selectedAITeam='blue';
+// ── AI MODE SELECT ─────────────────────────────────────────
+let selAIMode='defense',selAITeam='blue';
 window.showAIModeSelect=()=>document.getElementById('aiModeModal').classList.add('vis');
 window.closeAIModeModal=()=>document.getElementById('aiModeModal').classList.remove('vis');
-window.selectAIMode=mode=>{selectedAIMode=mode;document.querySelectorAll('.ai-mode-card').forEach(c=>c.classList.remove('selected'));document.getElementById('aimode-'+mode)?.classList.add('selected');};
-window.selectAITeam=team=>{selectedAITeam=team;document.getElementById('teamBtnBlue').classList.toggle('selected',team==='blue');document.getElementById('teamBtnRed').classList.toggle('selected',team==='red');};
+window.selectAIMode=m=>{selAIMode=m;document.querySelectorAll('.ai-mode-card').forEach(c=>c.classList.remove('selected'));document.getElementById('aimode-'+m)?.classList.add('selected');};
+window.selectAITeam=t=>{selAITeam=t;document.getElementById('teamBtnBlue').classList.toggle('selected',t==='blue');document.getElementById('teamBtnRed').classList.toggle('selected',t==='red');};
 
-// ══════════════════════════════════
-//  GLOBAL MAPS
-// ══════════════════════════════════
-let globalMaps=[];
+// ── GLOBAL MAPS ────────────────────────────────────────────
 async function loadGlobalMaps(){
-  try{const snap=await getDoc(doc(db,'appData','globalMaps'));globalMaps=snap.exists()?(snap.data().maps||[]):[];renderLobbyGlobalMaps();if(isAdmin)renderAdminMaps();if(globalMaps.length>0&&!mapBgW)loadMapFromUrl(globalMaps[0].url);}catch(e){}
+  try{const s=await getDoc(doc(db,'appData','globalMaps'));globalMaps=s.exists()?(s.data().maps||[]):[];renderLobbyGlobalMaps();if(isAdmin)renderAdminMaps();if(globalMaps.length>0&&!mapBgW)loadMapFromUrl(globalMaps[0].url);}catch(e){}
 }
 function renderLobbyGlobalMaps(){
   const el=document.getElementById('lobbyGlobalMaps');if(!el)return;
@@ -825,13 +806,11 @@ window.selectGlobalMap=async(i)=>{
   toast('✅ Карта вибрана: '+m.name);
 };
 
-// ══════════════════════════════════
-//  ADMIN MAPS
-// ══════════════════════════════════
+// ── ADMIN ──────────────────────────────────────────────────
 window.adminUploadMap=async(input)=>{
   const file=input.files[0];if(!file)return;
   const st=document.getElementById('adminMapUploadStatus');st.textContent='⟳ Стискаємо...';
-  try{const comp=await compressImage(file,3000,3000,.85);st.textContent='⟳ Завантажуємо...';const url=await uploadCloudinary(comp,'admin_map_'+Date.now());const name=file.name.replace(/\.[^.]+$/,'').slice(0,30);const date=new Date().toLocaleDateString('uk-UA');globalMaps.push({url,name,date,cities:[],water:[],bridges:[],spawns:null});await setDoc(doc(db,'appData','globalMaps'),{maps:globalMaps});st.textContent='✅ Карта збережена!';renderAdminMaps();renderLobbyGlobalMaps();toast('✅ Карта додана!');input.value='';}
+  try{const comp=await compressImage(file,3000,3000,.85);st.textContent='⟳ Завантажуємо...';const url=await uploadCL(comp,'admin_map_'+Date.now());const name=file.name.replace(/\.[^.]+$/,'').slice(0,30);const date=new Date().toLocaleDateString('uk-UA');globalMaps.push({url,name,date,cities:[],water:[],bridges:[],spawns:null});await setDoc(doc(db,'appData','globalMaps'),{maps:globalMaps});st.textContent='✅ Карта збережена!';renderAdminMaps();renderLobbyGlobalMaps();toast('✅ Карта додана!');input.value='';}
   catch(e){st.textContent='❌ '+e.message;}
 };
 function renderAdminMaps(){
@@ -844,35 +823,34 @@ window.adminDeleteMap=async(i)=>{if(!confirm('Видалити?'))return;globalM
 window.adminEditMap=async(i)=>{adminNav('editor');editorEditingMapIdx=i;const m=globalMaps[i];editorMarkers=[];if(m.spawns){if(m.spawns.blueBase)editorMarkers.push({type:'base',team:'blue',nx:m.spawns.blueBase.nx,ny:m.spawns.blueBase.ny,px:0,py:0});if(m.spawns.redBase)editorMarkers.push({type:'base',team:'red',nx:m.spawns.redBase.nx,ny:m.spawns.redBase.ny,px:0,py:0});(m.spawns.units||[]).forEach(u=>editorMarkers.push({type:'unit',team:u.team,unitType:u.unitType,nx:u.nx,ny:u.ny,px:0,py:0}));}(m.cities||[]).forEach(c=>editorMarkers.push({type:'city',nx:c.nx,ny:c.ny,name:c.name,px:0,py:0}));editorBg=null;const img=new Image();img.crossOrigin='anonymous';img.onload=()=>{editorBg=img;drawEditorBase();const cv=document.getElementById('adminMapCanvas');if(cv){editorMarkers.forEach(mk=>{mk.px=mk.nx*cv.width;mk.py=mk.ny*cv.height;});}renderEditorMarkers();updateEditorMarkerList();};img.src=m.url;toast('✏️ Редагування: '+m.name);};
 window.adminNav=section=>{document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.admin-nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('asec-'+section)?.classList.add('active');document.getElementById('anav-'+section)?.classList.add('active');if(section==='editor')initEditor();if(section==='maps'){renderAdminMaps();loadGlobalMaps();}if(section==='users')loadAdminUsers();};
 
-// ══════════════════════════════════
-//  ADMIN EDITOR (in admin panel)
-// ══════════════════════════════════
+// ── ADMIN EDITOR (panel) ───────────────────────────────────
+let editorBg=null;
 function initEditor(){
   const cv=document.getElementById('adminMapCanvas');if(!cv)return;
   const wrap=cv.parentElement;cv.width=wrap.clientWidth||900;cv.height=wrap.clientHeight||550;
   editorCtx=cv.getContext('2d');editorHistoryStack=[];drawEditorBase();
   const sw=document.getElementById('colorSwatches');if(sw)sw.innerHTML=EDITOR_COLORS.map(c=>`<div class="color-swatch ${c===editorColor?'active':''}" style="background:${c}" onclick="setEditorColor('${c}')"></div>`).join('');
   cv.onmousedown=e=>{if(editorTool.startsWith('base_')||editorTool.startsWith('unit_')||editorTool==='city'){placeEditorMarker(e.offsetX,e.offsetY);return;}if(editorTool==='fill'){floodFill(e.offsetX,e.offsetY);return;}saveEditorHistory();editorDrawing=true;editorLastX=e.offsetX;editorLastY=e.offsetY;};
-  cv.onmousemove=e=>{if(!editorDrawing)return;if(editorTool==='water')drawTerrainStroke(e,'#1e40af',editorSize);else if(editorTool==='bridge')drawTerrainStroke(e,'#92400e',editorSize*.6);else if(editorTool==='forest')drawTerrainStroke(e,'#166534',editorSize);else if(editorTool==='erase')drawTerrainStroke(e,editorBg?null:'#1a2810',editorSize*2,true);else drawTerrainStroke(e,editorColor,editorSize);};
+  cv.onmousemove=e=>{if(!editorDrawing)return;const col={water:'#1e40af',bridge:'#92400e',forest:'#166534'}[editorTool]||editorColor;const isErase=editorTool==='erase';drawTStroke(e,isErase?null:col,editorTool==='bridge'?editorSize*.6:editorSize,isErase);};
   cv.onmouseup=cv.onmouseleave=()=>{editorDrawing=false;};
   const bs=document.getElementById('brushSize');if(bs)bs.oninput=e=>{editorSize=+e.target.value;};
 }
-function drawTerrainStroke(e,color,size,erase=false){
+function drawTStroke(e,color,size,erase=false){
   if(erase&&editorBg){editorCtx.drawImage(editorBg,e.offsetX-size,e.offsetY-size,size*2,size*2,e.offsetX-size,e.offsetY-size,size*2,size*2);}
-  else{editorCtx.strokeStyle=color;editorCtx.lineWidth=size;editorCtx.lineCap='round';editorCtx.lineJoin='round';editorCtx.beginPath();editorCtx.moveTo(editorLastX,editorLastY);editorCtx.lineTo(e.offsetX,e.offsetY);editorCtx.stroke();}
+  else if(color){editorCtx.strokeStyle=color;editorCtx.lineWidth=size;editorCtx.lineCap='round';editorCtx.lineJoin='round';editorCtx.beginPath();editorCtx.moveTo(editorLastX,editorLastY);editorCtx.lineTo(e.offsetX,e.offsetY);editorCtx.stroke();}
   editorLastX=e.offsetX;editorLastY=e.offsetY;
 }
 function floodFill(sx,sy){
-  saveEditorHistory();const cv=document.getElementById('adminMapCanvas');const imgData=editorCtx.getImageData(0,0,cv.width,cv.height);const data=imgData.data;const idx=(x,y)=>(y*cv.width+x)*4;const target=[data[idx(sx,sy)],data[idx(sx,sy)+1],data[idx(sx,sy)+2],data[idx(sx,sy)+3]];const fill=hexToRgb(editorColor);if(!fill)return;if(target[0]===fill.r&&target[1]===fill.g&&target[2]===fill.b)return;const stack=[[sx,sy]];const visited=new Uint8Array(cv.width*cv.height);while(stack.length){const[x,y]=stack.pop();if(x<0||x>=cv.width||y<0||y>=cv.height)continue;const i=idx(x,y);const vi=y*cv.width+x;if(visited[vi])continue;visited[vi]=1;if(Math.abs(data[i]-target[0])>30||Math.abs(data[i+1]-target[1])>30||Math.abs(data[i+2]-target[2])>30)continue;data[i]=fill.r;data[i+1]=fill.g;data[i+2]=fill.b;data[i+3]=255;stack.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);}editorCtx.putImageData(imgData,0,0);
+  saveEditorHistory();const cv=document.getElementById('adminMapCanvas');const id=editorCtx.getImageData(0,0,cv.width,cv.height);const d=id.data;const idx=(x,y)=>(y*cv.width+x)*4;const tgt=[d[idx(sx,sy)],d[idx(sx,sy)+1],d[idx(sx,sy)+2],d[idx(sx,sy)+3]];const fill=hexToRgb(editorColor);if(!fill||tgt.every((v,i)=>[fill.r,fill.g,fill.b,255][i]===v))return;const stk=[[sx,sy]],vis=new Uint8Array(cv.width*cv.height);while(stk.length){const[x,y]=stk.pop();if(x<0||x>=cv.width||y<0||y>=cv.height)continue;const i=idx(x,y),vi=y*cv.width+x;if(vis[vi])continue;vis[vi]=1;if(Math.abs(d[i]-tgt[0])>30||Math.abs(d[i+1]-tgt[1])>30||Math.abs(d[i+2]-tgt[2])>30)continue;d[i]=fill.r;d[i+1]=fill.g;d[i+2]=fill.b;d[i+3]=255;stk.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);}editorCtx.putImageData(id,0,0);
 }
-function hexToRgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return{r,g,b};}
+function hexToRgb(hex){return{r:parseInt(hex.slice(1,3),16),g:parseInt(hex.slice(3,5),16),b:parseInt(hex.slice(5,7),16)};}
 function saveEditorHistory(){const cv=document.getElementById('adminMapCanvas');if(!editorCtx||!cv)return;editorHistoryStack.push(editorCtx.getImageData(0,0,cv.width,cv.height));if(editorHistoryStack.length>30)editorHistoryStack.shift();}
-window.editorUndo=()=>{if(!editorHistoryStack.length){toast('⚠️ Нема що відмінити');return;}const imgData=editorHistoryStack.pop();editorCtx.putImageData(imgData,0,0);renderEditorMarkers();};
+window.editorUndo=()=>{if(!editorHistoryStack.length){toast('⚠️ Нема що відмінити');return;}editorCtx.putImageData(editorHistoryStack.pop(),0,0);renderEditorMarkers();};
 window.loadEditorBackground=input=>{const file=input.files[0];if(!file)return;const img=new Image();img.onload=()=>{editorBg=img;const cv=document.getElementById('adminMapCanvas');if(!cv)return;saveEditorHistory();editorCtx.clearRect(0,0,cv.width,cv.height);editorCtx.drawImage(img,0,0,cv.width,cv.height);};img.src=URL.createObjectURL(file);toast('📷 Фото завантажено');};
 function drawEditorBase(){const cv=document.getElementById('adminMapCanvas');if(!editorCtx||!cv)return;if(editorBg){editorCtx.drawImage(editorBg,0,0,cv.width,cv.height);return;}editorCtx.fillStyle='#1a2810';editorCtx.fillRect(0,0,cv.width,cv.height);editorCtx.strokeStyle='rgba(255,255,255,.18)';editorCtx.lineWidth=2;editorCtx.setLineDash([10,8]);editorCtx.beginPath();editorCtx.moveTo(cv.width/2,0);editorCtx.lineTo(cv.width/2,cv.height);editorCtx.stroke();editorCtx.setLineDash([]);}
-function placeEditorMarker(px,py){const cv=document.getElementById('adminMapCanvas');if(!cv)return;const isBase=editorTool.startsWith('base_');const team=editorTool.split('_')[1];const unitType=document.getElementById('editorUnitType')?.value||'infantry';const nx=px/cv.width,ny=py/cv.height;if(isBase){editorMarkers=editorMarkers.filter(m=>!(m.type==='base'&&m.team===team));}if(editorTool==='city'){const name=prompt('Назва міста:','Місто '+(editorMarkers.filter(m=>m.type==='city').length+1))||('Місто '+(editorMarkers.filter(m=>m.type==='city').length+1));editorMarkers.push({type:'city',nx,ny,name,px,py});}else{editorMarkers.push({type:isBase?'base':'unit',team:isBase?team:editorTool.split('_')[1],unitType:isBase?null:unitType,nx,ny,px,py});}renderEditorMarkers();updateEditorMarkerList();}
-function renderEditorMarkers(){const wrap=document.getElementById('editorMarkers');const cv=document.getElementById('adminMapCanvas');if(!wrap||!cv)return;wrap.innerHTML=editorMarkers.map((m,i)=>{let emoji;if(m.type==='city')emoji='🏙️';else if(m.type==='base')emoji=m.team==='blue'?'🏠':'🏚️';else emoji=UNIT_DEFS[m.unitType]?.emoji||'⚪';const px=m.nx*cv.width,py=m.ny*cv.height;return`<div style="position:absolute;left:${px-14}px;top:${py-14}px;font-size:20px;cursor:pointer;pointer-events:auto" onclick="removeEditorMarker(${i})">${emoji}</div>`;}).join('');wrap.style.pointerEvents='none';}
-function updateEditorMarkerList(){const el=document.getElementById('editorMarkerList');if(!el)return;if(!editorMarkers.length){el.textContent='Немає маркерів';return;}el.innerHTML=editorMarkers.map((m,i)=>{const label=m.type==='city'?`🏙️ ${m.name}`:m.type==='base'?`База ${m.team}`:`${UNIT_DEFS[m.unitType]?.name||m.unitType} (${m.team})`;return`<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span>${label}</span><span style="cursor:pointer;color:#f87171" onclick="removeEditorMarker(${i})">✕</span></div>`;}).join('');}
+function placeEditorMarker(px,py){const cv=document.getElementById('adminMapCanvas');if(!cv)return;const isBase=editorTool.startsWith('base_');const team=editorTool.split('_')[1];const unitType=document.getElementById('editorUnitType')?.value||'infantry';const nx=px/cv.width,ny=py/cv.height;if(isBase)editorMarkers=editorMarkers.filter(m=>!(m.type==='base'&&m.team===team));if(editorTool==='city'){const name=prompt('Назва міста:','Місто '+(editorMarkers.filter(m=>m.type==='city').length+1))||'Місто';editorMarkers.push({type:'city',nx,ny,name,px,py});}else{editorMarkers.push({type:isBase?'base':'unit',team:isBase?team:editorTool.split('_')[1],unitType:isBase?null:unitType,nx,ny,px,py});}renderEditorMarkers();updateEditorMarkerList();}
+function renderEditorMarkers(){const wrap=document.getElementById('editorMarkers');const cv=document.getElementById('adminMapCanvas');if(!wrap||!cv)return;wrap.innerHTML=editorMarkers.map((m,i)=>{const e=m.type==='city'?'🏙️':m.type==='base'?(m.team==='blue'?'🏠':'🏚️'):(UNIT_DEFS[m.unitType]?.emoji||'⚪');return`<div style="position:absolute;left:${m.nx*cv.width-14}px;top:${m.ny*cv.height-14}px;font-size:20px;cursor:pointer;pointer-events:auto" onclick="removeEditorMarker(${i})">${e}</div>`;}).join('');wrap.style.pointerEvents='none';}
+function updateEditorMarkerList(){const el=document.getElementById('editorMarkerList');if(!el)return;el.innerHTML=editorMarkers.length?editorMarkers.map((m,i)=>{const lb=m.type==='city'?`🏙️ ${m.name}`:m.type==='base'?`База ${m.team}`:`${UNIT_DEFS[m.unitType]?.name||m.unitType} (${m.team})`;return`<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span>${lb}</span><span style="cursor:pointer;color:#f87171" onclick="removeEditorMarker(${i})">✕</span></div>`;}).join(''):'Немає маркерів';}
 window.removeEditorMarker=i=>{editorMarkers.splice(i,1);renderEditorMarkers();updateEditorMarkerList();};
 window.clearEditorMarkers=()=>{editorMarkers=[];renderEditorMarkers();updateEditorMarkerList();toast('🗑️ Маркери видалено');};
 window.setEditorTool=t=>{editorTool=t;document.querySelectorAll('.tool-btn[id^="tool-"]').forEach(b=>b.classList.remove('active'));document.getElementById('tool-'+t)?.classList.add('active');};
@@ -880,321 +858,121 @@ window.setEditorColor=c=>{editorColor=c;document.querySelectorAll('.color-swatch
 window.clearEditorCanvas=()=>{if(!editorCtx)return;editorHistoryStack=[];editorBg=null;drawEditorBase();toast('🗑️ Полотно очищено');};
 window.saveEditorAsMap=async()=>{
   const cv=document.getElementById('adminMapCanvas');if(!cv)return;
-  let name='Моя карта';if(editorEditingMapIdx>=0)name=globalMaps[editorEditingMapIdx].name;else{const n=prompt('Назва карти:','Нова карта');if(n===null)return;name=n||'Нова карта';}
+  let name=editorEditingMapIdx>=0?globalMaps[editorEditingMapIdx].name:(prompt('Назва карти:','Нова карта')||'Нова карта');
   const dataUrl=cv.toDataURL('image/jpeg',.92);toast('⟳ Зберігаємо...');
-  try{const url=await uploadCloudinary(dataUrl,'editor_map_'+(editorEditingMapIdx>=0?'edit_'+editorEditingMapIdx:'new_'+Date.now()));const date=new Date().toLocaleDateString('uk-UA');const spawns={blueBase:editorMarkers.find(m=>m.type==='base'&&m.team==='blue')||null,redBase:editorMarkers.find(m=>m.type==='base'&&m.team==='red')||null,units:editorMarkers.filter(m=>m.type==='unit').map(m=>({team:m.team,unitType:m.unitType,nx:m.nx,ny:m.ny}))};const cities=editorMarkers.filter(m=>m.type==='city').map(m=>({nx:m.nx,ny:m.ny,name:m.name}));const mapEntry={url,name,date,spawns,cities};if(editorEditingMapIdx>=0){globalMaps[editorEditingMapIdx]=mapEntry;}else{globalMaps.push(mapEntry);}await setDoc(doc(db,'appData','globalMaps'),{maps:globalMaps});toast('✅ "'+name+'" збережена!');editorMarkers=[];editorEditingMapIdx=-1;adminNav('maps');}
+  try{const url=await uploadCL(dataUrl,'editor_map_'+(editorEditingMapIdx>=0?'edit_'+editorEditingMapIdx:'new_'+Date.now()));const date=new Date().toLocaleDateString('uk-UA');const spawns={blueBase:editorMarkers.find(m=>m.type==='base'&&m.team==='blue')||null,redBase:editorMarkers.find(m=>m.type==='base'&&m.team==='red')||null,units:editorMarkers.filter(m=>m.type==='unit').map(m=>({team:m.team,unitType:m.unitType,nx:m.nx,ny:m.ny}))};const cities=editorMarkers.filter(m=>m.type==='city').map(m=>({nx:m.nx,ny:m.ny,name:m.name}));const entry={url,name,date,spawns,cities};if(editorEditingMapIdx>=0)globalMaps[editorEditingMapIdx]=entry;else globalMaps.push(entry);await setDoc(doc(db,'appData','globalMaps'),{maps:globalMaps});toast('✅ "'+name+'" збережена!');editorMarkers=[];editorEditingMapIdx=-1;adminNav('maps');}
   catch(e){toast('❌ '+e.message);}
 };
 
-// ══════════════════════════════════════════════════════════════
-//  NEW STANDALONE MAP EDITOR  ← FIX #4: proper zoom via CSS transform
-// ══════════════════════════════════════════════════════════════
+// ── STANDALONE EDITOR ──────────────────────────────────────
 window.openMapEditor=(mapIdx=-1)=>{
   showScreen('screen-editor');eMapIdx=mapIdx;initNewEditor();editorPopulateMapSelect();
-  const loadIdx=mapIdx>=0?mapIdx:(globalMaps.length>0?0:-1);
-  if(loadIdx>=0&&globalMaps[loadIdx]){eMapIdx=loadIdx;eMapName=globalMaps[loadIdx].name;const el=document.getElementById('editorMapName');if(el)el.textContent=eMapName;const sel=document.getElementById('editorMapSelect');if(sel)sel.value=String(loadIdx);setTimeout(()=>eLoadMapForEditing(globalMaps[loadIdx]),80);}
+  const li=mapIdx>=0?mapIdx:(globalMaps.length>0?0:-1);
+  if(li>=0&&globalMaps[li]){eMapIdx=li;eMapName=globalMaps[li].name;const el=document.getElementById('editorMapName');if(el)el.textContent=eMapName;const sel=document.getElementById('editorMapSelect');if(sel)sel.value=String(li);setTimeout(()=>eLoadMapForEditing(globalMaps[li]),80);}
 };
 function editorPopulateMapSelect(){
   const sel=document.getElementById('editorMapSelect');if(!sel)return;
   sel.innerHTML='<option value="-1">+ Нова карта</option>';
-  globalMaps.forEach((m,i)=>{const opt=document.createElement('option');opt.value=String(i);opt.textContent=m.name||(i+1+'. Карта');sel.appendChild(opt);});
+  globalMaps.forEach((m,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=m.name||(i+1+'. Карта');sel.appendChild(o);});
   if(eMapIdx>=0)sel.value=String(eMapIdx);
 }
-window.editorSwitchMap=idxStr=>{
-  const i=parseInt(idxStr);
+window.editorSwitchMap=v=>{
+  const i=parseInt(v);
   if(i<0){eMapIdx=-1;eMapName='Нова карта';eHistory=[];eMarkers=[];eBg=null;eDrawDefaultBg();eRedrawMarkersOverlay();eUpdateMarkerList();document.getElementById('editorMapName').textContent=eMapName;return;}
   if(!globalMaps[i])return;eMapIdx=i;eMapName=globalMaps[i].name;document.getElementById('editorMapName').textContent=eMapName;eLoadMapForEditing(globalMaps[i]);
 };
-
-// Editor uses a native high-res canvas (4K) — CSS transform zooms it without pixelation
-const EDITOR_NATIVE_W=3840,EDITOR_NATIVE_H=2160;
-let eInitScale=1; // scale that fits canvas to viewport at 100%
-
 function initNewEditor(){
-  const area=document.getElementById('editorCanvasArea');
-  const cv=document.getElementById('editorCanvas');
-  if(!area||!cv)return;
+  const area=document.getElementById('editorCanvasArea'),cv=document.getElementById('editorCanvas');if(!area||!cv)return;
   const aW=Math.max(1,area.clientWidth),aH=Math.max(1,area.clientHeight);
-  // Canvas is always 4K — no pixelation at any zoom level
   cv.width=EDITOR_NATIVE_W;cv.height=EDITOR_NATIVE_H;
   cv.style.width=EDITOR_NATIVE_W+'px';cv.style.height=EDITOR_NATIVE_H+'px';
-  const ov=document.getElementById('editorOverlay');
-  if(ov){ov.style.width=EDITOR_NATIVE_W+'px';ov.style.height=EDITOR_NATIVE_H+'px';}
-  const wrap=document.getElementById('editorZoomWrap');
-  if(wrap){wrap.style.width=EDITOR_NATIVE_W+'px';wrap.style.height=EDITOR_NATIVE_H+'px';}
-  eCtx=cv.getContext('2d');
-  eCtx.imageSmoothingEnabled=true;eCtx.imageSmoothingQuality='high';
-  // Visual terrain canvas (same size as main canvas, used only for display)
-  const terrainCv=document.createElement('canvas');
-  terrainCv.width=EDITOR_NATIVE_W;terrainCv.height=EDITOR_NATIVE_H;
-  eTerrainCtx=terrainCv.getContext('2d');
-  eTerrainCtx.imageSmoothingEnabled=true;eTerrainCtx.imageSmoothingQuality='high';
+  const ov=document.getElementById('editorOverlay');if(ov){ov.style.width=EDITOR_NATIVE_W+'px';ov.style.height=EDITOR_NATIVE_H+'px';}
+  const wrap=document.getElementById('editorZoomWrap');if(wrap){wrap.style.width=EDITOR_NATIVE_W+'px';wrap.style.height=EDITOR_NATIVE_H+'px';}
+  eCtx=cv.getContext('2d');eCtx.imageSmoothingEnabled=true;eCtx.imageSmoothingQuality='high';
+  const tcv=document.createElement('canvas');tcv.width=EDITOR_NATIVE_W;tcv.height=EDITOR_NATIVE_H;
+  eTerrainCtx=tcv.getContext('2d');eTerrainCtx.imageSmoothingEnabled=true;
   eHistory=[];eTerrainStrokes=[];eCurrentStroke=null;eMarkers=[];
-  // Fit canvas to area at init
-  eInitScale=Math.min(aW/EDITOR_NATIVE_W,aH/EDITOR_NATIVE_H);
-  eScale=eInitScale;ePanX=0;ePanY=0;ePanning=false;eBg=null;
-  eDrawDefaultBg();eUpdateMarkerList();
-  applyEditorTransform();
+  eInitScale=Math.min(aW/EDITOR_NATIVE_W,aH/EDITOR_NATIVE_H);eScale=eInitScale;ePanX=0;ePanY=0;eBg=null;
+  eDrawDefaultBg();eUpdateMarkerList();applyEditorTransform();
   area.onmousedown=eOnMD;area.onmousemove=eOnMM;area.onmouseup=area.onmouseleave=eOnMU;
-  area.onwheel=e=>{
-    e.preventDefault();
-    const r=area.getBoundingClientRect();
-    const mx=e.clientX-r.left,my=e.clientY-r.top;
-    const f=e.deltaY<0?1.12:0.89;
-    const ns=Math.max(eInitScale*.3,Math.min(8,eScale*f));
-    ePanX=mx-(mx-ePanX)*(ns/eScale);
-    ePanY=my-(my-ePanY)*(ns/eScale);
-    eScale=ns;
-    applyEditorTransform();
-    document.getElementById('editorZoomInd').textContent=Math.round(eScale/eInitScale*100)+'%';
-  };
+  area.onwheel=e=>{e.preventDefault();const r=area.getBoundingClientRect();const mx=e.clientX-r.left,my=e.clientY-r.top;const f=e.deltaY<0?1.12:0.89;const ns=Math.max(eInitScale*.3,Math.min(8,eScale*f));ePanX=mx-(mx-ePanX)*(ns/eScale);ePanY=my-(my-ePanY)*(ns/eScale);eScale=ns;applyEditorTransform();document.getElementById('editorZoomInd').textContent=Math.round(eScale/eInitScale*100)+'%';};
   area.oncontextmenu=e=>{e.preventDefault();eHandleRightClick(e);};
   document.addEventListener('keydown',eKeyHandler);
 }
-
-function applyEditorTransform(){
-  const wrap=document.getElementById('editorZoomWrap');if(!wrap)return;
-  wrap.style.transform=`translate(${ePanX}px,${ePanY}px) scale(${eScale})`;
-  // Overlay must match
-  const ov=document.getElementById('editorOverlay');
-  if(ov&&eCtx){ov.style.width=eCtx.canvas.width+'px';ov.style.height=eCtx.canvas.height+'px';}
-}
-
-// Convert screen coords → canvas coords (accounting for pan+zoom)
-function screenToCanvas(sx,sy){
-  return{cx:(sx-ePanX)/eScale,cy:(sy-ePanY)/eScale};
-}
-
-window.eZoomIn=()=>eZoom(1.2);
-window.eZoomOut=()=>eZoom(0.85);
-function eZoom(f){
-  if(!eCtx)return;
-  const area=document.getElementById('editorCanvasArea');
-  const cx=(area?.clientWidth||800)/2,cy=(area?.clientHeight||600)/2;
-  const ns=Math.max(eInitScale*.3,Math.min(8,eScale*f));
-  ePanX=cx-(cx-ePanX)*(ns/eScale);ePanY=cy-(cy-ePanY)*(ns/eScale);eScale=ns;
-  applyEditorTransform();
-  document.getElementById('editorZoomInd').textContent=Math.round(eScale/eInitScale*100)+'%';
-}
+function applyEditorTransform(){const wrap=document.getElementById('editorZoomWrap');if(!wrap)return;wrap.style.transform=`translate(${ePanX}px,${ePanY}px) scale(${eScale})`;const ov=document.getElementById('editorOverlay');if(ov&&eCtx){ov.style.width=eCtx.canvas.width+'px';ov.style.height=eCtx.canvas.height+'px';}}
+function scr2cv(sx,sy){return{cx:(sx-ePanX)/eScale,cy:(sy-ePanY)/eScale};}
+window.eZoomIn=()=>eZoom(1.2);window.eZoomOut=()=>eZoom(0.85);
+function eZoom(f){if(!eCtx)return;const area=document.getElementById('editorCanvasArea');const cx=(area?.clientWidth||800)/2,cy=(area?.clientHeight||600)/2;const ns=Math.max(eInitScale*.3,Math.min(8,eScale*f));ePanX=cx-(cx-ePanX)*(ns/eScale);ePanY=cy-(cy-ePanY)*(ns/eScale);eScale=ns;applyEditorTransform();document.getElementById('editorZoomInd').textContent=Math.round(eScale/eInitScale*100)+'%';}
 window.eZoomReset=()=>{eScale=eInitScale;ePanX=0;ePanY=0;applyEditorTransform();document.getElementById('editorZoomInd').textContent='100%';};
-
 function eOnMD(e){
-  e.preventDefault();
-  const area=document.getElementById('editorCanvasArea');const r=area.getBoundingClientRect();
-  const sx=e.clientX-r.left,sy=e.clientY-r.top;
-  const{cx,cy}=screenToCanvas(sx,sy);
+  e.preventDefault();const area=document.getElementById('editorCanvasArea');const r=area.getBoundingClientRect();const sx=e.clientX-r.left,sy=e.clientY-r.top;const{cx,cy}=scr2cv(sx,sy);
   if(eTool==='move'||e.button===1){ePanning=true;ePanLX=sx;ePanLY=sy;return;}
   if(eTool.startsWith('base_')||eTool.startsWith('unit_')||eTool==='city'){ePlaceMarker(cx,cy);return;}
   if(eTool==='fill'){eFloodFill(Math.round(cx),Math.round(cy));return;}
   eHistoryPush();eDrawing=true;eLX=cx;eLY=cy;
-  // Start new stroke record
-  const col=ECOLORS_TERRAIN[eTool]||null;
-  const bPx=+(document.getElementById('eBrushSize')?.value||14);
-  if(eTool==='erase'){
-    eCurrentStroke={type:'erase',color:null,pts:[],size:bPx*1.5,isErase:true};
-  } else if(col){
-    eCurrentStroke={type:eTool,color:col,pts:[],size:bPx,isErase:false};
-  } else {eCurrentStroke=null;}
-  if(eCurrentStroke&&eBgW>0){
-    const nx2=(cx-eBgX)/eBgW,ny2=(cy-eBgY)/eBgH;
-    eCurrentStroke.pts.push({nx:nx2,ny:ny2});
-  }
+  const col=ECOLORS_TERRAIN[eTool]||null,bPx=+(document.getElementById('eBrushSize')?.value||14);
+  eCurrentStroke=eTool==='erase'?{type:'erase',color:null,pts:[],size:bPx*1.5,isErase:true}:(col?{type:eTool,color:col,pts:[],size:bPx,isErase:false}:null);
+  if(eCurrentStroke&&eBgW>0)eCurrentStroke.pts.push({nx:(cx-eBgX)/eBgW,ny:(cy-eBgY)/eBgH});
 }
 function eOnMM(e){
-  e.preventDefault();
-  const area=document.getElementById('editorCanvasArea');const r=area.getBoundingClientRect();
-  const sx=e.clientX-r.left,sy=e.clientY-r.top;
+  e.preventDefault();const area=document.getElementById('editorCanvasArea');const r=area.getBoundingClientRect();const sx=e.clientX-r.left,sy=e.clientY-r.top;
   if(ePanning){ePanX+=sx-ePanLX;ePanY+=sy-ePanLY;ePanLX=sx;ePanLY=sy;applyEditorTransform();return;}
   if(!eDrawing)return;
-  const{cx,cy}=screenToCanvas(sx,sy);
-  const brushPx=+(document.getElementById('eBrushSize')?.value||14);
-  if(eTool==='erase'){
-    // Visual erase on terrain canvas
-    if(eTerrainCtx){
-      eTerrainCtx.globalCompositeOperation='destination-out';
-      eTerrainCtx.beginPath();eTerrainCtx.arc(cx,cy,brushPx*1.5,0,Math.PI*2);
-      eTerrainCtx.fillStyle='rgba(0,0,0,1)';eTerrainCtx.fill();
-      eTerrainCtx.globalCompositeOperation='source-over';
-    }
-  }else if(!eTool.startsWith('base_')&&eTool!=='unit_blue'&&eTool!=='unit_red'&&eTool!=='city'&&eTool!=='move'&&eTool!=='fill'){
-    const col=ECOLORS_TERRAIN[eTool]||ECOLORS_TERRAIN.draw;
-    // Visual draw on terrain canvas
-    if(col&&eTerrainCtx){
-      eTerrainCtx.strokeStyle=col;eTerrainCtx.lineWidth=brushPx;
-      eTerrainCtx.lineCap='round';eTerrainCtx.lineJoin='round';
-      eTerrainCtx.globalAlpha=0.8;
-      eTerrainCtx.beginPath();eTerrainCtx.moveTo(eLX,eLY);eTerrainCtx.lineTo(cx,cy);eTerrainCtx.stroke();
-      eTerrainCtx.globalAlpha=1;
-    }
-  }
-  // Record normalized point into current stroke
-  if(eCurrentStroke&&eBgW>0){
-    const nx2=(cx-eBgX)/eBgW,ny2=(cy-eBgY)/eBgH;
-    eCurrentStroke.pts.push({nx:nx2,ny:ny2});
-  }
-  eRedrawAll();
-  eLX=cx;eLY=cy;
+  const{cx,cy}=scr2cv(sx,sy);const bPx=+(document.getElementById('eBrushSize')?.value||14);
+  if(eTool==='erase'&&eTerrainCtx){eTerrainCtx.globalCompositeOperation='destination-out';eTerrainCtx.beginPath();eTerrainCtx.arc(cx,cy,bPx*1.5,0,Math.PI*2);eTerrainCtx.fillStyle='rgba(0,0,0,1)';eTerrainCtx.fill();eTerrainCtx.globalCompositeOperation='source-over';}
+  else if(ECOLORS_TERRAIN[eTool]&&eTerrainCtx){eTerrainCtx.strokeStyle=ECOLORS_TERRAIN[eTool];eTerrainCtx.lineWidth=bPx;eTerrainCtx.lineCap='round';eTerrainCtx.lineJoin='round';eTerrainCtx.globalAlpha=0.8;eTerrainCtx.beginPath();eTerrainCtx.moveTo(eLX,eLY);eTerrainCtx.lineTo(cx,cy);eTerrainCtx.stroke();eTerrainCtx.globalAlpha=1;}
+  if(eCurrentStroke&&eBgW>0)eCurrentStroke.pts.push({nx:(cx-eBgX)/eBgW,ny:(cy-eBgY)/eBgH});
+  eRedrawAll();eLX=cx;eLY=cy;
 }
-function eOnMU(e){
-  eDrawing=false;ePanning=false;
-  // Finalize stroke — add to list
-  if(eCurrentStroke&&eCurrentStroke.pts.length>0){
-    eTerrainStrokes.push(eCurrentStroke);
-    eCurrentStroke=null;
-  }
-  eRedrawMarkersOverlay();
-}
-function eKeyHandler(e){
-  if(!document.getElementById('screen-editor').classList.contains('active'))return;
-  // Works for both English (z) and Ukrainian (я) keyboard layouts
-  const isZ=e.key.toLowerCase()==='z'||e.key==='я'||e.code==='KeyZ';
-  if((e.ctrlKey||e.metaKey)&&isZ){e.preventDefault();editorUndoNew();}
-}
-function eHandleRightClick(e){
-  const area=document.getElementById('editorCanvasArea');const r=area.getBoundingClientRect();
-  const sx=e.clientX-r.left,sy=e.clientY-r.top;
-  const{cx,cy}=screenToCanvas(sx,sy);
-  const cv=eCtx?.canvas;if(!cv)return;
-  // Find marker near canvas click pos
-  const idx=eMarkers.findIndex(m=>Math.hypot(m.nx*cv.width-cx,m.ny*cv.height-cy)<30);
-  if(idx>=0){eMarkers.splice(idx,1);eRedrawMarkersOverlay();eUpdateMarkerList();toast('✕ Маркер видалено');}
-}
-
-function eHistoryPush(){
-  // Snapshot current stroke list
-  eHistory.push(JSON.stringify(eTerrainStrokes));
-  if(eHistory.length>30)eHistory.shift();
-}
-window.editorUndoNew=()=>{
-  if(!eHistory.length){toast('⚠️ Нічого відміняти');return;}
-  eTerrainStrokes=JSON.parse(eHistory.pop());
-  eRebuildTerrainCanvas();
-  eRedrawAll();
-};
-
+function eOnMU(){eDrawing=false;ePanning=false;if(eCurrentStroke&&eCurrentStroke.pts.length>0){eTerrainStrokes.push(eCurrentStroke);eCurrentStroke=null;}eRedrawMarkersOverlay();}
+function eKeyHandler(e){if(!document.getElementById('screen-editor').classList.contains('active'))return;const isZ=e.key.toLowerCase()==='z'||e.key==='я'||e.code==='KeyZ';if((e.ctrlKey||e.metaKey)&&isZ){e.preventDefault();editorUndoNew();}}
+function eHandleRightClick(e){const area=document.getElementById('editorCanvasArea');const r=area.getBoundingClientRect();const{cx,cy}=scr2cv(e.clientX-r.left,e.clientY-r.top);const cv=eCtx?.canvas;if(!cv)return;const idx=eMarkers.findIndex(m=>Math.hypot(m.nx*cv.width-cx,m.ny*cv.height-cy)<30);if(idx>=0){eMarkers.splice(idx,1);eRedrawMarkersOverlay();eUpdateMarkerList();toast('✕ Маркер видалено');}}
+function eHistoryPush(){eHistory.push(JSON.stringify(eTerrainStrokes));if(eHistory.length>30)eHistory.shift();}
+window.editorUndoNew=()=>{if(!eHistory.length){toast('⚠️ Нічого відміняти');return;}eTerrainStrokes=JSON.parse(eHistory.pop());eRebuildTerrainCanvas();eRedrawAll();};
 function eRebuildTerrainCanvas(){
-  // Rebuild visual terrain canvas from stroke list
-  if(!eTerrainCtx||!eBgW)return;
-  const tcv=eTerrainCtx.canvas;
-  eTerrainCtx.clearRect(0,0,tcv.width,tcv.height);
+  if(!eTerrainCtx||!eBgW)return;const tcv=eTerrainCtx.canvas;eTerrainCtx.clearRect(0,0,tcv.width,tcv.height);
   for(const s of eTerrainStrokes){
-    if(s.isErase){
-      eTerrainCtx.globalCompositeOperation='destination-out';
-      for(const pt of s.pts){
-        const cx2=eBgX+pt.nx*eBgW,cy2=eBgY+pt.ny*eBgH;
-        eTerrainCtx.beginPath();eTerrainCtx.arc(cx2,cy2,s.size,0,Math.PI*2);
-        eTerrainCtx.fillStyle='rgba(0,0,0,1)';eTerrainCtx.fill();
-      }
-      eTerrainCtx.globalCompositeOperation='source-over';
-    } else {
-      eTerrainCtx.strokeStyle=s.color;eTerrainCtx.lineWidth=s.size;
-      eTerrainCtx.lineCap='round';eTerrainCtx.lineJoin='round';eTerrainCtx.globalAlpha=0.8;
-      eTerrainCtx.beginPath();
-      if(s.pts.length===1){
-        const cx2=eBgX+s.pts[0].nx*eBgW,cy2=eBgY+s.pts[0].ny*eBgH;
-        eTerrainCtx.arc(cx2,cy2,s.size/2,0,Math.PI*2);eTerrainCtx.fill();
-      } else {
-        eTerrainCtx.moveTo(eBgX+s.pts[0].nx*eBgW,eBgY+s.pts[0].ny*eBgH);
-        for(let i=1;i<s.pts.length;i++)
-          eTerrainCtx.lineTo(eBgX+s.pts[i].nx*eBgW,eBgY+s.pts[i].ny*eBgH);
-        eTerrainCtx.stroke();
-      }
-      eTerrainCtx.globalAlpha=1;
-    }
+    if(s.isErase){eTerrainCtx.globalCompositeOperation='destination-out';for(const pt of s.pts){const cx=eBgX+pt.nx*eBgW,cy=eBgY+pt.ny*eBgH;eTerrainCtx.beginPath();eTerrainCtx.arc(cx,cy,s.size,0,Math.PI*2);eTerrainCtx.fillStyle='rgba(0,0,0,1)';eTerrainCtx.fill();}eTerrainCtx.globalCompositeOperation='source-over';}
+    else{eTerrainCtx.strokeStyle=s.color;eTerrainCtx.lineWidth=s.size;eTerrainCtx.lineCap='round';eTerrainCtx.lineJoin='round';eTerrainCtx.globalAlpha=0.8;eTerrainCtx.beginPath();if(s.pts.length===1){const cx=eBgX+s.pts[0].nx*eBgW,cy=eBgY+s.pts[0].ny*eBgH;eTerrainCtx.arc(cx,cy,s.size/2,0,Math.PI*2);eTerrainCtx.fill();}else{eTerrainCtx.moveTo(eBgX+s.pts[0].nx*eBgW,eBgY+s.pts[0].ny*eBgH);for(let i=1;i<s.pts.length;i++)eTerrainCtx.lineTo(eBgX+s.pts[i].nx*eBgW,eBgY+s.pts[i].ny*eBgH);eTerrainCtx.stroke();}eTerrainCtx.globalAlpha=1;}
   }
 }
 function eRedrawAll(){
-  if(!eCtx)return;
-  const cv=eCtx.canvas;
-  eCtx.clearRect(0,0,cv.width,cv.height);
-  eCtx.fillStyle='#1a2810';eCtx.fillRect(0,0,cv.width,cv.height);
-  if(eBg&&eBgW>0){
-    eCtx.drawImage(eBg,eBgX,eBgY,eBgW,eBgH);
-  }else{
-    eDrawDefaultBg();return;
-  }
-  // Draw terrain overlay (semi-transparent so photo shows through)
-  if(eTerrainCtx){
-    eCtx.globalAlpha=0.72;
-    eCtx.drawImage(eTerrainCtx.canvas,0,0);
-    eCtx.globalAlpha=1;
-  }
+  if(!eCtx)return;const cv=eCtx.canvas;eCtx.clearRect(0,0,cv.width,cv.height);eCtx.fillStyle='#1a2810';eCtx.fillRect(0,0,cv.width,cv.height);
+  if(eBg&&eBgW>0){eCtx.drawImage(eBg,eBgX,eBgY,eBgW,eBgH);}else{eDrawDefaultBg();return;}
+  if(eTerrainCtx){eCtx.globalAlpha=0.72;eCtx.drawImage(eTerrainCtx.canvas,0,0);eCtx.globalAlpha=1;}
 }
 function eDrawDefaultBg(){
-  if(!eCtx)return;const cv=eCtx.canvas;const W=cv.width,H=cv.height;
-  eCtx.fillStyle='#1a2810';eCtx.fillRect(0,0,W,H);
-  eCtx.strokeStyle='rgba(255,255,255,.04)';eCtx.lineWidth=1;
-  for(let x=0;x<W;x+=50){eCtx.beginPath();eCtx.moveTo(x,0);eCtx.lineTo(x,H);eCtx.stroke();}
-  for(let y=0;y<H;y+=50){eCtx.beginPath();eCtx.moveTo(0,y);eCtx.lineTo(W,y);eCtx.stroke();}
-  eCtx.strokeStyle='rgba(255,255,255,.2)';eCtx.lineWidth=2;eCtx.setLineDash([12,8]);
-  eCtx.beginPath();eCtx.moveTo(W/2,0);eCtx.lineTo(W/2,H);eCtx.stroke();eCtx.setLineDash([]);
-  eCtx.font='bold 28px Oswald,sans-serif';eCtx.textAlign='center';eCtx.textBaseline='middle';
-  eCtx.fillStyle='rgba(59,130,246,.12)';eCtx.fillText('СИНІ',W*.25,H/2);
-  eCtx.fillStyle='rgba(239,68,68,.12)';eCtx.fillText('ЧЕРВОНІ',W*.75,H/2);
+  if(!eCtx)return;const cv=eCtx.canvas,W=cv.width,H=cv.height;eCtx.fillStyle='#1a2810';eCtx.fillRect(0,0,W,H);eCtx.strokeStyle='rgba(255,255,255,.04)';eCtx.lineWidth=1;for(let x=0;x<W;x+=50){eCtx.beginPath();eCtx.moveTo(x,0);eCtx.lineTo(x,H);eCtx.stroke();}for(let y=0;y<H;y+=50){eCtx.beginPath();eCtx.moveTo(0,y);eCtx.lineTo(W,y);eCtx.stroke();}eCtx.strokeStyle='rgba(255,255,255,.2)';eCtx.lineWidth=2;eCtx.setLineDash([12,8]);eCtx.beginPath();eCtx.moveTo(W/2,0);eCtx.lineTo(W/2,H);eCtx.stroke();eCtx.setLineDash([]);eCtx.font='bold 28px Oswald,sans-serif';eCtx.textAlign='center';eCtx.textBaseline='middle';eCtx.fillStyle='rgba(59,130,246,.12)';eCtx.fillText('СИНІ',W*.25,H/2);eCtx.fillStyle='rgba(239,68,68,.12)';eCtx.fillText('ЧЕРВОНІ',W*.75,H/2);
 }
-window.setETool=t=>{
-  eTool=t;document.querySelectorAll('.etool').forEach(b=>b.classList.remove('active'));document.getElementById('etool-'+t)?.classList.add('active');
-  const hints={draw:'ЛКМ — малювати',erase:'ЛКМ — стерти',fill:'ЛКМ — заливка',move:'ЛКМ тягни — pan | Коліщатко — zoom',water:'ЛКМ — вода (блокує рух)',bridge:'ЛКМ — міст (прохід через воду)',forest:'ЛКМ — ліс (-50% швидкість)',road:'ЛКМ — дорога (+40% швидкість)',meadow:'ЛКМ — луг (нормальна швидкість)',city:'ЛКМ — місто',base_blue:'ЛКМ — База СИНІХ',base_red:'ЛКМ — База ЧЕРВОНИХ',unit_blue:'ЛКМ — юніт СИНІХ',unit_red:'ЛКМ — юніт ЧЕРВОНИХ'};
-  const hint=document.getElementById('editorCursorHint');if(hint)hint.textContent=hints[t]||'';
-};
-window.editorLoadBg=input=>{
-  const file=input.files[0];if(!file)return;
-  const img=new Image();
-  img.onload=()=>{
-    eHistoryPush();
-    eBg=img;
-    const cv=eCtx.canvas;
-    const sc=Math.min(cv.width/img.naturalWidth,cv.height/img.naturalHeight);
-    eBgW=img.naturalWidth*sc;eBgH=img.naturalHeight*sc;
-    eBgX=(cv.width-eBgW)/2;eBgY=(cv.height-eBgH)/2;
-    // Keep existing terrain strokes, rebuild visual on new bg
-    eRebuildTerrainCanvas();
-    eRedrawAll();
-    toast('📷 Фото завантажено — малюйте терен поверх!');
-  };
-  img.src=URL.createObjectURL(file);
-};
-window.editorRenameMap=()=>{const n=prompt('Назва карти:',eMapName);if(n)eMapName=n;const el=document.getElementById('editorMapName');if(el)el.textContent=eMapName;};
-window.editorClearTerrain=()=>{
-  eHistoryPush();
-  eTerrainStrokes=[];
-  if(eTerrainCtx)eTerrainCtx.clearRect(0,0,eTerrainCtx.canvas.width,eTerrainCtx.canvas.height);
-  eRedrawAll();
-  toast('🗑️ Терен очищено');
-};
+window.setETool=t=>{eTool=t;document.querySelectorAll('.etool').forEach(b=>b.classList.remove('active'));document.getElementById('etool-'+t)?.classList.add('active');const hints={draw:'ЛКМ — малювати',erase:'ЛКМ — стерти',fill:'ЛКМ — заливка',move:'ЛКМ тягни — pan | Коліщатко — zoom',water:'🌊 Вода (блокує рух)',bridge:'🌉 Міст (прохід через воду)',forest:'🌲 Ліс (-50% швидкість)',road:'🛣️ Дорога (+40%)',meadow:'🌿 Луг (нормально)',city:'ЛКМ — місто',base_blue:'База СИНІХ',base_red:'База ЧЕРВОНИХ',unit_blue:'Юніт СИНІХ',unit_red:'Юніт ЧЕРВОНИХ'};const hint=document.getElementById('editorCursorHint');if(hint)hint.textContent=hints[t]||'';};
+window.editorLoadBg=input=>{const file=input.files[0];if(!file)return;const img=new Image();img.onload=()=>{eHistoryPush();eBg=img;const cv=eCtx.canvas;const sc=Math.min(cv.width/img.naturalWidth,cv.height/img.naturalHeight);eBgW=img.naturalWidth*sc;eBgH=img.naturalHeight*sc;eBgX=(cv.width-eBgW)/2;eBgY=(cv.height-eBgH)/2;eRebuildTerrainCanvas();eRedrawAll();toast('📷 Фото завантажено!');};img.src=URL.createObjectURL(file);};
+window.editorRenameMap=()=>{const n=prompt('Назва карти:',eMapName);if(n){eMapName=n;const el=document.getElementById('editorMapName');if(el)el.textContent=eMapName;}};
+window.editorClearTerrain=()=>{eHistoryPush();eTerrainStrokes=[];if(eTerrainCtx)eTerrainCtx.clearRect(0,0,eTerrainCtx.canvas.width,eTerrainCtx.canvas.height);eRedrawAll();toast('🗑️ Терен очищено');};
 window.editorClearMarkers=()=>{eMarkers=[];eRedrawMarkersOverlay();toast('🚫 Маркери видалено');};
-window.editorClearAll=()=>{
-  eHistoryPush();eMarkers=[];eBg=null;eTerrainStrokes=[];
-  if(eTerrainCtx)eTerrainCtx.clearRect(0,0,eTerrainCtx.canvas.width,eTerrainCtx.canvas.height);
-  if(eCtx){const cv=eCtx.canvas;eCtx.fillStyle='#1a2810';eCtx.fillRect(0,0,cv.width,cv.height);eDrawDefaultBg();}
-  eRedrawMarkersOverlay();toast('💥 Все очищено');
-};
+window.editorClearAll=()=>{eHistoryPush();eMarkers=[];eBg=null;eTerrainStrokes=[];if(eTerrainCtx)eTerrainCtx.clearRect(0,0,eTerrainCtx.canvas.width,eTerrainCtx.canvas.height);if(eCtx){const cv=eCtx.canvas;eCtx.fillStyle='#1a2810';eCtx.fillRect(0,0,cv.width,cv.height);eDrawDefaultBg();}eRedrawMarkersOverlay();toast('💥 Все очищено');};
+
+// ── EDITOR MARKER PLACEMENT — FIX: use canvas-space coords directly ──
+// Canvas is EDITOR_NATIVE_W x EDITOR_NATIVE_H. Marker nx/ny = cx/NATIVE_W, cy/NATIVE_H
+// No bg offsets applied here — bg offset is only for terrain visual layer
 function ePlaceMarker(cx,cy){
-  const cv=eCtx.canvas;const nx=cx/cv.width,ny=cy/cv.height;
+  const cv=eCtx.canvas;
+  // Normalize to canvas coords (0-1), NOT bg-relative
+  const nx=cx/cv.width,ny=cy/cv.height;
   const isBase=eTool.startsWith('base_');
   if(isBase){const team=eTool.split('_')[1];eMarkers=eMarkers.filter(m=>!(m.type==='base'&&m.team===team));eMarkers.push({type:'base',team,nx,ny});}
-  else if(eTool==='city'){const name=prompt('Назва міста:',`Місто ${eMarkers.filter(m=>m.type==='city').length+1}`)||`Місто ${eMarkers.filter(m=>m.type==='city').length+1}`;eMarkers.push({type:'city',nx,ny,name});}
-  else{const team=eTool.split('_')[1];const unitType=document.getElementById('editorUnitType2')?.value||'infantry';eMarkers.push({type:'unit',team,unitType,nx,ny});}
+  else if(eTool==='city'){const name=prompt('Назва міста:',`Місто ${eMarkers.filter(m=>m.type==='city').length+1}`)||`Місто`;eMarkers.push({type:'city',nx,ny,name});}
+  else{const team=eTool.split('_')[1];const ut=document.getElementById('editorUnitType2')?.value||'infantry';eMarkers.push({type:'unit',team,unitType:ut,nx,ny});}
   eRedrawMarkersOverlay();eUpdateMarkerList();
 }
 function eFloodFill(cx,cy){
-  // Fill = large circle stroke at click point (simpler, reliable)
-  if(!eBgW)return;
-  eHistoryPush();
-  const col=ECOLORS_TERRAIN[eTool];
-  if(!col)return;
-  const nx2=(cx-eBgX)/eBgW,ny2=(cy-eBgY)/eBgH;
-  // Add a big circle fill stroke
-  const fillSize=Math.max(eBgW,eBgH)*0.08; // 8% of map size
-  const s={type:eTool,color:col,pts:[{nx:nx2,ny:ny2}],size:fillSize,isErase:false};
-  eTerrainStrokes.push(s);
-  eRebuildTerrainCanvas();
-  eRedrawAll();
-  toast('🪣 Заливка: '+eTool);
+  if(!eBgW)return;eHistoryPush();const col=ECOLORS_TERRAIN[eTool];if(!col)return;
+  const nx=(cx-eBgX)/eBgW,ny=(cy-eBgY)/eBgH;
+  const s={type:eTool,color:col,pts:[{nx,ny}],size:Math.max(eBgW,eBgH)*0.08,isErase:false};
+  eTerrainStrokes.push(s);eRebuildTerrainCanvas();eRedrawAll();
 }
-function hexOrRgbaToRgb(col){if(!col)return{r:26,g:40,b:16};if(col.startsWith('#')){const r=parseInt(col.slice(1,3),16),g=parseInt(col.slice(3,5),16),b=parseInt(col.slice(5,7),16);return{r,g,b};}if(col.startsWith('rgba')){const m=col.match(/[\d.]+/g);return m?{r:+m[0],g:+m[1],b:+m[2]}:null;}return null;}
+// Overlay renders markers at canvas px positions (scaled by CSS transform)
 function eRedrawMarkersOverlay(){
-  const ov=document.getElementById('editorOverlay');const cv=eCtx?.canvas;if(!ov||!cv)return;
+  const ov=document.getElementById('editorOverlay'),cv=eCtx?.canvas;if(!ov||!cv)return;
   ov.style.width=cv.width+'px';ov.style.height=cv.height+'px';
   ov.innerHTML=eMarkers.map((m,i)=>{
     const px=m.nx*cv.width,py=m.ny*cv.height;
@@ -1206,126 +984,81 @@ function eRedrawMarkersOverlay(){
 window.eRemoveMarker=i=>{eMarkers.splice(i,1);eRedrawMarkersOverlay();eUpdateMarkerList();};
 function eUpdateMarkerList(){
   const el=document.getElementById('eMarkerList');if(!el)return;
-  if(!eMarkers.length){el.innerHTML='<span style="color:var(--dim);font-size:10px">Маркерів немає</span>';return;}
-  el.innerHTML=eMarkers.map((m,i)=>{const label=m.type==='city'?`🏙️ ${m.name}`:m.type==='base'?`${m.team==='blue'?'🏠 База Синіх':'🏚️ База Червоних'}`:`${UNIT_DEFS[m.unitType]?.emoji||'⚪'} ${UNIT_DEFS[m.unitType]?.name||m.unitType} (${m.team==='blue'?'🔵':'🔴'})`;return`<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 4px;border-radius:4px;background:rgba(255,255,255,.02);"><span style="font-size:10px">${label}</span><span style="color:#f87171;cursor:pointer;font-size:11px;padding:0 4px" onclick="eRemoveMarker(${i})">✕</span></div>`;}).join('');
+  el.innerHTML=eMarkers.length?eMarkers.map((m,i)=>{const lb=m.type==='city'?`🏙️ ${m.name}`:m.type==='base'?`${m.team==='blue'?'🏠 База Синіх':'🏚️ База Червоних'}`:`${UNIT_DEFS[m.unitType]?.emoji||'⚪'} ${UNIT_DEFS[m.unitType]?.name||m.unitType} (${m.team==='blue'?'🔵':'🔴'})`;return`<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 4px;border-radius:4px;background:rgba(255,255,255,.02);"><span style="font-size:10px">${lb}</span><span style="color:#f87171;cursor:pointer;font-size:11px;padding:0 4px" onclick="eRemoveMarker(${i})">✕</span></div>`;}).join(''):'<span style="color:var(--dim);font-size:10px">Маркерів немає</span>';
 }
+
+// ── SAVE MAP FROM STANDALONE EDITOR ───────────────────────
+// FIX: save nx/ny as canvas-normalized (not bg-relative), then game loads them correctly
 window.editorSaveMap=async()=>{
   const cv=eCtx?.canvas;if(!cv){toast('❌ Редактор не ініціалізований');return;}
-  // Validate required markers
   const hasBlue=eMarkers.some(m=>m.type==='base'&&m.team==='blue');
   const hasRed=eMarkers.some(m=>m.type==='base'&&m.team==='red');
-  if(!hasBlue||!hasRed){toast('⚠️ Додайте Базу СИНІХ та ЧЕРВОНИХ перед збереженням!');return;}
+  if(!hasBlue||!hasRed){toast('⚠️ Додайте Базу СИНІХ та ЧЕРВОНИХ!');return;}
   toast('⟳ Зберігаємо карту...');
   try{
-    // Save background photo as map image (user uploaded photo IS the map)
     let bgUrl=eMapIdx>=0?globalMaps[eMapIdx]?.url:null;
-    if(eBg&&!bgUrl){
-      // New map with photo — upload the bg
-      const bgCanvas=document.createElement('canvas');bgCanvas.width=eBg.naturalWidth;bgCanvas.height=eBg.naturalHeight;
-      bgCanvas.getContext('2d').drawImage(eBg,0,0);
-      bgUrl=await uploadCloudinary(bgCanvas.toDataURL('image/jpeg',.92),'bg_map_'+Date.now());
-    }
-    if(!bgUrl&&eBg){bgUrl=eBg.src;}
-
+    if(eBg&&!bgUrl){const bc=document.createElement('canvas');bc.width=eBg.naturalWidth;bc.height=eBg.naturalHeight;bc.getContext('2d').drawImage(eBg,0,0);bgUrl=await uploadCL(bc.toDataURL('image/jpeg',.92),'bg_map_'+Date.now());}
+    if(!bgUrl&&eBg)bgUrl=eBg.src;
     const date=new Date().toLocaleDateString('uk-UA');
+    // Markers are stored canvas-normalized (0-1 of NATIVE canvas size)
+    // Game converts: worldX = nx * mapBgW (which equals real image pixels)
     const spawns={
       blueBase:eMarkers.find(m=>m.type==='base'&&m.team==='blue')||null,
       redBase:eMarkers.find(m=>m.type==='base'&&m.team==='red')||null,
       units:eMarkers.filter(m=>m.type==='unit').map(m=>({team:m.team,unitType:m.unitType,nx:m.nx,ny:m.ny}))
     };
     const cities=eMarkers.filter(m=>m.type==='city').map(m=>({nx:m.nx,ny:m.ny,name:m.name}));
-
-    // Save map metadata (no terrain — stored separately)
-    const mapEntry={url:bgUrl||cv.toDataURL('image/jpeg',.85),name:eMapName,date,spawns,cities};
-    if(eMapIdx>=0){globalMaps[eMapIdx]=mapEntry;}else{globalMaps.push(mapEntry);}
-
-    // Determine map index for terrain doc key — store it in map entry too
-    const savedMapIdx=eMapIdx>=0?eMapIdx:globalMaps.length-1;
-    globalMaps[savedMapIdx].terrainIdx=savedMapIdx; // embed index so game can find it
-
-    // Save terrain as SEPARATE Firestore doc (avoids 1MB limit on globalMaps)
-    // Thin out points to save space (every 2nd point is enough for smooth curves)
-    const terrainStrokes=eTerrainStrokes.map(s=>({
-      t:s.type,c:s.color,
-      p:s.pts.filter((_,i)=>i%3===0||i===s.pts.length-1).map(pt=>({
-        x:Math.round(pt.nx*10000)/10000,
-        y:Math.round(pt.ny*10000)/10000
-      })),
-      s:Math.round(s.size),e:s.isErase?1:0
-    }));
+    const entry={url:bgUrl||cv.toDataURL('image/jpeg',.85),name:eMapName,date,spawns,cities};
+    if(eMapIdx>=0)globalMaps[eMapIdx]=entry;else globalMaps.push(entry);
+    const savedIdx=eMapIdx>=0?eMapIdx:globalMaps.length-1;
+    globalMaps[savedIdx].terrainIdx=savedIdx;
+    // Save terrain strokes compressed
+    const ts=eTerrainStrokes.map(s=>({t:s.type,c:s.color,p:s.pts.filter((_,i)=>i%3===0||i===s.pts.length-1).map(pt=>({x:Math.round(pt.nx*10000)/10000,y:Math.round(pt.ny*10000)/10000})),s:Math.round(s.size),e:s.isErase?1:0}));
     toast('⟳ Зберігаємо терен...');
-    await setDoc(doc(db,'appData','terrain_'+savedMapIdx),{
-      strokes:terrainStrokes,
-      updatedAt:serverTimestamp()
-    });
-
+    await setDoc(doc(db,'appData','terrain_'+savedIdx),{strokes:ts,updatedAt:serverTimestamp()});
     await setDoc(doc(db,'appData','globalMaps'),{maps:globalMaps});
     renderLobbyGlobalMaps();if(isAdmin)renderAdminMaps();
     toast('✅ "'+eMapName+'" збережена!');showScreen('screen-menu');
-  }
-  catch(e){toast('❌ '+e.message);console.error(e);}
+  }catch(e){toast('❌ '+e.message);console.error(e);}
 };
 function eLoadMapForEditing(m){
   const img=new Image();img.crossOrigin='anonymous';
   img.onload=()=>{
-    eBg=img;
-    const cv=eCtx.canvas;
-    // Scale bg to fill the native canvas while preserving aspect ratio
+    eBg=img;const cv=eCtx.canvas;
     const sc=Math.min(cv.width/img.naturalWidth,cv.height/img.naturalHeight);
-    eBgW=img.naturalWidth*sc;eBgH=img.naturalHeight*sc;
-    eBgX=(cv.width-eBgW)/2;eBgY=(cv.height-eBgH)/2;
-    // Draw bg (photo = the map)
-    eCtx.fillStyle='#1a2810';eCtx.fillRect(0,0,cv.width,cv.height);
-    eCtx.drawImage(img,eBgX,eBgY,eBgW,eBgH);
-    // Restore terrain from separate Firestore doc (async, non-blocking)
+    eBgW=img.naturalWidth*sc;eBgH=img.naturalHeight*sc;eBgX=(cv.width-eBgW)/2;eBgY=(cv.height-eBgH)/2;
+    eCtx.fillStyle='#1a2810';eCtx.fillRect(0,0,cv.width,cv.height);eCtx.drawImage(img,eBgX,eBgY,eBgW,eBgH);
     eTerrainStrokes=[];
     const mapIdx=eMapIdx>=0?eMapIdx:0;
     getDoc(doc(db,'appData','terrain_'+mapIdx)).then(tsnap=>{
       if(tsnap.exists()){
-        const raw=tsnap.data().strokes||[];
-        // Restore compressed format back to full stroke objects
-        eTerrainStrokes=raw.map(s=>({
-          type:s.t,color:s.c,
-          pts:(s.p||[]).map(pt=>({nx:pt.x,ny:pt.y})),
-          size:s.s,isErase:s.e===1
-        }));
-        eRebuildTerrainCanvas();
-        eRedrawAll();
-        toast('✅ Терен завантажено: '+eTerrainStrokes.length+' шарів');
-      }else{
-        eRebuildTerrainCanvas();
-        eRedrawAll();
-      }
-    }).catch(err=>{console.warn('terrain load err:',err);eRebuildTerrainCanvas();eRedrawAll();});
+        eTerrainStrokes=(tsnap.data().strokes||[]).map(s=>({type:s.t,color:s.c,pts:(s.p||[]).map(pt=>({nx:pt.x,ny:pt.y})),size:s.s,isErase:s.e===1}));
+        eRebuildTerrainCanvas();eRedrawAll();toast('✅ Терен: '+eTerrainStrokes.length+' шарів');
+      }else{eRebuildTerrainCanvas();eRedrawAll();}
+    }).catch(()=>{eRebuildTerrainCanvas();eRedrawAll();});
     eMarkers=[];
+    // FIX: markers already stored as canvas-normalized nx/ny — load directly, no conversion needed
     if(m.spawns){
       if(m.spawns.blueBase)eMarkers.push({type:'base',team:'blue',nx:m.spawns.blueBase.nx,ny:m.spawns.blueBase.ny});
       if(m.spawns.redBase)eMarkers.push({type:'base',team:'red',nx:m.spawns.redBase.nx,ny:m.spawns.redBase.ny});
       (m.spawns.units||[]).forEach(u=>eMarkers.push({type:'unit',team:u.team,unitType:u.unitType,nx:u.nx,ny:u.ny}));
     }
     (m.cities||[]).forEach(c=>eMarkers.push({type:'city',nx:c.nx,ny:c.ny,name:c.name}));
-    eMapName=m.name;
-    const el=document.getElementById('editorMapName');if(el)el.textContent=eMapName;
-    eRedrawMarkersOverlay();eUpdateMarkerList();
-    toast('✏️ Завантажено: '+m.name);
+    eMapName=m.name;const el=document.getElementById('editorMapName');if(el)el.textContent=eMapName;
+    eRedrawMarkersOverlay();eUpdateMarkerList();toast('✏️ '+m.name);
   };
   img.src=m.url;
 }
 
-// ══════════════════════════════════
-//  SCREENS
-// ══════════════════════════════════
+// ── SCREEN CONTROL ─────────────────────────────────────────
 window.showScreen=name=>{
   if(document.getElementById('screen-editor')?.classList.contains('active')&&name!=='screen-editor')document.removeEventListener('keydown',eKeyHandler);
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(name)?.classList.add('active');
 };
 
-// ══════════════════════════════════
-//  LOBBY
-// ══════════════════════════════════
+// ── LOBBY ──────────────────────────────────────────────────
 function genCode(){return Array.from({length:5},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');}
-window.copyLobbyCode=()=>{const code=document.getElementById('lcCode').textContent;if(navigator.clipboard)navigator.clipboard.writeText(code).then(()=>toast('✅ Код скопійовано: '+code));else{const ta=document.createElement('textarea');ta.value=code;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✅ Скопійовано!');}};
-function setLobbyMapHostOnly(isHost){['mapUploadArea','mapFileInput'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=isHost?'':'none';});}
+window.copyLobbyCode=()=>{const code=document.getElementById('lcCode').textContent;navigator.clipboard?.writeText(code).then(()=>toast('✅ Код скопійовано: '+code))||toast(code);};
 window.showLobbyCreate=async()=>{
   showScreen('screen-lobby-create');setStatus('lcStatus','⟳ Створення лобі...','warn');
   const code=genCode();lobbyId=code;myRole='blue';
@@ -1333,7 +1066,7 @@ window.showLobbyCreate=async()=>{
   document.getElementById('lcP2Name').textContent='Очікування...';document.getElementById('lcP2Slot').classList.remove('filled');document.getElementById('lcP2Slot').querySelector('.lps-icon').textContent='⏳';
   document.getElementById('lcStartBtn').disabled=true;mapBg=null;mapBgW=0;mapBgH=0;
   document.getElementById('mapPreview').style.display='none';document.getElementById('mapUploadArea').style.display='block';document.getElementById('mapUploadStatus').textContent='';
-  renderLobbyGlobalMaps();setLobbyMapHostOnly(true);if(globalMaps.length>0)loadMapFromUrl(globalMaps[0].url);
+  renderLobbyGlobalMaps();if(globalMaps.length>0)loadMapFromUrl(globalMaps[0].url);
   try{await setDoc(doc(db,'lobbies',code),{code,host:uid,hostName:myName,guestUid:null,guestName:null,mapUrl:globalMaps[0]?.url||null,mapIdx:0,mapVer:'0',status:'waiting',createdAt:serverTimestamp(),presence:{blue:Date.now(),red:0}});setStatus('lcStatus','✅ Лобі створено! Код: '+code,'ok');listenLobby(code,'host');startPresencePing(code,'blue');}
   catch(e){setStatus('lcStatus','❌ '+e.message,'err');}
 };
@@ -1341,551 +1074,466 @@ window.showLobbyJoin=()=>showScreen('screen-lobby-join');
 window.joinLobby=async()=>{
   const code=document.getElementById('joinCodeInput').value.trim().toUpperCase(),nm=document.getElementById('joinNameInput').value.trim()||myName;
   if(!code){setStatus('ljStatus','❌ Введіть код!','err');return;}myName=nm;setStatus('ljStatus','⟳ Пошук...','warn');
-  try{const snap=await getDoc(doc(db,'lobbies',code));if(!snap.exists()){setStatus('ljStatus','❌ Лобі не знайдено!','err');return;}const d=snap.data();if(d.status!=='waiting'&&d.status!=='ready'){setStatus('ljStatus','❌ Лобі недоступне','err');return;}if(d.guestUid&&d.guestUid!==uid){setStatus('ljStatus','❌ Лобі заповнене','err');return;}lobbyId=code;myRole='red';await updateDoc(doc(db,'lobbies',code),{guestUid:uid,guestName:myName,status:'ready','presence.red':Date.now()});showScreen('screen-lobby-create');document.getElementById('lcCode').textContent=code;document.getElementById('lcP1Name').textContent=d.hostName||'Хост';document.getElementById('lcP2Name').textContent=myName;document.getElementById('lcP2Slot').classList.add('filled');document.getElementById('lcP2Slot').querySelector('.lps-icon').textContent='🔴';document.getElementById('lcStartBtn').disabled=true;mapBg=null;mapBgW=0;mapBgH=0;renderLobbyGlobalMaps();setLobbyMapHostOnly(false);setStatus('lcStatus','✅ Приєднались! Очікуємо старту...','ok');listenLobby(code,'guest');startPresencePing(code,'red');if(d.mapUrl)loadMapFromUrl(d.mapUrl);else if(globalMaps.length>0)loadMapFromUrl(globalMaps[0].url);}
+  try{const snap=await getDoc(doc(db,'lobbies',code));if(!snap.exists()){setStatus('ljStatus','❌ Лобі не знайдено!','err');return;}const d=snap.data();if(d.status!=='waiting'&&d.status!=='ready'){setStatus('ljStatus','❌ Лобі недоступне','err');return;}if(d.guestUid&&d.guestUid!==uid){setStatus('ljStatus','❌ Лобі заповнене','err');return;}lobbyId=code;myRole='red';await updateDoc(doc(db,'lobbies',code),{guestUid:uid,guestName:myName,status:'ready','presence.red':Date.now()});showScreen('screen-lobby-create');document.getElementById('lcCode').textContent=code;document.getElementById('lcP1Name').textContent=d.hostName||'Хост';document.getElementById('lcP2Name').textContent=myName;document.getElementById('lcP2Slot').classList.add('filled');document.getElementById('lcP2Slot').querySelector('.lps-icon').textContent='🔴';document.getElementById('lcStartBtn').disabled=true;renderLobbyGlobalMaps();setStatus('lcStatus','✅ Приєднались!','ok');listenLobby(code,'guest');startPresencePing(code,'red');if(d.mapUrl)loadMapFromUrl(d.mapUrl);else if(globalMaps.length>0)loadMapFromUrl(globalMaps[0].url);}
   catch(e){setStatus('ljStatus','❌ '+e.message,'err');}
 };
 function listenLobby(code,role){
   if(lobbyUnsub)lobbyUnsub();
-  lobbyUnsub=onSnapshot(doc(db,'lobbies',code),snap=>{if(!snap.exists())return;const d=snap.data();if(d.guestName){document.getElementById('lcP2Name').textContent=d.guestName;document.getElementById('lcP2Slot').classList.add('filled');document.getElementById('lcP2Slot').querySelector('.lps-icon').textContent='🔴';if(role==='host'){document.getElementById('lcStartBtn').disabled=false;setStatus('lcStatus','✅ '+d.guestName+' приєднався! Натисніть СТАРТ.','ok');}}if(d.mapUrl)loadMapFromUrl(d.mapUrl);if(d.status==='started'){if(lobbyUnsub){lobbyUnsub();lobbyUnsub=null;}startGame(code,role,d);}});
+  lobbyUnsub=onSnapshot(doc(db,'lobbies',code),snap=>{if(!snap.exists())return;const d=snap.data();if(d.guestName){document.getElementById('lcP2Name').textContent=d.guestName;document.getElementById('lcP2Slot').classList.add('filled');document.getElementById('lcP2Slot').querySelector('.lps-icon').textContent='🔴';if(role==='host'){document.getElementById('lcStartBtn').disabled=false;setStatus('lcStatus','✅ '+d.guestName+' приєднався!','ok');}}if(d.mapUrl)loadMapFromUrl(d.mapUrl);if(d.status==='started'){if(lobbyUnsub){lobbyUnsub();lobbyUnsub=null;}startGame(code,role,d);}});
 }
 window.hostStartGame=async()=>{if(!lobbyId)return;await updateDoc(doc(db,'lobbies',lobbyId),{status:'started'});};
 window.leaveLobby=async()=>{if(lobbyId&&myRole==='blue')await deleteDoc(doc(db,'lobbies',lobbyId)).catch(()=>{});if(lobbyUnsub){lobbyUnsub();lobbyUnsub=null;}if(presenceUnsub){clearInterval(presenceUnsub);presenceUnsub=null;}lobbyId=null;myRole=null;showScreen('screen-menu');};
 
-// ══════════════════════════════════
-//  PRESENCE
-// ══════════════════════════════════
+// ── PRESENCE ───────────────────────────────────────────────
 function startPresencePing(code,role){if(presenceUnsub)clearInterval(presenceUnsub);presenceUnsub=setInterval(async()=>{if(!lobbyId)return;await updateDoc(doc(db,'games',code),{['presence.'+role]:Date.now()}).catch(()=>{});},5000);}
-function monitorOpponentPresence(code){const oppRole=myRole==='blue'?'red':'blue';setInterval(async()=>{if(gameOver||!lobbyId)return;const snap=await getDoc(doc(db,'games',code)).catch(()=>null);if(!snap?.exists())return;const ts=snap.data()?.presence?.[oppRole]||0;const elapsed=(Date.now()-ts)/1000;if(elapsed>10&&elapsed<75)showDcBanner(75-Math.floor(elapsed));else if(elapsed>=75){hideDcBanner();showResult(myRole,'Опонент не повернувся');}else hideDcBanner();},3000);}
+function monitorOpponentPresence(code){const opp=myRole==='blue'?'red':'blue';setInterval(async()=>{if(gameOver||!lobbyId)return;const snap=await getDoc(doc(db,'games',code)).catch(()=>null);if(!snap?.exists())return;const ts=snap.data()?.presence?.[opp]||0;const el=(Date.now()-ts)/1000;if(el>10&&el<75)showDcBanner(75-Math.floor(el));else if(el>=75){hideDcBanner();showResult(myRole,'Опонент не повернувся');}else hideDcBanner();},3000);}
 function showDcBanner(sec){dcSeconds=sec;const b=document.getElementById('dcBanner');b.classList.add('vis');document.getElementById('dcTimer').textContent=sec;if(dcInterval)return;dcInterval=setInterval(()=>{dcSeconds--;document.getElementById('dcTimer').textContent=Math.max(0,dcSeconds);if(dcSeconds<=0){clearInterval(dcInterval);dcInterval=null;}},1000);}
 function hideDcBanner(){document.getElementById('dcBanner').classList.remove('vis');if(dcInterval){clearInterval(dcInterval);dcInterval=null;}}
-let dcSeconds=0;
 
-// ══════════════════════════════════
-//  VS AI
-// ══════════════════════════════════
+// ── VS AI ──────────────────────────────────────────────────
 window.startVsAI=()=>{
-  aiMode=selectedAIMode;myRole=selectedAITeam;isAI=true;lobbyId='ai_'+Date.now();closeAIModeModal();
-  const mapMeta=globalMaps[0]||null;initGameState(mapMeta,myRole);showScreen('screen-game');
-  setTimeout(()=>{resizeCanvases();if(mapMeta?.url)loadMapFromUrl(mapMeta.url);},50);
-  startGameLoop();addLog(`🤖 Режим: ${aiModeLabel(aiMode)} | Ви: ${myRole==='blue'?'🔵 СИНІ':'🔴 ЧЕРВОНІ'}`,'warn');
+  aiMode=selAIMode;myRole=selAITeam;isAI=true;lobbyId='ai_'+Date.now();closeAIModeModal();
+  const mm=globalMaps[0]||null;initGameState(mm,myRole);showScreen('screen-game');
+  setTimeout(()=>{resizeCanvases();if(mm?.url)loadMapFromUrl(mm.url);},50);
+  startGameLoop();addLog(`🤖 ${aiModeLabel(aiMode)} | ${myRole==='blue'?'🔵':'🔴'}`,'warn');
 };
 function aiModeLabel(m){return{defense:'🛡️ ОБОРОНА',attack:'⚔️ НАСТУП',blitz:'⚡ БЛІЦКРИГ',conquest:'🏆 ЗАВОЮВАННЯ'}[m]||m;}
 
-// ══════════════════════════════════
-//  GAME START
-// ══════════════════════════════════
+// ── GAME START ─────────────────────────────────────────────
 function startGame(code,role,lobbyData){
   isAI=false;myRole=role;lobbyId=code;
-  const mapIdx=lobbyData?.mapIdx||0;const mapUrl=lobbyData?.mapUrl||globalMaps[0]?.url||null;
-  const mapMeta=mapIdx>=0&&mapIdx<globalMaps.length?globalMaps[mapIdx]:(globalMaps.find(m=>m.url===mapUrl)||null);
-  mapBg=null;mapBgW=0;mapBgH=0;initGameState(mapMeta,myRole);showScreen('screen-game');
-  setTimeout(()=>{resizeCanvases();if(mapUrl)loadMapFromUrl(mapUrl);},50);
+  const mi=lobbyData?.mapIdx||0,mu=lobbyData?.mapUrl||globalMaps[0]?.url||null;
+  const mm=mi>=0&&mi<globalMaps.length?globalMaps[mi]:(globalMaps.find(m=>m.url===mu)||null);
+  mapBg=null;mapBgW=0;mapBgH=0;initGameState(mm,myRole);showScreen('screen-game');
+  setTimeout(()=>{resizeCanvases();if(mu)loadMapFromUrl(mu);},50);
   startGameLoop();listenGameState(code);startPresencePing(code,role);monitorOpponentPresence(code);
 }
-
 function initGameState(mapData,playerRole){
   G={units:[],funds:{blue:2000,red:2000},casualties:{blue:0,red:0},cities:[],phase:'placement',wave:1,startTime:Date.now(),nextId:1};
-  gamePhase='placement';gameOver=false;gameTimer=0;
+  gamePhase='placement';gameOver=false;gameTimer=0;aiMemory={reinforcementCooldown:0};
   if(timerInterval)clearInterval(timerInterval);timerInterval=setInterval(tickTimer,1000);
   if(incomeInterval)clearInterval(incomeInterval);incomeInterval=setInterval(tickIncome,15000);
   document.getElementById('hudPhase').textContent='РОЗМІЩЕННЯ';document.getElementById('placementHint').classList.add('vis');
   if(mapData?.cities?.length>0)G._pendingCities=mapData.cities;else G._pendingCities=null;
   if(mapData?.spawns)G._pendingSpawns=mapData.spawns;
-  // terrain loaded via pixel map in loadTerrainFromMap
   loadTerrainFromMap(mapData);updateHUD();updateCitiesPanel();
 }
 function loadTerrainFromMap(mapEntry){
-  G_terrainStrokes=[];
-  if(!mapEntry)return;
-  // Find terrain index: prefer embedded terrainIdx, fallback to URL match, then position
+  G_terrainStrokes=[];if(!mapEntry)return;
   let idx=mapEntry.terrainIdx;
-  if(idx===undefined){
-    const byUrl=globalMaps.findIndex(m=>m.url===mapEntry.url);
-    idx=byUrl>=0?byUrl:0;
-  }
-  console.log('[TERRAIN] Loading terrain_'+idx+' for map: '+mapEntry.name);
-  getDoc(doc(db,'appData','terrain_'+idx)).then(tsnap=>{
-    if(tsnap.exists()){
-      const raw=tsnap.data().strokes||[];
-      G_terrainStrokes=raw.map(s=>({
-        type:s.t,color:s.c,
-        pts:(s.p||[]).map(pt=>({nx:pt.x,ny:pt.y})),
-        size:s.s, // raw pixel size in editor coords
-        isErase:s.e===1
-      }));
-      console.log('[TERRAIN] ✅ Loaded',G_terrainStrokes.length,'strokes');
-    }else{
-      console.log('[TERRAIN] No terrain doc found for idx',idx);
-    }
-  }).catch(err=>console.warn('[TERRAIN] load err:',err));
+  if(idx===undefined){const bi=globalMaps.findIndex(m=>m.url===mapEntry.url);idx=bi>=0?bi:0;}
+  getDoc(doc(db,'appData','terrain_'+idx)).then(ts=>{
+    if(ts.exists())G_terrainStrokes=(ts.data().strokes||[]).map(s=>({type:s.t,color:s.c,pts:(s.p||[]).map(pt=>({nx:pt.x,ny:pt.y})),size:s.s,isErase:s.e===1}));
+  }).catch(()=>{});
 }
+// FIX: marker coords are canvas-normalized (0-1 of NATIVE 3840 canvas)
+// Game map is loaded at natural image size (mapBgW x mapBgH)
+// NATIVE canvas displays bg at scale sc = min(3840/img.w, 2160/img.h), centered
+// So bg on NATIVE: x=(3840-bW)/2, y=(2160-bH)/2
+// marker nx = cx/3840, marker ny = cy/3840
+// worldX = (nx*3840 - bgX) / sc = (nx * imgW * sc + ...) → simplified:
+// Actually since markers are placed with ePlaceMarker using cx/cv.width where cv.width=3840:
+//   marker.nx = cx/3840
+// In game: worldX = marker.nx * mapBgW  ← WRONG if bg is not full native width
+// CORRECT: worldX = (marker.nx * NATIVE_W - eBgX_at_save) / sc_at_save
+// Since we don't store eBgX/sc, we convert at save time to image-relative coords
+// So editorSaveMap converts markers to image-relative BEFORE saving
+// And game just does worldX = nx * mapBgW  ← now correct
 function applyMapData(){
   if(!mapBgW||!mapBgH)return;const mw=mapBgW,mh=mapBgH;
-  if(G._pendingCities?.length>0){G.cities=G._pendingCities.map((c,i)=>({id:'city_'+i,name:c.name||('Місто '+(i+1)),x:c.nx*mw,y:c.ny*mh,nx:c.nx,ny:c.ny,owner:'neutral',income:CITY_INCOME,hp:300,maxHp:300,captureProgress:{blue:0,red:0}}));G._pendingCities=null;addLog('🏙️ '+G.cities.length+' міст','info');}
-  else if(!G.cities.length){G.cities=generateDefaultCities(mw,mh);addLog('🏙️ '+G.cities.length+' міст (авто)','info');}
-  if(G._pendingSpawns){const s=G._pendingSpawns;if(s.blueBase)G.bases={...G.bases||{},blue:{x:s.blueBase.nx*mw,y:s.blueBase.ny*mh}};if(s.redBase)G.bases={...G.bases||{},red:{x:s.redBase.nx*mw,y:s.redBase.ny*mh}};
-  (s.units||[]).forEach(u=>{const def=UNIT_DEFS[u.unitType]||UNIT_DEFS.infantry;G.units.push({id:G.nextId++,type:u.unitType,owner:u.team,x:u.nx*mw,y:u.ny*mh,tx:u.nx*mw,ty:u.ny*mh,vx:0,vy:0,hp:def.hp,maxHp:def.hp,atk:def.atk,def:def.def,speed:def.speed,range:def.range,radius:def.radius,state:'idle',attackTarget:null,lastAttack:0,lastAttackAnim:0});});G._pendingSpawns=null;}
+  if(G._pendingCities?.length>0){
+    G.cities=G._pendingCities.map((c,i)=>({id:'city_'+i,name:c.name||('Місто '+(i+1)),x:c.nx*mw,y:c.ny*mh,nx:c.nx,ny:c.ny,owner:'neutral',income:CITY_INCOME,hp:300,maxHp:300,captureProgress:{blue:0,red:0}}));
+    G._pendingCities=null;addLog('🏙️ '+G.cities.length+' міст','info');
+  }else if(!G.cities.length){G.cities=genDefaultCities(mw,mh);addLog('🏙️ '+G.cities.length+' міст (авто)','info');}
+  if(G._pendingSpawns){
+    const s=G._pendingSpawns;
+    if(s.blueBase)G.bases={...G.bases||{},blue:{x:s.blueBase.nx*mw,y:s.blueBase.ny*mh}};
+    if(s.redBase)G.bases={...G.bases||{},red:{x:s.redBase.nx*mw,y:s.redBase.ny*mh}};
+    (s.units||[]).forEach(u=>{const def=UNIT_DEFS[u.unitType]||UNIT_DEFS.infantry;G.units.push(mkUnit(G.nextId++,u.unitType,u.team,u.nx*mw,u.ny*mh));});
+    G._pendingSpawns=null;
+  }
   if(!G.bases)G.bases={blue:{x:mw*.12,y:mh*.5},red:{x:mw*.88,y:mh*.5}};
   updateHUD();updateCitiesPanel();
 }
-function generateDefaultCities(mw,mh){return[{nx:.5,ny:.5,name:'Центральне'},{nx:.3,ny:.3,name:'Ліса'},{nx:.7,ny:.3,name:'Схід'},{nx:.3,ny:.7,name:'Південь'},{nx:.7,ny:.7,name:'Гори'}].map((p,i)=>({id:'city_'+i,name:p.name,x:p.nx*mw,y:p.ny*mh,nx:p.nx,ny:p.ny,owner:'neutral',income:CITY_INCOME,hp:300,maxHp:300,captureProgress:{blue:0,red:0}}));}
+function mkUnit(id,type,owner,x,y,extra={}){
+  const def=UNIT_DEFS[type]||UNIT_DEFS.infantry;
+  return{id,type,owner,x,y,tx:x,ty:y,vx:0,vy:0,hp:def.hp,maxHp:def.hp,atk:def.atk,def:def.def,speed:def.speed,range:def.range,radius:def.radius,isAir:!!def.isAir,isMissile:!!def.isMissile,isGround:!!def.isGround,state:'idle',attackTarget:null,forceTarget:null,moveTarget:null,lastAttack:0,lastAttackAnim:0,lastMissile:0,...extra};
+}
+function genDefaultCities(mw,mh){return[{nx:.5,ny:.5,name:'Центральне'},{nx:.3,ny:.3,name:'Ліса'},{nx:.7,ny:.3,name:'Схід'},{nx:.3,ny:.7,name:'Південь'},{nx:.7,ny:.7,name:'Гори'}].map((p,i)=>({id:'city_'+i,name:p.name,x:p.nx*mw,y:p.ny*mh,nx:p.nx,ny:p.ny,owner:'neutral',income:CITY_INCOME,hp:300,maxHp:300,captureProgress:{blue:0,red:0}}));}
 
-// ══════════════════════════════════
-//  INCOME
-// ══════════════════════════════════
+// ── INCOME ─────────────────────────────────────────────────
 function tickIncome(){if(gameOver||gamePhase!=='battle')return;let bi=BASE_INCOME,ri=BASE_INCOME;G.cities.forEach(c=>{if(c.owner==='blue')bi+=c.income;else if(c.owner==='red')ri+=c.income;});G.funds.blue+=bi;G.funds.red+=ri;updateHUD();spawnIncomeFloat(myRole,myRole==='blue'?bi:ri);addLog(`💰 +${myRole==='blue'?bi:ri}₴`,'warn');}
-function getIncome(role){let inc=BASE_INCOME;G.cities?.forEach(c=>{if(c.owner===role)inc+=c.income;});return inc;}
-function spawnIncomeFloat(role,amount){const body=document.getElementById('gameBody');const base=G.bases?.[role];if(!base||!body)return;const sx=base.x*camScale+camX,sy=base.y*camScale+camY;const el=document.createElement('div');el.className='income-float';el.textContent='+'+amount+'₴';el.style.left=sx+'px';el.style.top=(sy-20)+'px';document.getElementById('incomeFloaters').appendChild(el);setTimeout(()=>el.remove(),1600);}
+function getIncome(r){let i=BASE_INCOME;G.cities?.forEach(c=>{if(c.owner===r)i+=c.income;});return i;}
+function spawnIncomeFloat(role,amount){const base=G.bases?.[role];if(!base)return;const sx=base.x*camScale+camX,sy=base.y*camScale+camY;const el=document.createElement('div');el.className='income-float';el.textContent='+'+amount+'₴';el.style.left=sx+'px';el.style.top=(sy-20)+'px';document.getElementById('incomeFloaters').appendChild(el);setTimeout(()=>el.remove(),1600);}
 
-// ══════════════════════════════════
-//  CITY CAPTURE
-// ══════════════════════════════════
+// ── CITY CAPTURE ───────────────────────────────────────────
 function updateCityCapture(dt){
-  if(!G.cities)return;
-  G.cities.forEach(city=>{
+  G.cities?.forEach(city=>{
     const r=30;const bn=G.units.filter(u=>u.owner==='blue'&&!u._dead&&Math.hypot(u.x-city.x,u.y-city.y)<r).length;const rn=G.units.filter(u=>u.owner==='red'&&!u._dead&&Math.hypot(u.x-city.x,u.y-city.y)<r).length;
-    if(bn>0&&rn===0){city.captureProgress.blue=Math.min(100,(city.captureProgress.blue||0)+dt*15);city.captureProgress.red=Math.max(0,(city.captureProgress.red||0)-dt*10);if(city.captureProgress.blue>=100&&city.owner!=='blue'){city.owner='blue';city.captureProgress={blue:100,red:0};addLog('🏙️ '+city.name+' захоплено СИНІМИ!','good');toast('🏙️ '+city.name+' — наше!');syncGameState();updateCitiesPanel();}}
-    else if(rn>0&&bn===0){city.captureProgress.red=Math.min(100,(city.captureProgress.red||0)+dt*15);city.captureProgress.blue=Math.max(0,(city.captureProgress.blue||0)-dt*10);if(city.captureProgress.red>=100&&city.owner!=='red'){city.owner='red';city.captureProgress={blue:0,red:100};addLog('🏙️ '+city.name+' захоплено ЧЕРВОНИМИ!',myRole==='blue'?'bad':'good');if(myRole==='blue')toast('⚠️ '+city.name+' — захоплено!');syncGameState();updateCitiesPanel();}}
+    if(bn>0&&rn===0){city.captureProgress.blue=Math.min(100,(city.captureProgress.blue||0)+dt*15);city.captureProgress.red=Math.max(0,(city.captureProgress.red||0)-dt*10);if(city.captureProgress.blue>=100&&city.owner!=='blue'){city.owner='blue';city.captureProgress={blue:100,red:0};addLog('🏙️ '+city.name+' — СИНІ!','good');toast('🏙️ '+city.name+' наше!');syncGameState();updateCitiesPanel();}}
+    else if(rn>0&&bn===0){city.captureProgress.red=Math.min(100,(city.captureProgress.red||0)+dt*15);city.captureProgress.blue=Math.max(0,(city.captureProgress.blue||0)-dt*10);if(city.captureProgress.red>=100&&city.owner!=='red'){city.owner='red';city.captureProgress={blue:0,red:100};addLog('🏙️ '+city.name+' — ЧЕРВОНІ!',myRole==='blue'?'bad':'good');syncGameState();updateCitiesPanel();}}
     else{if(city.owner==='neutral'){city.captureProgress.blue=Math.max(0,(city.captureProgress.blue||0)-dt*3);city.captureProgress.red=Math.max(0,(city.captureProgress.red||0)-dt*3);}}
   });
 }
-function updateCitiesPanel(){const el=document.getElementById('citiesList');if(!el||!G.cities)return;if(!G.cities.length){el.innerHTML='<div style="font-size:10px;color:var(--dim)">Немає міст</div>';return;}el.innerHTML=G.cities.map(c=>`<div class="city-row"><div class="city-dot ${c.owner==='neutral'?'neutral':c.owner}"></div><span class="city-name">${c.name}</span>${c.owner!=='neutral'?`<span class="city-income">+${c.income}₴</span>`:''}</div>`).join('');}
+function updateCitiesPanel(){const el=document.getElementById('citiesList');if(!el||!G.cities)return;el.innerHTML=G.cities.length?G.cities.map(c=>`<div class="city-row"><div class="city-dot ${c.owner==='neutral'?'neutral':c.owner}"></div><span class="city-name">${c.name}</span>${c.owner!=='neutral'?`<span class="city-income">+${c.income}₴</span>`:''}</div>`).join(''):'<div style="font-size:10px;color:var(--dim)">Немає міст</div>';}
 
-// ══════════════════════════════════
-//  TIMER
-// ══════════════════════════════════
+// ── TIMER ──────────────────────────────────────────────────
 function tickTimer(){
   gameTimer++;const m=Math.floor(gameTimer/60),s=gameTimer%60;document.getElementById('hudTimer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
   if(isAI&&gameTimer%120===0&&!gameOver){G.wave++;document.getElementById('hudWave').textContent=G.wave;addLog('🌊 ХВИЛЯ '+G.wave+'!','warn');if(gamePhase==='battle')spawnAIWave();}
-  if(isAI&&aiMode==='blitz'&&gameTimer>=300&&!gameOver){const mc=G.cities.filter(c=>c.owner===myRole).length,oc=G.cities.filter(c=>c.owner!=myRole&&c.owner!=='neutral').length;if(mc>oc)showResult(myRole,'Переможець за містами!');else showResult(myRole==='blue'?'red':'blue','Час вийшов!');}
+  if(isAI&&aiMode==='blitz'&&gameTimer>=300&&!gameOver){const mc=G.cities.filter(c=>c.owner===myRole).length,oc=G.cities.filter(c=>c.owner!==myRole&&c.owner!=='neutral').length;if(mc>oc)showResult(myRole,'Час вийшов — більше міст!');else showResult(myRole==='blue'?'red':'blue','Час вийшов!');}
 }
 
-// ══════════════════════════════════
-//  FIRESTORE SYNC
-// ══════════════════════════════════
-let syncThrottle=null;
+// ── FIRESTORE SYNC ─────────────────────────────────────────
+let syncThr=null;
 function syncGameState(){
-  if(!lobbyId||isAI)return;if(syncThrottle)clearTimeout(syncThrottle);
-  syncThrottle=setTimeout(async()=>{try{await setDoc(doc(db,'games',lobbyId),{units:G.units.filter(u=>!u._dead).map(u=>({id:u.id,type:u.type,owner:u.owner,x:Math.round(u.x),y:Math.round(u.y),hp:Math.round(u.hp)})),funds:G.funds,casualties:G.casualties,cities:G.cities.map(c=>({id:c.id,owner:c.owner,captureProgress:c.captureProgress})),phase:gamePhase,wave:G.wave,ts:Date.now(),['presence.'+myRole]:Date.now()},{merge:true});}catch(e){}},150);
+  if(!lobbyId||isAI)return;if(syncThr)clearTimeout(syncThr);
+  syncThr=setTimeout(async()=>{try{await setDoc(doc(db,'games',lobbyId),{units:G.units.filter(u=>!u._dead).map(u=>({id:u.id,type:u.type,owner:u.owner,x:Math.round(u.x),y:Math.round(u.y),hp:Math.round(u.hp)})),funds:G.funds,casualties:G.casualties,cities:G.cities.map(c=>({id:c.id,owner:c.owner,captureProgress:c.captureProgress})),phase:gamePhase,wave:G.wave,ts:Date.now(),['presence.'+myRole]:Date.now()},{merge:true});}catch(e){}},150);
 }
 function listenGameState(code){
   if(gameUnsub)gameUnsub();
-  gameUnsub=onSnapshot(doc(db,'games',code),snap=>{if(!snap.exists())return;const d=snap.data();const oppRole=myRole==='blue'?'red':'blue';const myUnits=G.units.filter(u=>u.owner===myRole);const remOpp=(d.units||[]).filter(u=>u.owner===oppRole).map(u=>{const ex=G.units.find(x=>x.id===u.id&&x.owner===oppRole);if(ex){ex.hp=u.hp;ex.tx=u.x;ex.ty=u.y;return ex;}const def=UNIT_DEFS[u.type]||UNIT_DEFS.infantry;return{...def,...u,tx:u.x,ty:u.y,vx:0,vy:0,state:'idle',attackTarget:null,lastAttack:0,lastAttackAnim:0};});G.units=[...myUnits,...remOpp];if(d.funds)G.funds=d.funds;if(d.casualties)G.casualties=d.casualties;if(d.cities&&G.cities){d.cities.forEach(dc=>{const lc=G.cities.find(c=>c.id===dc.id);if(lc){lc.owner=dc.owner;lc.captureProgress=dc.captureProgress;}});updateCitiesPanel();}if(d.phase&&d.phase!==gamePhase){gamePhase=d.phase;if(gamePhase==='battle'){document.getElementById('hudPhase').textContent='БІЙ';document.getElementById('placementHint').classList.remove('vis');}}updateHUD();});
+  gameUnsub=onSnapshot(doc(db,'games',code),snap=>{if(!snap.exists())return;const d=snap.data();const opp=myRole==='blue'?'red':'blue';const mine=G.units.filter(u=>u.owner===myRole);const remOpp=(d.units||[]).filter(u=>u.owner===opp).map(u=>{const ex=G.units.find(x=>x.id===u.id&&x.owner===opp);if(ex){ex.hp=u.hp;ex.tx=u.x;ex.ty=u.y;return ex;}return mkUnit(u.id,u.type,opp,u.x,u.y);});G.units=[...mine,...remOpp];if(d.funds)G.funds=d.funds;if(d.casualties)G.casualties=d.casualties;if(d.cities&&G.cities){d.cities.forEach(dc=>{const lc=G.cities.find(c=>c.id===dc.id);if(lc){lc.owner=dc.owner;lc.captureProgress=dc.captureProgress;}});updateCitiesPanel();}if(d.phase&&d.phase!==gamePhase){gamePhase=d.phase;if(gamePhase==='battle'){document.getElementById('hudPhase').textContent='БІЙ';document.getElementById('placementHint').classList.remove('vis');}}updateHUD();});
 }
 
-// ══════════════════════════════════
-//  MAP UPLOAD
-// ══════════════════════════════════
-window.handleMapUpload=async(input)=>{const file=input.files[0];if(!file)return;const st=document.getElementById('mapUploadStatus');st.textContent='⟳ Стискаємо...';try{const comp=await compressImage(file,3000,3000,.85);st.textContent='⟳ Завантажуємо...';const prev=document.getElementById('mapPreview');prev.src=comp;prev.style.display='block';document.getElementById('mapUploadArea').style.display='none';const url=await uploadCloudinary(comp,'lobby_map_'+lobbyId);if(lobbyId)await updateDoc(doc(db,'lobbies',lobbyId),{mapUrl:url,mapVer:Date.now().toString()}).catch(()=>{});loadMapFromUrl(url);st.textContent='✅ Завантажено!';}catch(e){st.textContent='❌ '+e.message;}};
-async function uploadCloudinary(base64,publicId){const fd=new FormData();fd.append('file',base64);fd.append('upload_preset',CL_PRESET);if(publicId)fd.append('public_id',publicId);const r=await fetch(`https://api.cloudinary.com/v1_1/${CL_CLOUD}/image/upload`,{method:'POST',body:fd});if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'Upload failed');}return(await r.json()).secure_url;}
-function compressImage(file,maxW,maxH,q){return new Promise(res=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{URL.revokeObjectURL(url);let w=img.width,h=img.height;const r=Math.min(maxW/w,maxH/h,1);w=Math.round(w*r);h=Math.round(h*r);const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);res(cv.toDataURL('image/jpeg',q));};img.src=url;});}
+// ── MAP UPLOAD ─────────────────────────────────────────────
+window.handleMapUpload=async(input)=>{const file=input.files[0];if(!file)return;const st=document.getElementById('mapUploadStatus');st.textContent='⟳ Стискаємо...';try{const comp=await compressImage(file,3000,3000,.85);st.textContent='⟳ Завантажуємо...';const prev=document.getElementById('mapPreview');prev.src=comp;prev.style.display='block';document.getElementById('mapUploadArea').style.display='none';const url=await uploadCL(comp,'lobby_map_'+lobbyId);if(lobbyId)await updateDoc(doc(db,'lobbies',lobbyId),{mapUrl:url,mapVer:Date.now().toString()}).catch(()=>{});loadMapFromUrl(url);st.textContent='✅ Завантажено!';}catch(e){st.textContent='❌ '+e.message;}};
+async function uploadCL(b64,pid){const fd=new FormData();fd.append('file',b64);fd.append('upload_preset',CL_PRESET);if(pid)fd.append('public_id',pid);const r=await fetch(`https://api.cloudinary.com/v1_1/${CL_CLOUD}/image/upload`,{method:'POST',body:fd});if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'Upload failed');}return(await r.json()).secure_url;}
+function compressImage(file,mW,mH,q){return new Promise(res=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{URL.revokeObjectURL(url);let w=img.width,h=img.height;const ratio=Math.min(mW/w,mH/h,1);w=Math.round(w*ratio);h=Math.round(h*ratio);const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);res(cv.toDataURL('image/jpeg',q));};img.src=url;});}
 function loadMapFromUrl(url){const img=new Image();img.crossOrigin='anonymous';img.onload=()=>{mapBg=img;mapBgW=img.naturalWidth;mapBgH=img.naturalHeight;centerMap();applyMapData();drawAll();};img.src=url;}
 
-// ══════════════════════════════════
-//  CANVAS INIT
-// ══════════════════════════════════
-let mapCtx,unitsCtx,frontCtx,uiCtx,interCtx,CW=0,CH=0;
+// ── CANVAS INIT ────────────────────────────────────────────
 function initGameCanvases(){
   [mapCtx,unitsCtx,frontCtx,uiCtx,interCtx]=['mapCanvas','unitsCanvas','frontCanvas','uiCanvas','interCanvas'].map(id=>document.getElementById(id).getContext('2d'));
   resizeCanvases();window.addEventListener('resize',()=>{if(document.getElementById('screen-game').classList.contains('active'))resizeCanvases();});
   setupInteraction();
 }
 function resizeCanvases(){const area=document.getElementById('gameBody');if(!area)return;CW=Math.max(1,area.clientWidth);CH=Math.max(1,area.clientHeight);['mapCanvas','unitsCanvas','frontCanvas','uiCanvas','interCanvas'].forEach(id=>{const cv=document.getElementById(id);if(!cv)return;cv.width=CW;cv.height=CH;cv.style.width=CW+'px';cv.style.height=CH+'px';});if(mapBgW>0)centerMap();drawAll();}
-function centerMap(){if(!mapBgW||!CW||!CH)return;const sc=Math.min(CW/mapBgW,CH/mapBgH);camScale=sc;camX=(CW-mapBgW*camScale)/2;camY=(CH-mapBgH*camScale)/2;}
+function centerMap(){if(!mapBgW||!CW||!CH)return;camScale=Math.min(CW/mapBgW,CH/mapBgH);camX=(CW-mapBgW*camScale)/2;camY=(CH-mapBgH*camScale)/2;}
 function s2w(sx,sy){return{wx:(sx-camX)/camScale,wy:(sy-camY)/camScale};}
 window.resetView=()=>{if(mapBgW)centerMap();else{camScale=1;camX=0;camY=0;}drawAll();};
 
-// ══════════════════════════════════
-//  INPUT / COMMANDS
-// ══════════════════════════════════
-window.setInputMode=mode=>{inputMode=mode;['cmdMove','cmdAttack','cmdPatrol'].forEach(id=>document.getElementById(id)?.classList.remove('active'));const map={move:'cmdMove',attack:'cmdAttack',patrol:'cmdPatrol'};document.getElementById(map[mode])?.classList.add('active');patrolPoint1=null;};
+// ── INPUT ──────────────────────────────────────────────────
+window.setInputMode=mode=>{inputMode=mode;['cmdMove','cmdAttack','cmdPatrol'].forEach(id=>document.getElementById(id)?.classList.remove('active'));const mp={move:'cmdMove',attack:'cmdAttack',patrol:'cmdPatrol'};document.getElementById(mp[mode])?.classList.add('active');patrolPoint1=null;};
 window.activateMissileMode=()=>{
   const stingers=G.units.filter(u=>u.owner===myRole&&!u._dead&&u.type==='stinger'&&selectedUnitIds.has(u.id));
   if(!stingers.length){const all=G.units.filter(u=>u.owner===myRole&&!u._dead&&u.type==='stinger');if(!all.length){toast('⚠️ Немає Стрільців «Смерч»!');return;}all.forEach(u=>selectedUnitIds.add(u.id));selectedUnitId=all[0].id;}
   const now=performance.now();const ready=G.units.filter(u=>u.owner===myRole&&!u._dead&&u.type==='stinger'&&selectedUnitIds.has(u.id)&&(!u.lastMissile||now-u.lastMissile>60000));
-  if(!ready.length){const sec=Math.ceil(Math.min(...G.units.filter(u=>u.owner===myRole&&!u._dead&&u.type==='stinger'&&selectedUnitIds.has(u.id)).map(u=>Math.max(0,60000-(now-(u.lastMissile||0)))))/1000);toast('⏳ Перезарядка: ще '+sec+'с');return;}
-  missileTargetMode=true;document.getElementById('cmdMissile').classList.add('missile-active');document.getElementById('missileStatus').style.display='';toast('🚀 '+ready.length+' ракет готово! Клікніть ціль.');
+  if(!ready.length){const sec=Math.ceil(Math.min(...G.units.filter(u=>u.owner===myRole&&!u._dead&&u.type==='stinger'&&selectedUnitIds.has(u.id)).map(u=>Math.max(0,60000-(now-(u.lastMissile||0)))))/1000);toast('⏳ Перезарядка: '+sec+'с');return;}
+  missileTargetMode=true;document.getElementById('cmdMissile').classList.add('missile-active');document.getElementById('missileStatus').style.display='';toast('🚀 '+ready.length+' ракет готово!');
 };
 window.selectAll=()=>{selectedUnitIds=new Set(G.units.filter(u=>u.owner===myRole&&!u._dead).map(u=>u.id));selectedUnitId=selectedUnitIds.size?[...selectedUnitIds][0]:null;toast('☰ Всі виділено: '+selectedUnitIds.size);drawAll();};
 window.stopSelected=()=>{G.units.filter(u=>selectedUnitIds.has(u.id)).forEach(u=>{u.state='hold';u.moveTarget=null;u.patrolA=null;u.patrolB=null;});toast('⏹ Стоп!');};
 window.cmdSelected=cmd=>{G.units.filter(u=>selectedUnitIds.has(u.id)).forEach(u=>{if(cmd==='advance'){u.state='advance';u.moveTarget=null;}else if(cmd==='defend'){u.state='defend';u.defendX=u.x;u.defendY=u.y;}else if(cmd==='hold'){u.state='hold';u.moveTarget=null;}});const l={advance:'⚔️ Атака',defend:'🛡️ Оборона',hold:'⏸ Стоп'};toast(l[cmd]);};
-function updateSelectionHUD(){const n=selectedUnitIds.size;const el=document.getElementById('selInfo');if(n>1){el.classList.add('vis');document.getElementById('siName').textContent=`⚡ Виділено ${n} юнітів`;document.getElementById('siHPText').textContent='';document.getElementById('siHPBar').style.width='100%';document.getElementById('siAtk').textContent='—';document.getElementById('siDef').textContent='—';document.getElementById('siSpd').textContent='—';const me=document.getElementById('siMode');if(me)me.textContent='ГРУПА';}}
+function updateSelectionHUD(){const n=selectedUnitIds.size;if(n>1){const el=document.getElementById('selInfo');el.classList.add('vis');document.getElementById('siName').textContent=`⚡ Виділено ${n} юнітів`;document.getElementById('siHPText').textContent='';document.getElementById('siHPBar').style.width='100%';document.getElementById('siAtk').textContent='—';document.getElementById('siDef').textContent='—';document.getElementById('siSpd').textContent='—';const me=document.getElementById('siMode');if(me)me.textContent='ГРУПА';}}
 
-// ══════════════════════════════════
-//  UNIT PLACEMENT
-// ══════════════════════════════════
+// ── UNIT PLACEMENT ─────────────────────────────────────────
 function buildUnitList(){document.getElementById('unitTypesList').innerHTML=Object.entries(UNIT_DEFS).map(([type,d])=>`<div class="sp-unit-btn" onclick="selectUnitType('${type}')" id="ubtn_${type}"><span class="sp-unit-icon">${d.emoji}</span><div class="sp-unit-info"><div class="sp-unit-name">${d.name}</div><div class="sp-unit-stat">HP:${d.hp} · АТК:${d.atk}</div></div><span class="sp-unit-cost">${d.cost}</span></div>`).join('');}
-window.selectUnitType=type=>{const def=UNIT_DEFS[type];if(G.funds[myRole]<def.cost){toast('❌ Недостатньо фондів!');return;}placingType=type;document.querySelectorAll('.sp-unit-btn').forEach(b=>b.classList.remove('active'));document.getElementById('ubtn_'+type)?.classList.add('active');document.getElementById('placementHint').classList.add('vis');document.getElementById('placementHint').textContent='РОЗМІСТІТЬ '+def.name.toUpperCase()+' ('+def.cost+' ₴) | ПКМ = скасувати';};
-// isOnWater replaced by pixel-based isTerrainWater
-// isOnBridge replaced by pixel-based isTerrainBridge
-const SPAWN_BASE_RADIUS=140;  // px around friendly base
-const SPAWN_CITY_RADIUS=90;   // px around friendly/neutral city
-
-function isValidSpawnPoint(wx,wy){
-  // Check distance to friendly base
-  const base=G.bases?.[myRole];
-  if(base&&Math.hypot(wx-base.x,wy-base.y)<=SPAWN_BASE_RADIUS)return true;
-  // Check distance to friendly or neutral cities
-  for(const city of(G.cities||[])){
-    if(city.owner===myRole||city.owner==='neutral'){
-      if(Math.hypot(wx-city.x,wy-city.y)<=SPAWN_CITY_RADIUS)return true;
-    }
-  }
-  return false;
-}
-
+window.selectUnitType=type=>{const def=UNIT_DEFS[type];if(G.funds[myRole]<def.cost){toast('❌ Недостатньо фондів!');return;}placingType=type;document.querySelectorAll('.sp-unit-btn').forEach(b=>b.classList.remove('active'));document.getElementById('ubtn_'+type)?.classList.add('active');document.getElementById('placementHint').classList.add('vis');document.getElementById('placementHint').textContent='РОЗМІСТІТЬ '+def.name.toUpperCase()+' ('+def.cost+' ₴)';};
+function isValidSpawnPoint(wx,wy){const base=G.bases?.[myRole];if(base&&Math.hypot(wx-base.x,wy-base.y)<=SPAWN_BASE_RADIUS)return true;for(const c of(G.cities||[])){if((c.owner===myRole||c.owner==='neutral')&&Math.hypot(wx-c.x,wy-c.y)<=SPAWN_CITY_RADIUS)return true;}return false;}
 function placeUnit(wx,wy){
   if(!placingType)return;const def=UNIT_DEFS[placingType];if(!def){placingType=null;return;}
   if(G.funds[myRole]<def.cost){toast('❌ Недостатньо фондів!');return;}
-  // Boundary check
-  const mapW=mapBgW||2000,mapH=mapBgH||1200;
-  if(wx<0||wx>mapW||wy<0||wy>mapH){toast('⚠️ За межами карти!');return;}
-  // Spawn zone check — must be near base or city
-  if(!isValidSpawnPoint(wx,wy)){
-    toast('⚠️ Розміщення лише біля своєї бази або міста!');return;
-  }
-  if(isTerrainWater(wx,wy)&&!isTerrainBridge(wx,wy)&&placingType!=='heli'){toast('🌊 Лише гелікоптер або на мосту!');return;}
-  G.units.push({id:G.nextId++,type:placingType,owner:myRole,x:wx,y:wy,tx:wx,ty:wy,vx:0,vy:0,hp:def.hp,maxHp:def.hp,atk:def.atk,def:def.def,speed:def.speed,range:def.range,radius:def.radius,state:'idle',attackTarget:null,forceTarget:null,moveTarget:null,lastAttack:0,lastAttackAnim:0});
-  G.funds[myRole]-=def.cost;addLog('📍 '+def.name+' розміщено'+(gamePhase==='battle'?' [підкріплення]':''),'info');
+  const mw=mapBgW||2000,mh=mapBgH||1200;if(wx<0||wx>mw||wy<0||wy>mh){toast('⚠️ За межами карти!');return;}
+  if(!isValidSpawnPoint(wx,wy)){toast('⚠️ Лише біля своєї бази або міста!');return;}
+  if(getTerrain(wx,wy)==='water'&&!def.isAir){toast('🌊 Лише гелікоптер може тут!');return;}
+  G.units.push(mkUnit(G.nextId++,placingType,myRole,wx,wy));
+  G.funds[myRole]-=def.cost;addLog('📍 '+def.name+' розміщено','info');
   placingType=null;document.querySelectorAll('.sp-unit-btn').forEach(b=>b.classList.remove('active'));document.getElementById('placementHint').classList.remove('vis');
   syncGameState();updateHUD();drawAll();
 }
 
-// ══════════════════════════════════
-//  BATTLE
-// ══════════════════════════════════
+// ── BATTLE START ───────────────────────────────────────────
 window.startBattle=()=>{
   if(gamePhase==='battle')return;if(G.units.filter(u=>u.owner===myRole).length===0){toast('⚠️ Розмістіть хоча б 1 юніт!');return;}
   gamePhase='battle';document.getElementById('hudPhase').textContent='БІЙ';document.getElementById('placementHint').classList.remove('vis');
   addLog('⚔️ БІЙ РОЗПОЧАТО!','warn');if(incomeInterval)clearInterval(incomeInterval);incomeInterval=setInterval(tickIncome,15000);
   if(isAI)spawnAIUnits();syncGameState();
 };
+
+// ── AI UNIT SPAWNING ───────────────────────────────────────
+// AI uses all unit types based on mode and game phase
+function aiUnitComposition(mode,wave){
+  if(mode==='defense')return wave<3?['infantry','infantry','apc','stinger']:['tank','apc','infantry','stinger','heli'];
+  if(mode==='attack')return wave<2?['tank','tank','apc','infantry']:['tank','tank','heli','artillery','apc'];
+  if(mode==='blitz')return['heli','heli','apc','infantry','stinger'];
+  return['infantry','apc','tank','heli','artillery','stinger'];
+}
 function spawnAIUnits(){
-  const oppRole=myRole==='blue'?'red':'blue';
-  const mapW=mapBgW||2000,mapH=mapBgH||1200;
-  // Use actual base position from map data
-  const base=G.bases?.[oppRole];
-  const spawnX=base?base.x:(oppRole==='red'?mapW*.85:mapW*.15);
-  const spawnY=base?base.y:mapH*.5;
-  let types;
-  if(aiMode==='defense')types=['infantry','infantry','infantry','apc','tank'];
-  else if(aiMode==='attack')types=['tank','tank','apc','apc','infantry','artillery'];
-  else if(aiMode==='blitz')types=['heli','heli','apc','apc','infantry'];
-  else types=['infantry','apc','tank','heli','artillery','infantry'];
-  const n=types.length;
-  types.forEach((t,i)=>{
-    const def=UNIT_DEFS[t];
-    const angle=(i/n)*Math.PI*2;
-    const r=50+rnd(0,40);
-    const sx=spawnX+Math.cos(angle)*r,sy=spawnY+Math.sin(angle)*r;
-    const clampedX=Math.max(10,Math.min(mapW-10,sx));
-    const clampedY=Math.max(10,Math.min(mapH-10,sy));
-    G.units.push({id:G.nextId++,type:t,owner:oppRole,x:clampedX,y:clampedY,tx:0,ty:0,vx:0,vy:0,hp:def.hp,maxHp:def.hp,atk:def.atk,def:def.def,speed:def.speed,range:def.range,radius:def.radius,state:'advance',defendX:spawnX,defendY:spawnY,attackTarget:null,lastAttack:0,lastAttackAnim:0,lastMissile:0});
-  });
+  const opp=myRole==='blue'?'red':'blue';const mw=mapBgW||2000,mh=mapBgH||1200;
+  const base=G.bases?.[opp];const sx=base?base.x:(opp==='red'?mw*.85:mw*.15);const sy=base?base.y:mh*.5;
+  const types=aiUnitComposition(aiMode,1);const n=types.length;
+  types.forEach((t,i)=>{const angle=(i/n)*Math.PI*2;const r=50+rnd(0,40);const x=clamp(sx+Math.cos(angle)*r,10,mw-10),y=clamp(sy+Math.sin(angle)*r,10,mh-10);if(getTerrain(x,y)!=='water'||UNIT_DEFS[t]?.isAir)G.units.push(mkUnit(G.nextId++,t,opp,x,y,{state:'advance',defendX:sx,defendY:sy}));});
 }
 function spawnAIWave(){
-  const oppRole=myRole==='blue'?'red':'blue';const mapW=mapBgW||2000,mapH=mapBgH||1200;
-  const base=G.bases?.[oppRole];
-  const spawnX=base?base.x:(oppRole==='red'?mapW*.85:mapW*.15);
-  const spawnY=base?base.y:mapH*.5;
-  const types=G.wave<3?['infantry','apc']:G.wave<5?['apc','tank','infantry']:['tank','tank','heli'];
-  types.forEach((t,i)=>{
-    const def=UNIT_DEFS[t];
-    const sx=spawnX+rnd(-60,60),sy=spawnY+rnd(-60,60);
-    const clampedX=Math.max(10,Math.min(mapW-10,sx));
-    const clampedY=Math.max(10,Math.min(mapH-10,sy));
-    G.units.push({id:G.nextId++,type:t,owner:oppRole,x:clampedX,y:clampedY,tx:0,ty:0,vx:0,vy:0,hp:def.hp*Math.min(1+G.wave*.1,2),maxHp:def.hp*Math.min(1+G.wave*.1,2),atk:def.atk,def:def.def,speed:def.speed,range:def.range,radius:def.radius,state:'advance',defendX:spawnX,defendY:spawnY,attackTarget:null,lastAttack:0,lastAttackAnim:0});
-  });
+  const opp=myRole==='blue'?'red':'blue';const mw=mapBgW||2000,mh=mapBgH||1200;
+  const base=G.bases?.[opp];const sx=base?base.x:(opp==='red'?mw*.85:mw*.15);const sy=base?base.y:mh*.5;
+  const types=aiUnitComposition(aiMode,G.wave);
+  const count=Math.min(types.length,Math.floor(3+G.wave*.5));
+  for(let i=0;i<count;i++){
+    const t=types[i%types.length];
+    let x,y,tries=0;
+    do{x=clamp(sx+rnd(-80,80),10,mw-10);y=clamp(sy+rnd(-80,80),10,mh-10);tries++;}
+    while(getTerrain(x,y)==='water'&&!UNIT_DEFS[t]?.isAir&&tries<15);
+    G.units.push(mkUnit(G.nextId++,t,opp,x,y,{state:'advance',defendX:sx,defendY:sy,hp:UNIT_DEFS[t].hp*Math.min(1+G.wave*.08,1.8),maxHp:UNIT_DEFS[t].hp*Math.min(1+G.wave*.08,1.8)}));
+  }
 }
+function clamp(v,mn,mx){return Math.max(mn,Math.min(mx,v));}
 function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1));}
 
-// ══════════════════════════════════
-//  TERRAIN
-// ══════════════════════════════════
-// Pixel-based terrain functions — fast and accurate
-function getTerrainAt(wx,wy){return sampleTerrainAt(wx,wy);}
-function getTerrainSpeedMultiplier(wx,wy){
-  const t=getTerrainAt(wx,wy);
-  if(t==='road')return 1.4;
-  if(t==='forest')return 0.5;
-  if(t==='meadow')return 1.0;
-  if(t==='water')return 0; // blocked
-  if(t==='bridge')return 1.0;
-  return 1.0;
-}
-function isTerrainWater(wx,wy){return getTerrainAt(wx,wy)==='water';}
-function isTerrainBridge(wx,wy){return getTerrainAt(wx,wy)==='bridge';}
-function isTerrainForest(wx,wy){return getTerrainAt(wx,wy)==='forest';}
-function isTerrainRoad(wx,wy){return getTerrainAt(wx,wy)==='road';}
-function canMoveTo(x,y,unitType){
-  if(unitType==='heli')return true;
-  const t=getTerrainAt(x,y);
-  if(t==='water')return false; // water blocks ground
-  return true;
-}
-// Road pathfinding — try to stay on roads when possible
-function roadAwareMove(u,tx,ty,dt){
-  const mw=mapBgW||2000,mh=mapBgH||1200;
-  const dx=tx-u.x,dy=ty-u.y,dist=Math.max(1,Math.sqrt(dx*dx+dy*dy));
-  if(dist<4){u.x=tx;u.y=ty;return;}
-  const t=getTerrainAt(u.x,u.y);
-  const onRoad=(t==='road'||t==='bridge');
-  // If not on road, check if there's a road nearby to detour onto
-  if(!onRoad){
-    const searchR=80;
-    for(const angle of[0,-0.4,0.4,-0.8,0.8,-1.2,1.2]){
-      const nx2=u.x+Math.cos(Math.atan2(dy,dx)+angle)*searchR;
-      const ny2=u.y+Math.sin(Math.atan2(dy,dx)+angle)*searchR;
-      if(getTerrainAt(nx2,ny2)==='road'&&canMoveTo(nx2,ny2,u.type)){
-        // Nudge toward road
-        const rdx=nx2-u.x,rdy=ny2-u.y,rd=Math.max(1,Math.sqrt(rdx*rdx+rdy*rdy));
-        const blendX=(dx/dist*0.6+rdx/rd*0.4),blendY=(dy/dist*0.6+rdy/rd*0.4);
-        const bl=Math.max(1,Math.sqrt(blendX*blendX+blendY*blendY));
-        const speedMult=getTerrainSpeedMultiplier(u.x,u.y)||1.0;
-        const step=u.speed*dt*speedMult;
-        const nx3=u.x+(blendX/bl)*step,ny3=u.y+(blendY/bl)*step;
-        if(canMoveTo(nx3,ny3,u.type)){u.x=nx3;u.y=ny3;return;}
-        break;
+// ══════════════════════════════════════════════════════════
+//  AI LOGIC — TACTICAL FRONT SYSTEM v2
+//  - Knows all terrain types (water/forest/road/bridge/meadow)
+//  - All unit types used correctly (heli ignores terrain, artillery stays back, stinger missile on cooldown)
+//  - Front analysis: detects weak sectors and sends reinforcements
+//  - Water avoidance: never crosses water without bridge
+// ══════════════════════════════════════════════════════════
+function updateAI(dt){
+  if(!isAI)return;
+  const opp=myRole==='blue'?'red':'blue';const now=performance.now();const mw=mapBgW||2000,mh=mapBgH||1200;
+  const pl=G.units.filter(e=>e.owner===myRole&&!e._dead);
+  const aiUnits=G.units.filter(u=>u.owner===opp&&!u._dead);
+  if(!aiUnits.length)return;
+
+  // AI missile: stinger fires every 60s
+  for(const u of aiUnits.filter(u=>u.type==='stinger')){
+    if(now-u.lastMissile>60000&&pl.length){
+      // Pick highest-threat target: prefer artillery/heli/tank
+      const prio=['artillery','heli','tank','apc','infantry'];
+      let tgt=null;for(const tp of prio){tgt=pl.find(p=>p.type===tp&&Math.hypot(p.x-u.x,p.y-u.y)<=u.range*1.3);if(tgt)break;}
+      if(!tgt)tgt=[...pl].sort((a,b)=>Math.hypot(a.x-u.x,a.y-u.y)-Math.hypot(b.x-u.x,b.y-u.y))[0];
+      if(tgt){u.lastMissile=now;u.lastAttack=now;u.lastAttackAnim=now;doAttack(u,tgt);addLog('🤖🚀 ШІ ракета!','warn');}
+    }
+  }
+
+  // Tactical front analysis — divide map into 3 vertical sectors
+  const SECTORS=3;const secH=mh/SECTORS;
+  const sectorData=Array.from({length:SECTORS},(_,i)=>{
+    const y0=i*secH,y1=(i+1)*secH;
+    const myInSec=pl.filter(u=>u.y>=y0&&u.y<y1).length;
+    const aiInSec=aiUnits.filter(u=>u.y>=y0&&u.y<y1).length;
+    return{i,y0,y1,myCount:myInSec,aiCount:aiInSec,pressure:myInSec-aiInSec};
+  });
+  // Sectors under pressure (enemy outnumbers AI)
+  const weakSectors=sectorData.filter(s=>s.pressure>1).sort((a,b)=>b.pressure-a.pressure);
+
+  // AI uses income for reinforcements when losing
+  if(isAI&&gamePhase==='battle'){
+    aiMemory.reinforcementCooldown=(aiMemory.reinforcementCooldown||0)-dt;
+    const myCount=pl.length,aiCount=aiUnits.length;
+    const deficit=myCount-aiCount;
+    if(deficit>2&&aiMemory.reinforcementCooldown<=0&&G.funds[opp]>=300){
+      // Buy most useful unit based on situation
+      const base=G.bases?.[opp];if(base){
+        let buyType='infantry';
+        if(deficit>4&&G.funds[opp]>=600)buyType='tank';
+        else if(deficit>3&&G.funds[opp]>=500)buyType='heli';
+        else if(G.funds[opp]>=350)buyType='apc';
+        const def2=UNIT_DEFS[buyType];if(def2&&G.funds[opp]>=def2.cost){
+          let bx,by,tries=0;
+          do{bx=clamp(base.x+rnd(-70,70),10,mw-10);by=clamp(base.y+rnd(-70,70),10,mh-10);tries++;}
+          while(getTerrain(bx,by)==='water'&&!def2.isAir&&tries<20);
+          G.units.push(mkUnit(G.nextId++,buyType,opp,bx,by,{state:'advance',defendX:base.x,defendY:base.y}));
+          G.funds[opp]-=def2.cost;aiMemory.reinforcementCooldown=15;
+          addLog(`🤖 ШІ купив: ${def2.name}`,'warn');
+        }
       }
     }
   }
-  moveToward(u,tx,ty,dt);
+
+  const sortedAIByY=[...aiUnits].sort((a,b)=>a.y-b.y);const nAI=aiUnits.length;
+  const plFrontX=pl.length?(opp==='red'?Math.max(...pl.map(v=>v.x)):Math.min(...pl.map(v=>v.x))):mw/2;
+
+  for(const u of aiUnits){
+    const ne=nearest(u,pl);
+
+    // ── ARTILLERY: stay far back, prioritize long range attack ──
+    if(u.type==='artillery'){
+      if(ne&&ne.d<=u.range){if(now-u.lastAttack>1500){u.lastAttack=now;u.lastAttackAnim=now;u.attackTarget=ne.unit.id;doAttack(u,ne.unit);}}
+      // Stay at safe distance from front
+      const base=G.bases?.[opp];const safeX=opp==='red'?Math.max(u.x-5,base?.x||mw*.8):Math.min(u.x+5,base?.x||mw*.2);
+      if(ne&&ne.d<u.range*.8){const ang=Math.atan2(u.y-ne.unit.y,u.x-ne.unit.x);const rx=u.x+Math.cos(ang)*30,ry=u.y+Math.sin(ang)*30;moveUnit(u,clamp(rx,10,mw-10),clamp(ry,10,mh-10),dt*.4);}
+      continue;
+    }
+
+    // ── HELI: ignores terrain, fast flanking ──
+    if(u.type==='heli'){
+      if(ne&&ne.d<=u.range){if(now-u.lastAttack>800){u.lastAttack=now;u.lastAttackAnim=now;u.attackTarget=ne.unit.id;doAttack(u,ne.unit);}}
+      // Helis flank: move perpendicular to front, then attack from side
+      if(ne&&ne.d>u.range){const ang=Math.atan2(ne.unit.y-u.y,ne.unit.x-u.x)+0.4*(opp==='red'?-1:1);moveUnit(u,u.x+Math.cos(ang)*u.speed*dt*1.5,u.y+Math.sin(ang)*u.speed*dt*1.5,dt);}
+      continue;
+    }
+
+    // ── STINGER: stay safe, don't charge into melee ──
+    if(u.type==='stinger'){
+      // Keep distance — retreat if enemy close
+      if(ne&&ne.d<80){const ang=Math.atan2(u.y-ne.unit.y,u.x-ne.unit.x);const rx=u.x+Math.cos(ang)*50,ry=u.y+Math.sin(ang)*50;moveUnit(u,clamp(rx,10,mw-10),clamp(ry,10,mh-10),dt*.5);}
+      continue;
+    }
+
+    // ── GROUND UNITS: tactical front with sector awareness ──
+    const slotIdx=sortedAIByY.findIndex(v=>v.id===u.id);
+    const margin=mh*.06;
+    // Check if this unit's sector is under pressure — assign to reinforce weak sector
+    const mySec=sectorData.find(s=>u.y>=s.y0&&u.y<s.y1);
+    let targetY;
+    if(weakSectors.length>0&&weakSectors[0].pressure>2&&mySec&&mySec.pressure<=0){
+      // Rush to reinforce the weakest sector
+      targetY=(weakSectors[0].y0+weakSectors[0].y1)/2;
+    }else{
+      targetY=nAI<=1?mh/2:(margin+slotIdx*(mh-2*margin)/(Math.max(1,nAI-1)));
+    }
+
+    // Attack if in range (non-missile ground)
+    if(ne&&ne.d<=u.range&&now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;u.attackTarget=ne.unit.id;doAttack(u,ne.unit);}
+
+    // Movement: advance to front, avoid water, prefer roads
+    const stopDist=u.range*0.85;
+    if(aiMode==='defense'){
+      // Defense: hold line near own base
+      const base=G.bases?.[opp];const defX=base?(opp==='red'?base.x-120:base.x+120):mw*.5;
+      const holdX=opp==='red'?Math.min(defX,plFrontX-stopDist):Math.max(defX,plFrontX+stopDist);
+      const atLine=Math.abs(u.x-holdX)<25&&Math.abs(u.y-targetY)<25;
+      if(!atLine)aiMoveAvoidTerrain(u,holdX,targetY,dt*.6,opp);
+    }else{
+      // Attack/blitz/conquest: push forward
+      const personalFrontX=opp==='red'?plFrontX-stopDist+(u.type==='tank'?-20:0):plFrontX+stopDist+(u.type==='tank'?20:0);
+      const atFront=opp==='red'?u.x<=personalFrontX+15:u.x>=personalFrontX-15;
+      const atSlot=Math.abs(u.y-targetY)<20;
+      // City capture priority for conquest/blitz
+      if((aiMode==='conquest'||aiMode==='blitz')&&slotIdx%2===0){
+        const allTarget=[...G.cities.filter(c=>c.owner===myRole||c.owner==='neutral')];
+        if(allTarget.length){const nc=allTarget.sort((a,b)=>Math.hypot(a.x-u.x,a.y-u.y)-Math.hypot(b.x-u.x,b.y-u.y))[0];if(nc&&(!ne||Math.hypot(nc.x-u.x,nc.y-u.y)<ne.d*.9)){aiMoveAvoidTerrain(u,nc.x,nc.y,dt,opp);u.state='advance';continue;}}
+      }
+      if(atFront&&atSlot)u.state='front';
+      else{u.state='advance';if(Math.abs(u.y-targetY)>40&&Math.abs(u.x-personalFrontX)<60)aiMoveAvoidTerrain(u,u.x,targetY,dt,opp);else aiMoveAvoidTerrain(u,personalFrontX,targetY,dt,opp);}
+    }
+  }
 }
 
-// ══════════════════════════════════
-//  GAME LOOP
-// ══════════════════════════════════
+// Terrain-aware AI movement: avoids water, prefers roads
+function aiMoveAvoidTerrain(u,tx,ty,dt,oppRole){
+  const mw=mapBgW||2000,mh=mapBgH||1200;
+  const base=Math.atan2(ty-u.y,tx-u.x);
+  const tCurr=getTerrain(u.x,u.y);
+  const tMid=getTerrain((u.x+tx)/2,(u.y+ty)/2);
+  // If forest: slower but still moves
+  // If road on path: no detour needed (speed bonus applied in moveUnit)
+  // If water in path: find detour
+  if(tMid==='water'||tCurr==='water'){
+    // Try 8 directions to find non-water path
+    const step=u.speed*dt*0.8;
+    for(const off of[0.4,-0.4,0.8,-0.8,1.2,-1.2,1.6,-1.6]){
+      const a=base+off;const nx=u.x+Math.cos(a)*step,ny=u.y+Math.sin(a)*step;const cx=clamp(nx,10,mw-10),cy=clamp(ny,10,mh-10);if(getTerrain(cx,cy)!=='water'){u.x=cx;u.y=cy;return;}
+    }
+    // Completely surrounded by water (shouldn't happen for ground) — stand still
+    return;
+  }
+  // Try to stay on roads for bonus speed
+  if(tCurr!=='road'){
+    const searchR=60;const ang=base;for(const off of[0,-0.3,0.3,-0.6,0.6]){const ax=u.x+Math.cos(ang+off)*searchR,ay=u.y+Math.sin(ang+off)*searchR;if(getTerrain(ax,ay)==='road'&&getTerrain(ax,ay)!=='water'){const da=Math.atan2(ay-u.y,ax-u.x);const bA=Math.atan2(ty-u.y,tx-u.x);const blend=(da+bA*2)/3;const step=u.speed*dt;const nx=u.x+Math.cos(blend)*step,ny=u.y+Math.sin(blend)*step;if(getTerrain(clamp(nx,10,mw-10),clamp(ny,10,mh-10))!=='water'){u.x=clamp(nx,10,mw-10);u.y=clamp(ny,10,mh-10);return;}break;}}
+  }
+  moveUnit(u,tx,ty,dt);
+}
+
+function nearest(u,arr){let n=null,nd=Infinity;for(const e of arr){const d=Math.hypot(e.x-u.x,e.y-u.y);if(d<nd){nd=d;n=e;}}return n?{unit:n,d:nd}:null;}
+
+// ── GAME LOOP ──────────────────────────────────────────────
 let lastFrame=0;
 function startGameLoop(){if(animFrame)cancelAnimationFrame(animFrame);lastFrame=performance.now();(function loop(ts){const dt=Math.min((ts-lastFrame)/1000,.05);lastFrame=ts;if(gamePhase==='battle'){updateUnits(dt);updateAI(dt);updateProjectiles(dt);updateCityCapture(dt);checkWinCondition();}drawAll();animFrame=requestAnimationFrame(loop);})(performance.now());}
 
-// ══════════════════════════════════════════════════════
-//  FIX #3: UNIT LOGIC — юніти НЕ рухаються самостійно
-//  Стан 'idle' = стоять і НЕ атакують автоматично
-//  Стрілець «Смерч» (stinger) — БЕЗ автоатаки при наближенні
-//  Тільки advance / moving / patrol / defend / force_attack / hold — активні стани
-// ══════════════════════════════════════════════════════
+// ── UNIT UPDATE ────────────────────────────────────────────
 function updateUnits(dt){
   const now=performance.now();
   for(const u of G.units.filter(u=>u.owner===myRole&&!u._dead)){
-    // IDLE — стоять на місці, не стріляють (FIX #3)
-    if(u.state==='idle')continue;
-
+    if(u.state==='idle'||u.state==='hold')continue;
     const opp=G.units.filter(e=>e.owner!==myRole&&!e._dead);
-
-    // HOLD — стоять, не рухаються, не стріляють (FIX #2 for stinger: HOLD=no auto shoot)
-    if(u.state==='hold')continue;
-
-    // FORCE ATTACK
     if(u.state==='force_attack'&&u.forceTarget){
-      const tgt=G.units.find(x=>x.id===u.forceTarget&&!x._dead);
-      if(!tgt){u.state='idle';u.forceTarget=null;}
-      else{const d=Math.hypot(tgt.x-u.x,tgt.y-u.y);if(d<=u.range){if(now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;doAttack(u,tgt);}}else{moveToward(u,tgt.x,tgt.y,dt);}}
-      continue;
+      const tgt=G.units.find(x=>x.id===u.forceTarget&&!x._dead);if(!tgt){u.state='idle';u.forceTarget=null;}
+      else{const d=Math.hypot(tgt.x-u.x,tgt.y-u.y);if(d<=u.range){if(now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;doAttack(u,tgt);}}else moveUnit(u,tgt.x,tgt.y,dt);}continue;
     }
-
-    // MOVE — рух до точки, стріляти поки рухаємось (крім stinger — FIX #2)
     if(u.state==='moving'&&u.moveTarget){
       const dx=u.moveTarget.x-u.x,dy=u.moveTarget.y-u.y,d=Math.sqrt(dx*dx+dy*dy);
       if(d<6){u.state='idle';u.moveTarget=null;}
-      else{
-        // Стреляємо на ходу (НЕ для stinger)
-        if(!UNIT_DEFS[u.type]?.isMissile&&opp.length){const ne=nearestEnemy(u,opp);if(ne&&ne.d<=u.range&&now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;u.attackTarget=ne.unit.id;doAttack(u,ne.unit);}}
-        moveToward(u,u.moveTarget.x,u.moveTarget.y,dt);
-      }
-      continue;
+      else{if(!u.isMissile&&opp.length){const ne=nearest(u,opp);if(ne&&ne.d<=u.range&&now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;u.attackTarget=ne.unit.id;doAttack(u,ne.unit);}}moveUnit(u,u.moveTarget.x,u.moveTarget.y,dt);}continue;
     }
-
-    // PATROL
     if(u.state==='patrol'&&u.patrolA&&u.patrolB){
-      if(!UNIT_DEFS[u.type]?.isMissile&&opp.length){const ne=nearestEnemy(u,opp);if(ne&&ne.d<=u.range&&now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;u.attackTarget=ne.unit.id;doAttack(u,ne.unit);}}
-      const dest=u.patrolDir>0?u.patrolB:u.patrolA;const dx=dest.x-u.x,dy=dest.y-u.y,d=Math.sqrt(dx*dx+dy*dy);
-      if(d<8)u.patrolDir*=-1;else moveToward(u,dest.x,dest.y,dt);continue;
+      if(!u.isMissile&&opp.length){const ne=nearest(u,opp);if(ne&&ne.d<=u.range&&now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;u.attackTarget=ne.unit.id;doAttack(u,ne.unit);}}
+      const dest=u.patrolDir>0?u.patrolB:u.patrolA;const d=Math.hypot(dest.x-u.x,dest.y-u.y);if(d<8)u.patrolDir*=-1;else moveUnit(u,dest.x,dest.y,dt);continue;
     }
-
-    // DEFEND — стоять near точці, атакують загрози (крім stinger)
     if(u.state==='defend'){
-      const defX=u.defendX||u.x,defY=u.defendY||u.y;
-      if(!UNIT_DEFS[u.type]?.isMissile&&opp.length){
-        const ne=nearestEnemy(u,opp);
-        if(ne&&ne.d<=u.range){if(now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;u.attackTarget=ne.unit.id;doAttack(u,ne.unit);}}
-        else if(ne&&ne.d<=u.range*2.5){const distFromBase=Math.hypot(ne.unit.x-defX,ne.unit.y-defY);if(distFromBase<u.range*3)moveToward(u,ne.unit.x,ne.unit.y,dt*.6);}
-      }
-      const dBack=Math.hypot(u.x-defX,u.y-defY);if(dBack>40)moveToward(u,defX,defY,dt*.3);continue;
+      const dX=u.defendX||u.x,dY=u.defendY||u.y;
+      if(!u.isMissile&&opp.length){const ne=nearest(u,opp);if(ne&&ne.d<=u.range){if(now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;u.attackTarget=ne.unit.id;doAttack(u,ne.unit);}}else if(ne&&ne.d<=u.range*2.5&&Math.hypot(ne.unit.x-dX,ne.unit.y-dY)<u.range*3)moveUnit(u,ne.unit.x,ne.unit.y,dt*.6);}
+      if(Math.hypot(u.x-dX,u.y-dY)>40)moveUnit(u,dX,dY,dt*.3);continue;
     }
-
-    // ADVANCE — фронт лайн (крім stinger без автоатаки)
     if(u.state==='advance'||u.state==='front'){
-      if(!opp.length)continue;
+      if(!opp.length)continue;const ne=nearest(u,opp);if(!ne)continue;
       const frontUnits=G.units.filter(v=>v.owner===myRole&&!v._dead&&(v.state==='advance'||v.state==='front'));
-      const mySlot=[...frontUnits].sort((a,b)=>a.y-b.y).findIndex(v=>v.id===u.id);
-      const nFront=frontUnits.length;
-      const mapH=mapBgH||1200;const margin=mapH*.08;
-      const slotY=nFront<=1?mapH/2:(margin+mySlot*(mapH-margin*2)/(Math.max(1,nFront-1)));
-      const ne=nearestEnemy(u,opp);if(!ne)continue;
-      const stopDist=u.range*0.85;
-      const targetX=myRole==='blue'?ne.unit.x-stopDist:ne.unit.x+stopDist;
-      const atTargetX=myRole==='blue'?u.x>=targetX:u.x<=targetX;
-      // Атака: для stinger — НЕ автоатака (FIX #2)
-      if(!UNIT_DEFS[u.type]?.isMissile&&ne.d<=u.range&&now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;u.attackTarget=ne.unit.id;doAttack(u,ne.unit);}
-      if(atTargetX&&Math.abs(u.y-slotY)<20){u.state='front';}
-      else{u.state='advance';moveToward(u,targetX,slotY,dt);}
+      const slotIdx=[...frontUnits].sort((a,b)=>a.y-b.y).findIndex(v=>v.id===u.id);const nF=frontUnits.length;const mH2=mapBgH||1200;const mg=mH2*.08;const slotY=nF<=1?mH2/2:(mg+slotIdx*(mH2-mg*2)/(Math.max(1,nF-1)));
+      const stopD=u.range*.85;const tX=myRole==='blue'?ne.unit.x-stopD:ne.unit.x+stopD;const atTX=myRole==='blue'?u.x>=tX:u.x<=tX;
+      if(!u.isMissile&&ne.d<=u.range&&now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;u.attackTarget=ne.unit.id;doAttack(u,ne.unit);}
+      if(atTX&&Math.abs(u.y-slotY)<20)u.state='front';else{u.state='advance';moveUnit(u,tX,slotY,dt);}
     }
   }
   G.units=G.units.filter(u=>!u._dead);
 }
-function nearestEnemy(u,opp){let n=null,nd=Infinity;for(const e of opp){const d=Math.hypot(e.x-u.x,e.y-u.y);if(d<nd){nd=d;n=e;}}return n?{unit:n,d:nd}:null;}
-function moveToward(u,tx,ty,dt){
-  const dx=tx-u.x,dy=ty-u.y,dist=Math.max(1,Math.sqrt(dx*dx+dy*dy));
-  const rawMult=getTerrainSpeedMultiplier(u.x,u.y);
-  const speedMult=Math.max(0.1,rawMult||1.0);
-  const step=u.speed*dt*speedMult;
-  const nx2=u.x+(dx/dist)*step,ny2=u.y+(dy/dist)*step;
-  // Map boundary clamp
-  const mw=mapBgW||2000,mh=mapBgH||1200;
-  const cx2=Math.max(0,Math.min(mw,nx2)),cy2=Math.max(0,Math.min(mh,ny2));
-  if(canMoveTo(cx2,cy2,u.type)){u.x=cx2;u.y=cy2;}
-  else if(canMoveTo(cx2,u.y,u.type)){u.x=cx2;}
-  else if(canMoveTo(u.x,cy2,u.type)){u.y=cy2;}
-}
+
+// ── COMBAT ─────────────────────────────────────────────────
 function doAttack(attacker,target){
-  if(UNIT_DEFS[attacker.type]?.isMissile){projectiles.push({id:Date.now()+'_'+Math.random(),ox:attacker.x,oy:attacker.y,tx:target.x+rnd(-5,5),ty:target.y+rnd(-5,5),targetId:target.id,owner:attacker.owner,progress:0,damage:Math.max(1,attacker.atk+rnd(-5,5)),trail:[],isGround:false});addLog('🚀 «Смерч» пуск!',attacker.owner===myRole?'info':'warn');return;}
+  if(attacker.isMissile){projectiles.push({id:Date.now()+'_'+Math.random(),ox:attacker.x,oy:attacker.y,tx:target.x+rnd(-5,5),ty:target.y+rnd(-5,5),targetId:target.id,owner:attacker.owner,progress:0,damage:Math.max(1,attacker.atk+rnd(-5,5)),trail:[],isGround:false});addLog('🚀 «Смерч» пуск!',attacker.owner===myRole?'info':'warn');return;}
   const dmg=Math.max(1,attacker.atk-Math.floor(target.def/3)+rnd(-3,3));target.hp-=dmg;if(target.hp<=0)killUnit(target);
 }
-function updateProjectiles(dt){const speed=dt*280;for(const p of projectiles){const totalDist=Math.hypot(p.tx-p.ox,p.ty-p.oy);p.progress+=speed/Math.max(1,totalDist);const cx=p.ox+(p.tx-p.ox)*p.progress,cy=p.oy+(p.ty-p.oy)*p.progress;p.trail.push({x:cx,y:cy});if(p.trail.length>12)p.trail.shift();if(p.progress>=1){p._done=true;const tgt=G.units.find(u=>u.id===p.targetId&&!u._dead);if(tgt){tgt.hp-=p.damage;tgt.lastAttackAnim=performance.now();if(tgt.hp<=0)killUnit(tgt);}const splashR=p.isGround?55:30;G.units.filter(u=>u.id!==p.targetId&&!u._dead&&Math.hypot(u.x-p.tx,u.y-p.ty)<splashR&&u.owner!==p.owner).forEach(u=>{const splash=Math.round(p.damage*(p.isGround?.5:.3));u.hp-=splash;if(u.hp<=0)killUnit(u);});}}projectiles=projectiles.filter(p=>!p._done);}
+function updateProjectiles(dt){
+  const spd=dt*280;for(const p of projectiles){const tot=Math.hypot(p.tx-p.ox,p.ty-p.oy);p.progress+=spd/Math.max(1,tot);const cx=p.ox+(p.tx-p.ox)*p.progress,cy=p.oy+(p.ty-p.oy)*p.progress;p.trail.push({x:cx,y:cy});if(p.trail.length>12)p.trail.shift();if(p.progress>=1){p._done=true;const tgt=G.units.find(u=>u.id===p.targetId&&!u._dead);if(tgt){tgt.hp-=p.damage;tgt.lastAttackAnim=performance.now();if(tgt.hp<=0)killUnit(tgt);}const splashR=30;G.units.filter(u=>u.id!==p.targetId&&!u._dead&&Math.hypot(u.x-p.tx,u.y-p.ty)<splashR&&u.owner!==p.owner).forEach(u=>{u.hp-=Math.round(p.damage*.3);if(u.hp<=0)killUnit(u);});}}projectiles=projectiles.filter(p=>!p._done);
+}
 function killUnit(u){u._dead=true;G.casualties[u.owner]=(G.casualties[u.owner]||0)+1;addLog('💀 '+UNIT_DEFS[u.type]?.name+' знищено!',u.owner===myRole?'bad':'good');updateHUD();}
 
-// ══════════════════════════════════
-//  AI LOGIC
-// ══════════════════════════════════
-function updateAI(dt){
-  if(!isAI)return;const oppRole=myRole==='blue'?'red':'blue';const now=performance.now();const mapW=mapBgW||2000,mapH=mapBgH||1200;
-  const pl=G.units.filter(e=>e.owner===myRole&&!e._dead);const aiUnits=G.units.filter(u=>u.owner===oppRole&&!u._dead);if(!aiUnits.length)return;
-  const enemyCities=G.cities?.filter(c=>c.owner===myRole)||[];const neutralCities=G.cities?.filter(c=>c.owner==='neutral')||[];
-  // AI stinger missile: раз на 60с
-  for(const u of aiUnits.filter(u=>u.type==='stinger')){if(!u.lastMissile)u.lastMissile=0;if(now-u.lastMissile>60000&&pl.length){const tgt=[...pl].sort((a,b)=>b.hp-a.hp)[0];if(tgt&&Math.hypot(tgt.x-u.x,tgt.y-u.y)<=u.range*1.2){u.lastMissile=now;u.lastAttack=now;doAttack(u,tgt);addLog('🤖🚀 ШІ пуск ракети!','warn');}}}
-  const sortedAIByY=[...aiUnits].sort((a,b)=>a.y-b.y);const nAI=aiUnits.length;
-  const plFrontX=pl.length?(oppRole==='red'?Math.max(...pl.map(v=>v.x)):Math.min(...pl.map(v=>v.x))):mapW/2;
-  const globalStopDist=(oppRole==='red'?1:-1)*(aiMode==='defense'?40:aiMode==='blitz'?10:30);const globalFrontX=plFrontX+globalStopDist;
-  for(const u of aiUnits){
-    const ne=nearestFrom(u,pl);
-    if(aiMode==='defense'){
-      const base=G.bases?.[oppRole];const baseX=base?base.x:(oppRole==='red'?mapW*.85:mapW*.15);
-      const slotIdx=sortedAIByY.findIndex(v=>v.id===u.id);const margin=mapH*.1;const slotY=nAI<=1?mapH/2:(margin+slotIdx*(mapH-2*margin)/(Math.max(1,nAI-1)));
-      const defLineX=oppRole==='red'?baseX-150:baseX+150;const holdX=oppRole==='red'?Math.min(defLineX,plFrontX-u.range*.6):Math.max(defLineX,plFrontX+u.range*.6);
-      if(!UNIT_DEFS[u.type]?.isMissile&&ne&&ne.d<=u.range){if(now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;u.attackTarget=ne.unit.id;doAttack(u,ne.unit);}}
-      else if(ne&&ne.d<u.range*2)aiMovePref(u,ne.unit.x,ne.unit.y,dt*.7);
-      else{const atLine=Math.abs(u.x-holdX)<30&&Math.abs(u.y-slotY)<30;if(!atLine)aiMovePref(u,holdX,slotY,dt*.5);}
-      u.state='defend';continue;
-    }
-    const slotIdx=sortedAIByY.findIndex(v=>v.id===u.id);const margin=mapH*.06;const slotY=nAI<=1?mapH/2:(margin+slotIdx*(mapH-2*margin)/(Math.max(1,nAI-1)));
-    const typeOffset=(u.type==='artillery'?u.range*.6:u.type==='stinger'?u.range*.7:0);const personalFrontX=oppRole==='red'?globalFrontX+typeOffset:globalFrontX-typeOffset;
-    let objectiveTarget=null;
-    if((aiMode==='conquest'||aiMode==='blitz')&&slotIdx%3===0){const allT=[...neutralCities,...enemyCities];if(allT.length){let nc=null,nd2=Infinity;for(const c of allT){const d=Math.hypot(c.x-u.x,c.y-u.y);if(d<nd2){nd2=d;nc=c;}}if(nc&&(!ne||nd2<ne.d*0.8))objectiveTarget=nc;}}
-    if(!UNIT_DEFS[u.type]?.isMissile&&ne&&ne.d<=u.range){if(now-u.lastAttack>1000){u.lastAttack=now;u.lastAttackAnim=now;u.attackTarget=ne.unit.id;doAttack(u,ne.unit);}}
-    const atFrontX=oppRole==='red'?u.x<=personalFrontX+15:u.x>=personalFrontX-15;const atSlotY=Math.abs(u.y-slotY)<20;
-    if(objectiveTarget){aiMovePref(u,objectiveTarget.x,objectiveTarget.y,dt);u.state='advance';}
-    else if(atFrontX&&atSlotY){u.state='front';if(aiMode==='blitz'&&ne&&ne.d<u.range*1.5){aiMovePref(u,ne.unit.x,ne.unit.y,dt*.6);u.state='advance';}}
-    else{u.state='advance';const yDelta=Math.abs(u.y-slotY);const xDelta=Math.abs(u.x-personalFrontX);if(yDelta>50&&xDelta<80)aiMovePref(u,u.x,slotY,dt);else aiMovePref(u,personalFrontX,slotY,dt);}
-  }
-}
-function nearestFrom(u,arr){let n=null,nd=Infinity;for(const e of arr){const d=Math.hypot(e.x-u.x,e.y-u.y);if(d<nd){nd=d;n=e;}}return n?{unit:n,d:nd}:null;}
-function aiMovePref(u,tx,ty,dt){
-  // AI prefers roads over direct path
-  const midX=(u.x+tx)/2,midY=(u.y+ty)/2;
-  const midTerrain=getTerrainAt(midX,midY);
-  const onRoad=(getTerrainAt(u.x,u.y)==='road'||midTerrain==='road');
-  if(midTerrain==='forest'){
-    // Avoid forest — try perpendicular detour
-    const dx=tx-u.x,dy=ty-u.y,dist=Math.max(1,Math.sqrt(dx*dx+dy*dy));
-    const perpX=-dy/dist,perpY=dx/dist;
-    for(const off of[60,-60,120,-120]){
-      const ax=midX+perpX*off,ay=midY+perpY*off;
-      if(getTerrainAt(ax,ay)!=='forest'&&canMoveTo(ax,ay,u.type)){moveToward(u,ax,ay,dt*.8);return;}
-    }
-  }
-  roadAwareMove(u,tx,ty,dt);
-}
-
-// ══════════════════════════════════
-//  WIN CONDITION
-// ══════════════════════════════════
+// ── WIN CHECK ──────────────────────────────────────────────
 function checkWinCondition(){
-  if(gameOver)return;const bl=G.units.filter(u=>u.owner==='blue'&&!u._dead);const rd=G.units.filter(u=>u.owner==='red'&&!u._dead);
+  if(gameOver)return;const bl=G.units.filter(u=>u.owner==='blue'&&!u._dead),rd=G.units.filter(u=>u.owner==='red'&&!u._dead);
   if(!bl.length&&rd.length)showResult('red','Всі сині знищені');else if(!rd.length&&bl.length)showResult('blue','Всі червоні знищені');
-  if(G.bases){['blue','red'].forEach(team=>{const eb=G.bases[team==='blue'?'red':'blue'];if(!eb)return;const inBase=G.units.filter(u=>u.owner===team&&!u._dead&&Math.hypot(u.x-eb.x,u.y-eb.y)<40);if(inBase.length>=2){if(!G._baseTimer)G._baseTimer={team,start:Date.now()};else if(G._baseTimer.team===team&&(Date.now()-G._baseTimer.start)>5000)showResult(team,'База противника взята!');}else if(G._baseTimer?.team===team)G._baseTimer=null;});}
-  if(isAI&&aiMode==='conquest'&&G.cities.length>0){const oppRole=myRole==='blue'?'red':'blue';if(G.cities.every(c=>c.owner===myRole))showResult(myRole,'Всі міста під контролем!');else if(G.cities.every(c=>c.owner===oppRole))showResult(oppRole,'Ворог захопив всі міста!');}
+  if(G.bases){['blue','red'].forEach(team=>{const eb=G.bases[team==='blue'?'red':'blue'];if(!eb)return;if(G.units.filter(u=>u.owner===team&&!u._dead&&Math.hypot(u.x-eb.x,u.y-eb.y)<40).length>=2){if(!G._baseTimer)G._baseTimer={team,start:Date.now()};else if(G._baseTimer.team===team&&(Date.now()-G._baseTimer.start)>5000)showResult(team,'База противника взята!');}else if(G._baseTimer?.team===team)G._baseTimer=null;});}
+  if(isAI&&aiMode==='conquest'&&G.cities.length>0){const opp=myRole==='blue'?'red':'blue';if(G.cities.every(c=>c.owner===myRole))showResult(myRole,'Всі міста під контролем!');else if(G.cities.every(c=>c.owner===opp))showResult(opp,'Ворог захопив всі міста!');}
 }
-function showResult(winner,reason=''){if(gameOver)return;gameOver=true;if(timerInterval)clearInterval(timerInterval);if(incomeInterval)clearInterval(incomeInterval);const isWinner=winner===myRole;document.getElementById('resultEmoji').textContent=isWinner?'🏆':'💀';document.getElementById('resultTitle').textContent=isWinner?'ПЕРЕМОГА!':'ПОРАЗКА';document.getElementById('resultTitle').style.color=isWinner?'var(--green)':'var(--red)';const bc=G.cities?.filter(c=>c.owner==='blue').length||0,rc=G.cities?.filter(c=>c.owner==='red').length||0;document.getElementById('resultSub').textContent=(reason?reason+'\n':'')+`🔵 Втрати: ${G.casualties?.blue||0} · Міст: ${bc}\n🔴 Втрати: ${G.casualties?.red||0} · Міст: ${rc}\n⏱ ${document.getElementById('hudTimer').textContent}`;document.getElementById('resultOverlay').classList.add('vis');}
+function showResult(winner,reason=''){if(gameOver)return;gameOver=true;if(timerInterval)clearInterval(timerInterval);if(incomeInterval)clearInterval(incomeInterval);const iW=winner===myRole;document.getElementById('resultEmoji').textContent=iW?'🏆':'💀';document.getElementById('resultTitle').textContent=iW?'ПЕРЕМОГА!':'ПОРАЗКА';document.getElementById('resultTitle').style.color=iW?'var(--green)':'var(--red)';const bc=G.cities?.filter(c=>c.owner==='blue').length||0,rc=G.cities?.filter(c=>c.owner==='red').length||0;document.getElementById('resultSub').textContent=(reason?reason+'\n':'')+`🔵 Втрати: ${G.casualties?.blue||0} · Міст: ${bc}\n🔴 Втрати: ${G.casualties?.red||0} · Міст: ${rc}\n⏱ ${document.getElementById('hudTimer').textContent}`;document.getElementById('resultOverlay').classList.add('vis');}
 window.backToMenu=()=>{document.getElementById('resultOverlay').classList.remove('vis');if(animFrame)cancelAnimationFrame(animFrame);if(timerInterval)clearInterval(timerInterval);if(incomeInterval)clearInterval(incomeInterval);if(lobbyUnsub){lobbyUnsub();lobbyUnsub=null;}if(gameUnsub){gameUnsub();gameUnsub=null;}if(presenceUnsub){clearInterval(presenceUnsub);presenceUnsub=null;}hideDcBanner();G={};gameOver=false;placingType=null;isAI=false;lobbyId=null;showScreen('screen-menu');};
 window.confirmQuit=()=>{if(confirm('Вийти з гри?'))backToMenu();};
 
-// ══════════════════════════════════
-//  MOUSE INTERACTION (GAME)
-// ══════════════════════════════════
+// ── MOUSE/TOUCH ────────────────────────────────────────────
 function setupInteraction(){
   const cv=document.getElementById('interCanvas');
   cv.addEventListener('mousedown',onMD);cv.addEventListener('mousemove',onMM);cv.addEventListener('mouseup',onMU);
   cv.addEventListener('wheel',onWheel,{passive:false});cv.addEventListener('contextmenu',e=>e.preventDefault());
-  cv.addEventListener('touchstart',onTStart,{passive:false});cv.addEventListener('touchmove',onTMove,{passive:false});cv.addEventListener('touchend',onTEnd,{passive:false});
+  cv.addEventListener('touchstart',onTS,{passive:false});cv.addEventListener('touchmove',onTM,{passive:false});cv.addEventListener('touchend',onTE,{passive:false});
   window.addEventListener('keydown',onKey);
 }
-function canvasRelXY(clientX,clientY){const cv=document.getElementById('interCanvas');const rect=cv?cv.getBoundingClientRect():{left:0,top:0};return{x:clientX-rect.left,y:clientY-rect.top};}
+function rel(cX,cY){const cv=document.getElementById('interCanvas');const r=cv?cv.getBoundingClientRect():{left:0,top:0};return{x:cX-r.left,y:cY-r.top};}
 let pinchDist=0;
-function onTStart(e){e.preventDefault();if(e.touches.length===1){isDragging=false;const r=canvasRelXY(e.touches[0].clientX,e.touches[0].clientY);dragLX=r.x;dragLY=r.y;}else if(e.touches.length===2)pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}
-function onTMove(e){e.preventDefault();if(e.touches.length===1){const r=canvasRelXY(e.touches[0].clientX,e.touches[0].clientY);const dx=r.x-dragLX,dy=r.y-dragLY;if(Math.abs(dx)+Math.abs(dy)>4)isDragging=true;if(isDragging){camX+=dx;camY+=dy;clampCamera();dragLX=r.x;dragLY=r.y;drawAll();}}else if(e.touches.length===2){const nd=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);const mc=canvasRelXY((e.touches[0].clientX+e.touches[1].clientX)/2,(e.touches[0].clientY+e.touches[1].clientY)/2);zoom(nd/pinchDist,mc.x,mc.y);pinchDist=nd;}}
-function onTEnd(e){e.preventDefault();if(!isDragging&&e.changedTouches.length===1){const r=canvasRelXY(e.changedTouches[0].clientX,e.changedTouches[0].clientY);handleClick(r.x,r.y,false,false);}isDragging=false;}
-function onWheel(e){e.preventDefault();const r=canvasRelXY(e.clientX,e.clientY);zoom(e.deltaY<0?1.12:0.9,r.x,r.y);}
-function clampCamera(){
-  if(!mapBgW||!CW||!CH)return;
-  // Min scale: map fits in viewport (no zooming out beyond fit)
-  const minScale=Math.min(CW/mapBgW,CH/mapBgH);
-  camScale=Math.max(minScale,Math.min(8,camScale));
-  const mw=mapBgW*camScale,mh=mapBgH*camScale;
-  // Clamp pan so map fills viewport (can't pan beyond edges)
-  if(mw>=CW){camX=Math.min(0,Math.max(CW-mw,camX));}else{camX=(CW-mw)/2;}
-  if(mh>=CH){camY=Math.min(0,Math.max(CH-mh,camY));}else{camY=(CH-mh)/2;}
-}
-function zoom(f,mx,my){
-  const minScale=mapBgW?Math.min(CW/mapBgW,CH/mapBgH):0.08;
-  const ns=Math.max(minScale,Math.min(8,camScale*f));
-  camX=mx-(mx-camX)*(ns/camScale);camY=my-(my-camY)*(ns/camScale);camScale=ns;
-  clampCamera();
-  document.getElementById('zoomInd').textContent=Math.round(camScale*100)+'%';drawAll();
-}
-function onMD(e){const r=canvasRelXY(e.clientX,e.clientY);if(e.button===1){e.preventDefault();isDragging=true;dragLX=r.x;dragLY=r.y;return;}if(e.button===2){isDragging=false;handleClick(r.x,r.y,true,e.shiftKey);return;}isDragging=false;dragLX=r.x;dragLY=r.y;}
-function onMM(e){const r=canvasRelXY(e.clientX,e.clientY);if(e.buttons===4){camX+=r.x-dragLX;camY+=r.y-dragLY;clampCamera();dragLX=r.x;dragLY=r.y;drawAll();return;}if(e.buttons===1){const dx=r.x-dragLX,dy=r.y-dragLY;if(!isDragging&&Math.abs(dx)+Math.abs(dy)>5)isDragging=true;if(isDragging){camX+=r.x-dragLX;camY+=r.y-dragLY;clampCamera();drawAll();}}dragLX=r.x;dragLY=r.y;}
-function onMU(e){if(isDragging){isDragging=false;return;}const r=canvasRelXY(e.clientX,e.clientY);if(e.button===0)handleClick(r.x,r.y,false,e.shiftKey);}
+function onTS(e){e.preventDefault();if(e.touches.length===1){isDragging=false;const r=rel(e.touches[0].clientX,e.touches[0].clientY);dragLX=r.x;dragLY=r.y;}else if(e.touches.length===2)pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}
+function onTM(e){e.preventDefault();if(e.touches.length===1){const r=rel(e.touches[0].clientX,e.touches[0].clientY);const dx=r.x-dragLX,dy=r.y-dragLY;if(Math.abs(dx)+Math.abs(dy)>4)isDragging=true;if(isDragging){camX+=dx;camY+=dy;clampCam();dragLX=r.x;dragLY=r.y;drawAll();}}else if(e.touches.length===2){const nd=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);const mc=rel((e.touches[0].clientX+e.touches[1].clientX)/2,(e.touches[0].clientY+e.touches[1].clientY)/2);zoom(nd/pinchDist,mc.x,mc.y);pinchDist=nd;}}
+function onTE(e){e.preventDefault();if(!isDragging&&e.changedTouches.length===1){const r=rel(e.changedTouches[0].clientX,e.changedTouches[0].clientY);handleClick(r.x,r.y,false,false);}isDragging=false;}
+function onWheel(e){e.preventDefault();const r=rel(e.clientX,e.clientY);zoom(e.deltaY<0?1.12:0.9,r.x,r.y);}
+function clampCam(){if(!mapBgW||!CW||!CH)return;const ms=Math.min(CW/mapBgW,CH/mapBgH);camScale=Math.max(ms,Math.min(8,camScale));const mw=mapBgW*camScale,mh=mapBgH*camScale;camX=mw>=CW?Math.min(0,Math.max(CW-mw,camX)):(CW-mw)/2;camY=mh>=CH?Math.min(0,Math.max(CH-mh,camY)):(CH-mh)/2;}
+function zoom(f,mx,my){const ms=mapBgW?Math.min(CW/mapBgW,CH/mapBgH):.08;const ns=Math.max(ms,Math.min(8,camScale*f));camX=mx-(mx-camX)*(ns/camScale);camY=my-(my-camY)*(ns/camScale);camScale=ns;clampCam();document.getElementById('zoomInd').textContent=Math.round(camScale*100)+'%';drawAll();}
+function onMD(e){const r=rel(e.clientX,e.clientY);if(e.button===1){e.preventDefault();isDragging=true;dragLX=r.x;dragLY=r.y;return;}if(e.button===2){isDragging=false;handleClick(r.x,r.y,true,e.shiftKey);return;}isDragging=false;dragLX=r.x;dragLY=r.y;}
+function onMM(e){const r=rel(e.clientX,e.clientY);if(e.buttons===4){camX+=r.x-dragLX;camY+=r.y-dragLY;clampCam();dragLX=r.x;dragLY=r.y;drawAll();return;}if(e.buttons===1){const dx=r.x-dragLX,dy=r.y-dragLY;if(!isDragging&&Math.abs(dx)+Math.abs(dy)>5)isDragging=true;if(isDragging){camX+=r.x-dragLX;camY+=r.y-dragLY;clampCam();drawAll();}}dragLX=r.x;dragLY=r.y;}
+function onMU(e){if(isDragging){isDragging=false;return;}const r=rel(e.clientX,e.clientY);if(e.button===0)handleClick(r.x,r.y,false,e.shiftKey);}
 function onKey(e){
   if(e.code==='Escape'){placingType=null;document.getElementById('placementHint').classList.remove('vis');document.querySelectorAll('.sp-unit-btn').forEach(b=>b.classList.remove('active'));}
   if(e.code==='Space'){e.preventDefault();if(gamePhase==='placement')startBattle();}
-  // Ctrl+Z: undo last unit placement (works EN + UK layout)
   const isZ=e.key.toLowerCase()==='z'||e.key==='я'||e.code==='KeyZ';
-  if((e.ctrlKey||e.metaKey)&&isZ&&gamePhase==='placement'){
-    e.preventDefault();
-    const myUnits=G.units.filter(u=>u.owner===myRole&&!u._dead);
-    if(myUnits.length){
-      const last=myUnits[myUnits.length-1];
-      const def=UNIT_DEFS[last.type];G.funds[myRole]+=(def?.cost||0);
-      G.units=G.units.filter(u=>u.id!==last.id);
-      addLog('↩ Скасовано: '+def?.name,'warn');toast('↩ Скасовано: '+(def?.name||'юніт'));
-      syncGameState();updateHUD();drawAll();
-    }
-  }
+  if((e.ctrlKey||e.metaKey)&&isZ&&gamePhase==='placement'){e.preventDefault();const mine=G.units.filter(u=>u.owner===myRole&&!u._dead);if(mine.length){const last=mine[mine.length-1];const def=UNIT_DEFS[last.type];G.funds[myRole]+=(def?.cost||0);G.units=G.units.filter(u=>u.id!==last.id);addLog('↩ Скасовано: '+def?.name,'warn');toast('↩ '+(def?.name||'юніт'));syncGameState();updateHUD();drawAll();}}
 }
-
 function handleClick(sx,sy,isRight,isShift=false){
   if(!G.units)return;const{wx,wy}=s2w(sx,sy);
-  // MISSILE MODE
   if(missileTargetMode&&!isRight){
     missileTargetMode=false;document.getElementById('cmdMissile').classList.remove('missile-active');document.getElementById('missileStatus').style.display='none';
     const now=performance.now();const ready=G.units.filter(u=>u.owner===myRole&&!u._dead&&u.type==='stinger'&&selectedUnitIds.has(u.id)&&(!u.lastMissile||now-u.lastMissile>60000));
     if(!ready.length){toast('⚠️ Немає готових ракет');return;}
-    const targetUnit=G.units.find(u=>u.owner!==myRole&&!u._dead&&Math.hypot(u.x-wx,u.y-wy)<(UNIT_DEFS[u.type]?.radius||10)*2+20);
-    ready.forEach(u=>{u.lastMissile=now;u.lastAttack=now;u.lastAttackAnim=now;if(targetUnit)doAttack(u,targetUnit);else projectiles.push({id:Date.now()+'_'+Math.random(),ox:u.x,oy:u.y,tx:wx,ty:wy,targetId:null,owner:u.owner,progress:0,damage:Math.max(1,u.atk+rnd(-5,5)),trail:[],isGround:true});});
-    toast('💥 Ракет випущено: '+ready.length);drawAll();return;
+    const tgtU=G.units.find(u=>u.owner!==myRole&&!u._dead&&Math.hypot(u.x-wx,u.y-wy)<(UNIT_DEFS[u.type]?.radius||10)*2+20);
+    ready.forEach(u=>{u.lastMissile=now;u.lastAttack=now;u.lastAttackAnim=now;if(tgtU)doAttack(u,tgtU);else projectiles.push({id:Date.now()+'_'+Math.random(),ox:u.x,oy:u.y,tx:wx,ty:wy,targetId:null,owner:u.owner,progress:0,damage:Math.max(1,u.atk+rnd(-5,5)),trail:[],isGround:true});});
+    toast('💥 Ракет: '+ready.length);drawAll();return;
   }
   if(missileTargetMode&&isRight){missileTargetMode=false;document.getElementById('cmdMissile').classList.remove('missile-active');document.getElementById('missileStatus').style.display='none';toast('❌ Скасовано');return;}
-  // PLACEMENT
   if(placingType&&!isRight){placeUnit(wx,wy);return;}
   if(placingType&&isRight){placingType=null;document.querySelectorAll('.sp-unit-btn').forEach(b=>b.classList.remove('active'));document.getElementById('placementHint').classList.remove('vis');return;}
   if(!isRight){
@@ -1894,159 +1542,67 @@ function handleClick(sx,sy,isRight,isShift=false){
       if(isShift){if(selectedUnitIds.has(clicked.id)){selectedUnitIds.delete(clicked.id);if(selectedUnitId===clicked.id)selectedUnitId=[...selectedUnitIds][0]||null;}else{selectedUnitIds.add(clicked.id);selectedUnitId=clicked.id;}}
       else{selectedUnitId=clicked.id;selectedUnitIds=new Set([clicked.id]);}
       const showU=G.units.find(u=>u.id===selectedUnitId);if(showU)showSelInfo(showU);updateSelectionHUD();
-    }else{
-      if(inputMode==='attack'&&clicked&&clicked.owner!==myRole){G.units.filter(u=>selectedUnitIds.has(u.id)&&u.owner===myRole).forEach(u=>{u.state='force_attack';u.forceTarget=clicked.id;u.attackTarget=clicked.id;});toast('🎯 Атакувати');}
-      else if(!isShift){selectedUnitId=null;selectedUnitIds=new Set();document.getElementById('selInfo').classList.remove('vis');updateSelectionHUD();}
-    }
+    }else{if(inputMode==='attack'&&clicked&&clicked.owner!==myRole){G.units.filter(u=>selectedUnitIds.has(u.id)&&u.owner===myRole).forEach(u=>{u.state='force_attack';u.forceTarget=clicked.id;u.attackTarget=clicked.id;});toast('🎯 Атакувати');}else if(!isShift){selectedUnitId=null;selectedUnitIds=new Set();document.getElementById('selInfo').classList.remove('vis');updateSelectionHUD();}}
   }else{
     if(!selectedUnitIds.size&&selectedUnitId)selectedUnitIds=new Set([selectedUnitId]);
     if(!selectedUnitIds.size)return;
-    const targetEnemy=G.units.find(u=>u.owner!==myRole&&!u._dead&&Math.hypot(u.x-wx,u.y-wy)<(UNIT_DEFS[u.type]?.radius||10)*1.5+8);
-    if(targetEnemy){G.units.filter(u=>selectedUnitIds.has(u.id)&&u.owner===myRole).forEach(u=>{u.state='force_attack';u.forceTarget=targetEnemy.id;u.attackTarget=targetEnemy.id;});toast('🎯 Атакувати: '+(UNIT_DEFS[targetEnemy.type]?.name||'ціль'));drawAll();return;}
+    const tgtE=G.units.find(u=>u.owner!==myRole&&!u._dead&&Math.hypot(u.x-wx,u.y-wy)<(UNIT_DEFS[u.type]?.radius||10)*1.5+8);
+    if(tgtE){G.units.filter(u=>selectedUnitIds.has(u.id)&&u.owner===myRole).forEach(u=>{u.state='force_attack';u.forceTarget=tgtE.id;u.attackTarget=tgtE.id;});toast('🎯 '+UNIT_DEFS[tgtE.type]?.name);drawAll();return;}
     else if(inputMode==='patrol'){
-      if(!patrolPoint1){patrolPoint1={x:wx,y:wy};toast('📍 Точка 1. Вкажіть точку 2 ПКМ');}
+      if(!patrolPoint1){patrolPoint1={x:wx,y:wy};toast('📍 Точка 1. ПКМ — точка 2');}
       else{G.units.filter(u=>selectedUnitIds.has(u.id)&&u.owner===myRole).forEach(u=>{u.state='patrol';u.patrolA={x:patrolPoint1.x,y:patrolPoint1.y};u.patrolB={x:wx,y:wy};u.patrolDir=1;u.moveTarget={x:wx,y:wy};});patrolPoint1=null;toast('🔄 Патруль!');}
     }else{
-      const myUnits=G.units.filter(u=>selectedUnitIds.has(u.id)&&u.owner===myRole);const n=myUnits.length;
-      const angle=Math.atan2(wy-myUnits.reduce((s,u)=>s+u.y,0)/n,wx-myUnits.reduce((s,u)=>s+u.x,0)/n);const perp=angle+Math.PI/2;const spacing=28;
-      myUnits.forEach((u,i)=>{const offset=(i-(n-1)/2)*spacing;u.moveTarget={x:wx+Math.cos(perp)*offset,y:wy+Math.sin(perp)*offset};u.state='moving';u.forceTarget=null;});
+      const myU=G.units.filter(u=>selectedUnitIds.has(u.id)&&u.owner===myRole);const n=myU.length;
+      const ang=Math.atan2(wy-myU.reduce((s,u)=>s+u.y,0)/n,wx-myU.reduce((s,u)=>s+u.x,0)/n);const perp=ang+Math.PI/2;const sp=28;
+      myU.forEach((u,i)=>{const off=(i-(n-1)/2)*sp;u.moveTarget={x:wx+Math.cos(perp)*off,y:wy+Math.sin(perp)*off};u.state='moving';u.forceTarget=null;});
     }
   }
   drawAll();
 }
 
-// ══════════════════════════════════
-//  ADMIN USERS
-// ══════════════════════════════════
+// ── ADMIN USERS ────────────────────────────────────────────
 window.loadAdminUsers=async()=>{
   const el=document.getElementById('adminUsersList');el.innerHTML='<div style="color:var(--dim);font-size:11px">Завантаження...</div>';
   try{const snaps=await getDocs(collection(db,'users'));if(snaps.empty){el.innerHTML='<div style="color:var(--dim);font-size:11px">Немає гравців</div>';return;}el.innerHTML=snaps.docs.map(d=>{const u=d.data();return`<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);"><span style="font-size:16px">${u.role==='admin'?'👑':'👤'}</span><div style="flex:1"><div style="font-size:12px;font-weight:700;color:#fff">${u.name||'—'}</div><div style="font-size:10px;color:var(--dim)">${u.email||'—'}</div></div><span style="font-size:10px;padding:2px 8px;border-radius:10px;${u.role==='admin'?'background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.3)':'background:rgba(100,116,139,.1);color:var(--dim);border:1px solid rgba(100,116,139,.2)'}">${u.role||'player'}</span>${u.role!=='admin'?`<button class="amc-btn set" onclick="grantAdmin('${d.id}')">👑 Адмін</button>`:''}</div>`;}).join('');}
   catch(e){el.innerHTML='<div style="color:#f87171;font-size:11px">❌ '+e.message+'</div>';}
 };
-window.grantAdmin=async(userId)=>{if(!confirm('Надати права адміна?'))return;await updateDoc(doc(db,'users',userId),{role:'admin'});toast('✅ Права адміна надано');loadAdminUsers();};
+window.grantAdmin=async(uid2)=>{if(!confirm('Надати права адміна?'))return;await updateDoc(doc(db,'users',uid2),{role:'admin'});toast('✅ Права надано');loadAdminUsers();};
 
-// ══════════════════════════════════════════════════════════
-//  FIX #1: FRONT LINE — деформується за позицією юнітів
-//  Алгоритм: для кожного юніта СИНІХ знаходимо
-//  найближчий ЧЕРВОНИЙ і малюємо точку посередині між ними.
-//  Потім з'єднуємо ці точки плавною лінією.
-// ══════════════════════════════════════════════════════════
-// FIX: Front line — grid-based, covers full map height, black, no glow
-// At each Y slice we find the weighted midpoint between blue and red units
-// Only considers nearby units (influence radius), so line only deforms where units actually are
+// ── FRONT LINE ─────────────────────────────────────────────
 function drawFrontLine(){
   if(!frontCtx||!CW||!CH)return;frontCtx.clearRect(0,0,CW,CH);
   if(gamePhase!=='battle')return;
-  const bl=G.units?.filter(u=>u.owner==='blue'&&!u._dead);
-  const rd=G.units?.filter(u=>u.owner==='red'&&!u._dead);
+  const bl=G.units?.filter(u=>u.owner==='blue'&&!u._dead),rd=G.units?.filter(u=>u.owner==='red'&&!u._dead);
   if(!bl?.length||!rd?.length)return;
-
-  const mW=mapBgW||2000,mH=mapBgH||1200;
-  const STEPS=120; // number of horizontal slices = resolution of line
-  const INFLUENCE=mW*0.35; // max distance a unit affects its Y slice
-  const pts=[];
-
-  // Global fallback X: weighted average of all blues vs reds
-  const blMeanX=bl.reduce((s,u)=>s+u.x,0)/bl.length;
-  const rdMeanX=rd.reduce((s,u)=>s+u.x,0)/rd.length;
-  const globalMidX=(blMeanX+rdMeanX)/2;
-
-  for(let i=0;i<=STEPS;i++){
-    const y=mH*(i/STEPS);
-    // For this Y-slice, gather influence from nearby blue and red units
-    let bSum=0,bW=0,rSum=0,rW=0;
-    for(const u of bl){
-      const dy=Math.abs(u.y-y);if(dy>INFLUENCE)continue;
-      const w=1-dy/INFLUENCE;bSum+=u.x*w;bW+=w;
-    }
-    for(const u of rd){
-      const dy=Math.abs(u.y-y);if(dy>INFLUENCE)continue;
-      const w=1-dy/INFLUENCE;rSum+=u.x*w;rW+=w;
-    }
-    let midX;
-    if(bW>0&&rW>0){
-      // Both sides have influence here — real front
-      midX=(bSum/bW+rSum/rW)/2;
-    } else if(bW>0){
-      // Only blue nearby — line trends toward globalMidX
-      const bX=bSum/bW;midX=(bX+globalMidX*2)/3;
-    } else if(rW>0){
-      // Only red nearby
-      const rX=rSum/rW;midX=(rX+globalMidX*2)/3;
-    } else {
-      // No units nearby — use global midpoint
-      midX=globalMidX;
-    }
-    pts.push({x:midX,y});
-  }
-
-  // Light smoothing (preserve deformation but remove jitter)
-  for(let pass=0;pass<4;pass++){
-    for(let i=1;i<pts.length-1;i++){
-      pts[i].x=(pts[i-1].x*0.25+pts[i].x*0.5+pts[i+1].x*0.25);
-    }
-  }
-
+  const mW=mapBgW||2000,mH=mapBgH||1200;const STEPS=120,INF=mW*0.35;const pts=[];
+  const bMX=bl.reduce((s,u)=>s+u.x,0)/bl.length,rMX=rd.reduce((s,u)=>s+u.x,0)/rd.length;const gMid=(bMX+rMX)/2;
+  for(let i=0;i<=STEPS;i++){const y=mH*(i/STEPS);let bS=0,bW=0,rS=0,rW=0;for(const u of bl){const dy=Math.abs(u.y-y);if(dy>INF)continue;const w=1-dy/INF;bS+=u.x*w;bW+=w;}for(const u of rd){const dy=Math.abs(u.y-y);if(dy>INF)continue;const w=1-dy/INF;rS+=u.x*w;rW+=w;}let mid;if(bW>0&&rW>0)mid=(bS/bW+rS/rW)/2;else if(bW>0)mid=(bS/bW+gMid*2)/3;else if(rW>0)mid=(rS/rW+gMid*2)/3;else mid=gMid;pts.push({x:mid,y});}
+  for(let p=0;p<4;p++){for(let i=1;i<pts.length-1;i++)pts[i].x=(pts[i-1].x*.25+pts[i].x*.5+pts[i+1].x*.25);}
   frontCtx.save();frontCtx.translate(camX,camY);frontCtx.scale(camScale,camScale);
-
-  // Draw black line only — no glow, no shadow (FIX #4)
-  const lw=Math.max(1.5,2.5/camScale);
-  frontCtx.beginPath();
-  frontCtx.moveTo(pts[0].x,pts[0].y);
-  for(let i=1;i<pts.length-1;i++){
-    const mx=(pts[i].x+pts[i+1].x)/2,my=(pts[i].y+pts[i+1].y)/2;
-    frontCtx.quadraticCurveTo(pts[i].x,pts[i].y,mx,my);
-  }
-  frontCtx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);
-  frontCtx.strokeStyle='rgba(0,0,0,0.85)';
-  frontCtx.lineWidth=lw;
-  frontCtx.lineCap='round';frontCtx.lineJoin='round';
-  frontCtx.shadowBlur=0;
-  frontCtx.stroke();
-
+  frontCtx.beginPath();frontCtx.moveTo(pts[0].x,pts[0].y);for(let i=1;i<pts.length-1;i++){const mx=(pts[i].x+pts[i+1].x)/2,my=(pts[i].y+pts[i+1].y)/2;frontCtx.quadraticCurveTo(pts[i].x,pts[i].y,mx,my);}frontCtx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);
+  frontCtx.strokeStyle='rgba(0,0,0,0.85)';frontCtx.lineWidth=Math.max(1.5,2.5/camScale);frontCtx.lineCap='round';frontCtx.shadowBlur=0;frontCtx.stroke();
   frontCtx.restore();
 }
 
-// ══════════════════════════════════
-//  DRAW ENGINE
-// ══════════════════════════════════
-function drawAll(){drawMap();drawFrontLine();drawUnits();drawProjectilesLayer();drawUI();}
+// ── DRAW ENGINE ────────────────────────────────────────────
+function drawAll(){drawMap();drawFrontLine();drawUnits();drawProjLayer();drawUI();}
 function drawMap(){
   if(!mapCtx||!CW||!CH)return;mapCtx.clearRect(0,0,CW,CH);mapCtx.fillStyle='#06090d';mapCtx.fillRect(0,0,CW,CH);
   mapCtx.save();mapCtx.translate(camX,camY);mapCtx.scale(camScale,camScale);
   const w=mapBgW||2000,h=mapBgH||1200;
-  if(mapBg&&mapBgW>0){
-    // Draw the photo — it IS the map, no terrain overlays (terrain is already visual in the photo)
-    mapCtx.drawImage(mapBg,0,0,w,h);
-  }else{
-    mapCtx.fillStyle='#141e0e';mapCtx.fillRect(0,0,w,h);
-    for(let i=0;i<20;i++){mapCtx.fillStyle=`rgba(${20+Math.sin(i)*8},${40+Math.cos(i)*15},12,.7)`;mapCtx.beginPath();mapCtx.ellipse(w*(.05+.9*(i%10)/10),h*(.1+.8*Math.floor(i/10)/2),w*.07,h*.05,i*.4,0,Math.PI*2);mapCtx.fill();}
-    const rg=mapCtx.createLinearGradient(w*.45,0,w*.55,0);rg.addColorStop(0,'rgba(30,64,175,.6)');rg.addColorStop(.5,'rgba(37,99,235,.7)');rg.addColorStop(1,'rgba(30,64,175,.6)');mapCtx.fillStyle=rg;mapCtx.beginPath();mapCtx.moveTo(w*.46,0);mapCtx.bezierCurveTo(w*.44,h*.25,w*.52,h*.5,w*.48,h*.75);mapCtx.lineTo(w*.48,h);mapCtx.lineTo(w*.54,h);mapCtx.bezierCurveTo(w*.56,h*.75,w*.48,h*.5,w*.52,h*.25);mapCtx.lineTo(w*.54,0);mapCtx.fill();
-    // No map loaded — generate placeholder
-  }
-  // Spawn zones — highlight base and city radii when placing
+  if(mapBg&&mapBgW>0)mapCtx.drawImage(mapBg,0,0,w,h);
+  else{mapCtx.fillStyle='#141e0e';mapCtx.fillRect(0,0,w,h);}
+  // Spawn zones during placement
   if(gamePhase==='placement'&&placingType){
-    // Friendly base zone
-    const base=G.bases?.[myRole];
-    if(base){
-      mapCtx.beginPath();mapCtx.arc(base.x,base.y,SPAWN_BASE_RADIUS,0,Math.PI*2);
-      mapCtx.fillStyle='rgba(34,197,94,.12)';mapCtx.fill();
-      mapCtx.strokeStyle='rgba(34,197,94,.5)';mapCtx.lineWidth=2;mapCtx.setLineDash([8,5]);mapCtx.stroke();mapCtx.setLineDash([]);
-    }
-    // City zones
-    (G.cities||[]).filter(c=>c.owner===myRole||c.owner==='neutral').forEach(c=>{
-      mapCtx.beginPath();mapCtx.arc(c.x,c.y,SPAWN_CITY_RADIUS,0,Math.PI*2);
-      mapCtx.fillStyle='rgba(245,158,11,.1)';mapCtx.fill();
-      mapCtx.strokeStyle='rgba(245,158,11,.45)';mapCtx.lineWidth=1.5;mapCtx.setLineDash([5,4]);mapCtx.stroke();mapCtx.setLineDash([]);
-    });
+    const base=G.bases?.[myRole];if(base){mapCtx.beginPath();mapCtx.arc(base.x,base.y,SPAWN_BASE_RADIUS,0,Math.PI*2);mapCtx.fillStyle='rgba(34,197,94,.12)';mapCtx.fill();mapCtx.strokeStyle='rgba(34,197,94,.5)';mapCtx.lineWidth=2;mapCtx.setLineDash([8,5]);mapCtx.stroke();mapCtx.setLineDash([]);}
+    (G.cities||[]).filter(c=>c.owner===myRole||c.owner==='neutral').forEach(c=>{mapCtx.beginPath();mapCtx.arc(c.x,c.y,SPAWN_CITY_RADIUS,0,Math.PI*2);mapCtx.fillStyle='rgba(245,158,11,.1)';mapCtx.fill();mapCtx.strokeStyle='rgba(245,158,11,.45)';mapCtx.lineWidth=1.5;mapCtx.setLineDash([5,4]);mapCtx.stroke();mapCtx.setLineDash([]);});
   }
   // Bases
-  if(G.bases){['blue','red'].forEach(team=>{const base=G.bases[team];if(!base)return;const color=team==='blue'?'rgba(59,130,246,.9)':'rgba(239,68,68,.9)';const pulse=.8+Math.sin(Date.now()*.003)*.2;mapCtx.beginPath();mapCtx.arc(base.x,base.y,24*pulse,0,Math.PI*2);mapCtx.fillStyle=team==='blue'?'rgba(59,130,246,.1)':'rgba(239,68,68,.1)';mapCtx.fill();mapCtx.strokeStyle=color;mapCtx.lineWidth=2.5;mapCtx.stroke();mapCtx.font='24px serif';mapCtx.textAlign='center';mapCtx.textBaseline='middle';mapCtx.fillText(team==='blue'?'🏠':'🏚️',base.x,base.y);mapCtx.font='bold 10px Oswald';mapCtx.fillStyle=team==='blue'?'#60a5fa':'#f87171';mapCtx.fillText('БАЗА',base.x,base.y+22);});}
+  if(G.bases){['blue','red'].forEach(t=>{const b=G.bases[t];if(!b)return;const c=t==='blue'?'rgba(59,130,246,.9)':'rgba(239,68,68,.9)';const p=.8+Math.sin(Date.now()*.003)*.2;mapCtx.beginPath();mapCtx.arc(b.x,b.y,24*p,0,Math.PI*2);mapCtx.fillStyle=t==='blue'?'rgba(59,130,246,.1)':'rgba(239,68,68,.1)';mapCtx.fill();mapCtx.strokeStyle=c;mapCtx.lineWidth=2.5;mapCtx.stroke();mapCtx.font='24px serif';mapCtx.textAlign='center';mapCtx.textBaseline='middle';mapCtx.fillText(t==='blue'?'🏠':'🏚️',b.x,b.y);mapCtx.font='bold 10px Oswald';mapCtx.fillStyle=t==='blue'?'#60a5fa':'#f87171';mapCtx.fillText('БАЗА',b.x,b.y+22);});}
   // Cities
-  if(G.cities){G.cities.forEach(city=>{const clr=city.owner==='blue'?'#3b82f6':city.owner==='red'?'#ef4444':'#94a3b8';const glowClr=city.owner==='blue'?'rgba(59,130,246,.3)':city.owner==='red'?'rgba(239,68,68,.3)':'rgba(148,163,184,.1)';mapCtx.beginPath();mapCtx.arc(city.x,city.y,28,0,Math.PI*2);mapCtx.fillStyle=glowClr;mapCtx.fill();mapCtx.font='22px serif';mapCtx.textAlign='center';mapCtx.textBaseline='middle';mapCtx.fillText('🏙️',city.x,city.y);mapCtx.beginPath();mapCtx.arc(city.x,city.y,18,0,Math.PI*2);mapCtx.strokeStyle=clr;mapCtx.lineWidth=2.5;mapCtx.stroke();mapCtx.font='bold 9px Share Tech Mono';mapCtx.textAlign='center';mapCtx.textBaseline='top';mapCtx.fillStyle='rgba(255,255,255,.8)';mapCtx.fillText(city.name,city.x,city.y+20);const p=city.captureProgress;if(p){const bw=36,bh=4,bx=city.x-bw/2,by=city.y-28;mapCtx.fillStyle='rgba(0,0,0,.5)';mapCtx.fillRect(bx-1,by-1,bw+2,bh+2);mapCtx.fillStyle='#1a1a1a';mapCtx.fillRect(bx,by,bw,bh);if(p.blue>0){mapCtx.fillStyle='#3b82f6';mapCtx.fillRect(bx,by,bw*(p.blue/100),bh);}if(p.red>0){mapCtx.fillStyle='#ef4444';mapCtx.fillRect(bx+bw*(1-p.red/100),by,bw*(p.red/100),bh);}}if(city.owner!=='neutral'){mapCtx.fillStyle=city.owner==='blue'?'rgba(59,130,246,.8)':'rgba(239,68,68,.8)';mapCtx.font='bold 8px Oswald';mapCtx.textAlign='center';mapCtx.textBaseline='bottom';mapCtx.fillText('+'+city.income+'₴',city.x,city.y-20);}});}
+  if(G.cities){G.cities.forEach(city=>{const clr=city.owner==='blue'?'#3b82f6':city.owner==='red'?'#ef4444':'#94a3b8';mapCtx.beginPath();mapCtx.arc(city.x,city.y,28,0,Math.PI*2);mapCtx.fillStyle=city.owner==='blue'?'rgba(59,130,246,.3)':city.owner==='red'?'rgba(239,68,68,.3)':'rgba(148,163,184,.1)';mapCtx.fill();mapCtx.font='22px serif';mapCtx.textAlign='center';mapCtx.textBaseline='middle';mapCtx.fillText('🏙️',city.x,city.y);mapCtx.beginPath();mapCtx.arc(city.x,city.y,18,0,Math.PI*2);mapCtx.strokeStyle=clr;mapCtx.lineWidth=2.5;mapCtx.stroke();mapCtx.font='bold 9px Share Tech Mono';mapCtx.textAlign='center';mapCtx.textBaseline='top';mapCtx.fillStyle='rgba(255,255,255,.8)';mapCtx.fillText(city.name,city.x,city.y+20);const p2=city.captureProgress;if(p2){const bw=36,bh=4,bx=city.x-18,by=city.y-28;mapCtx.fillStyle='rgba(0,0,0,.5)';mapCtx.fillRect(bx-1,by-1,bw+2,bh+2);mapCtx.fillStyle='#1a1a1a';mapCtx.fillRect(bx,by,bw,bh);if(p2.blue>0){mapCtx.fillStyle='#3b82f6';mapCtx.fillRect(bx,by,bw*(p2.blue/100),bh);}if(p2.red>0){mapCtx.fillStyle='#ef4444';mapCtx.fillRect(bx+bw*(1-p2.red/100),by,bw*(p2.red/100),bh);}}if(city.owner!=='neutral'){mapCtx.fillStyle=city.owner==='blue'?'rgba(59,130,246,.8)':'rgba(239,68,68,.8)';mapCtx.font='bold 8px Oswald';mapCtx.textAlign='center';mapCtx.textBaseline='bottom';mapCtx.fillText('+'+city.income+'₴',city.x,city.y-20);}});}
   mapCtx.restore();
 }
-// detectWaterAreas removed — terrain is now pixel-based from editor canvas
 function drawUnits(){
   if(!unitsCtx||!CW||!CH)return;unitsCtx.clearRect(0,0,CW,CH);if(!G.units?.length)return;
   const now=performance.now();unitsCtx.save();unitsCtx.translate(camX,camY);unitsCtx.scale(camScale,camScale);
@@ -2057,16 +1613,15 @@ function drawUnits(){
     unitsCtx.beginPath();unitsCtx.arc(u.x,u.y,r,0,Math.PI*2);const g=unitsCtx.createRadialGradient(u.x-r*.3,u.y-r*.35,0,u.x,u.y,r);g.addColorStop(0,isBlue?'#93c5fd':'#fca5a5');g.addColorStop(1,isBlue?'#1d4ed8':'#b91c1c');unitsCtx.fillStyle=g;unitsCtx.fill();unitsCtx.strokeStyle=isBlue?'#3b82f6':'#ef4444';unitsCtx.lineWidth=1.5/camScale;unitsCtx.stroke();
     unitsCtx.font=`bold ${r*1.25}px serif`;unitsCtx.textAlign='center';unitsCtx.textBaseline='alphabetic';unitsCtx.fillText(def.emoji,u.x,u.y+r*.35);
     const bw=r*2.5,bh=Math.max(2,3/camScale),bx=u.x-bw/2,by=u.y-r-7/camScale;unitsCtx.fillStyle='rgba(0,0,0,.6)';unitsCtx.fillRect(bx-1,by-1,bw+2,bh+2);unitsCtx.fillStyle='#1a1a1a';unitsCtx.fillRect(bx,by,bw,bh);unitsCtx.fillStyle=hp>.6?'#22c55e':hp>.3?'#f59e0b':'#ef4444';unitsCtx.fillRect(bx,by,bw*hp,bh);
-    if(u.attackTarget&&isAtk){const tgt=G.units.find(x=>x.id===u.attackTarget);if(tgt){unitsCtx.beginPath();unitsCtx.moveTo(u.x,u.y);unitsCtx.lineTo(tgt.x,tgt.y);unitsCtx.strokeStyle=isBlue?'rgba(96,165,250,.6)':'rgba(248,113,113,.6)';unitsCtx.lineWidth=1.5/camScale;unitsCtx.setLineDash([4/camScale,4/camScale]);unitsCtx.stroke();unitsCtx.setLineDash([]);}}
-    if(isSel&&isBlue){const stateIco={advance:'⚔',hold:'⏸',defend:'🛡',moving:'➤',patrol:'🔄',force_attack:'🎯',idle:'—'}[u.state]||'';if(stateIco){unitsCtx.font=`${r*.9}px serif`;unitsCtx.textAlign='center';unitsCtx.textBaseline='top';unitsCtx.fillText(stateIco,u.x,u.y+r+4/camScale);}}
+    if(u.attackTarget&&isAtk){const t=G.units.find(x=>x.id===u.attackTarget);if(t){unitsCtx.beginPath();unitsCtx.moveTo(u.x,u.y);unitsCtx.lineTo(t.x,t.y);unitsCtx.strokeStyle=isBlue?'rgba(96,165,250,.6)':'rgba(248,113,113,.6)';unitsCtx.lineWidth=1.5/camScale;unitsCtx.setLineDash([4/camScale,4/camScale]);unitsCtx.stroke();unitsCtx.setLineDash([]);}}
+    if(isSel&&isBlue){const si={advance:'⚔',hold:'⏸',defend:'🛡',moving:'➤',patrol:'🔄',force_attack:'🎯',idle:'—'}[u.state]||'';if(si){unitsCtx.font=`${r*.9}px serif`;unitsCtx.textAlign='center';unitsCtx.textBaseline='top';unitsCtx.fillText(si,u.x,u.y+r+4/camScale);}}
     if(isSel&&def.isMissile){unitsCtx.beginPath();unitsCtx.arc(u.x,u.y,u.range,0,Math.PI*2);unitsCtx.strokeStyle='rgba(168,85,247,.25)';unitsCtx.lineWidth=1.5/camScale;unitsCtx.setLineDash([8/camScale,4/camScale]);unitsCtx.stroke();unitsCtx.setLineDash([]);}
   }
   unitsCtx.restore();
 }
-function drawProjectilesLayer(){
+function drawProjLayer(){
   if(!frontCtx||!projectiles.length)return;frontCtx.save();frontCtx.translate(camX,camY);frontCtx.scale(camScale,camScale);
-  for(const p of projectiles){const cx=p.ox+(p.tx-p.ox)*p.progress,cy=p.oy+(p.ty-p.oy)*p.progress;if(p.trail.length>1){frontCtx.beginPath();frontCtx.moveTo(p.trail[0].x,p.trail[0].y);for(let i=1;i<p.trail.length;i++)frontCtx.lineTo(p.trail[i].x,p.trail[i].y);frontCtx.strokeStyle=p.owner==='blue'?'rgba(96,165,250,.5)':'rgba(248,113,113,.5)';frontCtx.lineWidth=2/camScale;frontCtx.lineCap='round';frontCtx.stroke();}
-  frontCtx.beginPath();frontCtx.arc(cx,cy,5/camScale,0,Math.PI*2);frontCtx.fillStyle=p.owner==='blue'?'#60a5fa':'#f87171';frontCtx.shadowColor=p.owner==='blue'?'rgba(96,165,250,.9)':'rgba(248,113,113,.9)';frontCtx.shadowBlur=10/camScale;frontCtx.fill();frontCtx.shadowBlur=0;const ang=Math.atan2(p.ty-p.oy,p.tx-p.ox);frontCtx.save();frontCtx.translate(cx,cy);frontCtx.rotate(ang);frontCtx.font=`${12/camScale}px serif`;frontCtx.textAlign='center';frontCtx.textBaseline='middle';frontCtx.fillText('🚀',0,0);frontCtx.restore();}
+  for(const p of projectiles){const cx=p.ox+(p.tx-p.ox)*p.progress,cy=p.oy+(p.ty-p.oy)*p.progress;if(p.trail.length>1){frontCtx.beginPath();frontCtx.moveTo(p.trail[0].x,p.trail[0].y);for(let i=1;i<p.trail.length;i++)frontCtx.lineTo(p.trail[i].x,p.trail[i].y);frontCtx.strokeStyle=p.owner==='blue'?'rgba(96,165,250,.5)':'rgba(248,113,113,.5)';frontCtx.lineWidth=2/camScale;frontCtx.lineCap='round';frontCtx.stroke();}frontCtx.beginPath();frontCtx.arc(cx,cy,5/camScale,0,Math.PI*2);frontCtx.fillStyle=p.owner==='blue'?'#60a5fa':'#f87171';frontCtx.shadowColor=p.owner==='blue'?'rgba(96,165,250,.9)':'rgba(248,113,113,.9)';frontCtx.shadowBlur=10/camScale;frontCtx.fill();frontCtx.shadowBlur=0;const ang=Math.atan2(p.ty-p.oy,p.tx-p.ox);frontCtx.save();frontCtx.translate(cx,cy);frontCtx.rotate(ang);frontCtx.font=`${12/camScale}px serif`;frontCtx.textAlign='center';frontCtx.textBaseline='middle';frontCtx.fillText('🚀',0,0);frontCtx.restore();}
   frontCtx.restore();
 }
 function drawUI(){
@@ -2078,9 +1633,7 @@ function drawUI(){
   uiCtx.restore();
 }
 
-// ══════════════════════════════════
-//  HUD
-// ══════════════════════════════════
+// ── HUD ────────────────────────────────────────────────────
 function updateHUD(){if(!G.units)return;document.getElementById('hudBlueUnits').textContent=G.units.filter(u=>u.owner==='blue'&&!u._dead).length;document.getElementById('hudRedUnits').textContent=G.units.filter(u=>u.owner==='red'&&!u._dead).length;document.getElementById('hudWave').textContent=G.wave||1;document.getElementById('hudFunds').textContent=G.funds?.[myRole]||0;document.getElementById('spFunds').textContent=G.funds?.[myRole]||0;document.getElementById('spIncome').textContent='+'+getIncome(myRole)+'/15с';document.getElementById('spUnits').textContent=G.units.filter(u=>u.owner===myRole&&!u._dead).length;document.getElementById('spCasualties').textContent=G.casualties?.[myRole]||0;document.getElementById('casBlue').textContent=G.casualties?.blue||0;document.getElementById('casRed').textContent=G.casualties?.red||0;}
 function showSelInfo(u){const def=UNIT_DEFS[u.type];document.getElementById('selInfo').classList.add('vis');document.getElementById('siName').textContent=def.emoji+' '+def.name;document.getElementById('siHPText').textContent=Math.round(u.hp)+'/'+u.maxHp;document.getElementById('siHPBar').style.width=(u.hp/u.maxHp*100)+'%';document.getElementById('siHPBar').style.background=u.hp/u.maxHp>.5?'var(--green)':u.hp/u.maxHp>.25?'var(--gold)':'var(--red)';document.getElementById('siAtk').textContent=u.atk;document.getElementById('siDef').textContent=u.def;document.getElementById('siSpd').textContent=u.speed;const me=document.getElementById('siMode');if(me){if(u.type==='stinger'){const now=performance.now();const cd=u.lastMissile?Math.max(0,Math.ceil((60000-(now-u.lastMissile))/1000)):0;me.textContent=cd>0?('⏳ '+cd+'с'):('🚀 ГОТОВО');me.style.color=cd>0?'var(--gold)':'#a855f7';}else{const l={advance:'⚔ АТК',hold:'⏸ СТОП',defend:'🛡 ОБ',moving:'➤ РУХ',patrol:'🔄 ПАТ',force_attack:'🎯 ЦІЛЬ',idle:'— СТІЙ',front:'⚔ ФРОНТ'};me.textContent=l[u.state]||u.state;me.style.color='';}}}
 function addLog(msg,type='info'){const el=document.getElementById('spLog');const d=document.createElement('div');d.className='log-entry '+type;d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight;if(el.children.length>80)el.removeChild(el.firstChild);}
