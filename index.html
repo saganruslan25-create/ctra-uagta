@@ -1552,8 +1552,12 @@ function setupInteraction(){
   cv.addEventListener('mousedown',onMD);cv.addEventListener('mousemove',onMM);cv.addEventListener('mouseup',onMU);
   cv.addEventListener('wheel',onWheel,{passive:false});cv.addEventListener('contextmenu',e=>e.preventDefault());
   cv.addEventListener('touchstart',onTS,{passive:false});cv.addEventListener('touchmove',onTM,{passive:false});cv.addEventListener('touchend',onTE,{passive:false});
-  window.addEventListener('keydown',onKey);
-}
+  window.addEventListener('keydown',e=>{
+  const active=document.activeElement;
+  const isInput=active&&(active.tagName==='INPUT'||active.tagName==='TEXTAREA'||active.tagName==='SELECT');
+  if(isInput)return;
+  onKey(e);
+});
 function rel(cX,cY){const cv=document.getElementById('interCanvas');const r=cv?cv.getBoundingClientRect():{left:0,top:0};return{x:cX-r.left,y:cY-r.top};}
 let pinchDist=0;
 function onTS(e){e.preventDefault();if(e.touches.length===1){isDragging=false;const r=rel(e.touches[0].clientX,e.touches[0].clientY);dragLX=r.x;dragLY=r.y;}else if(e.touches.length===2)pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}
@@ -1579,10 +1583,11 @@ function onKey(e){
   if(!e||!e.key)return;
   if(e.code==='Escape'){placingType=null;document.getElementById('placementHint').classList.remove('vis');document.querySelectorAll('.sp-unit-btn').forEach(b=>b.classList.remove('active'));}
   if(e.code==='Space'){e.preventDefault();if(gamePhase==='placement')startBattle();}
-  const isZ=(e.key&&e.key.toLowerCase()==='z')||e.key==='я'||e.code==='KeyZ';
+const isZ=(e.key&&e.key.toLowerCase()==='z')||e.key==='я'||e.code==='KeyZ';
   if((e.ctrlKey||e.metaKey)&&isZ&&gamePhase==='placement'){
     e.preventDefault();
     const mine=G.units&&G.units.filter(u=>u.owner===myRole&&!u._dead);
+    if(mine&&mine.length===0){toast('⚠️ Нема що відміняти');return;}
     if(mine&&mine.length){
       const last=mine[mine.length-1];
       const def=UNIT_DEFS[last.type];
@@ -1592,8 +1597,8 @@ function onKey(e){
       toast('↩ '+(def?.name||'юніт'));
       syncGameState();updateHUD();drawAll();
     }
+    return;
   }
-}
 function handleClick(sx,sy,isRight,isShift=false){
   if(!G.units)return;const{wx,wy}=s2w(sx,sy);
   if(missileTargetMode&&!isRight){
