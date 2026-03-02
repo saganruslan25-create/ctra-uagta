@@ -931,6 +931,42 @@ function eHandleRightClick(e){const area=document.getElementById('editorCanvasAr
 function eHistoryPush(){eHistory.push(JSON.stringify(eTerrainStrokes));if(eHistory.length>30)eHistory.shift();}
 window.editorUndoNew=()=>{if(!eHistory.length){toast('⚠️ Нічого відміняти');return;}eTerrainStrokes=JSON.parse(eHistory.pop());eRebuildTerrainCanvas();eRedrawAll();};
 function eRebuildTerrainCanvas(){
+  if(!eTerrainCtx)return;
+  eTerrainCtx.clearRect(0,0,eTerrainCtx.canvas.width,eTerrainCtx.canvas.height);
+  for(const s of eTerrainStrokes){
+    if(s.isErase){
+      eTerrainCtx.globalCompositeOperation='destination-out';
+      for(let i=0;i<s.pts.length;i++){
+        const px=s.pts[i].nx*eTerrainCtx.canvas.width;
+        const py=s.pts[i].ny*eTerrainCtx.canvas.height;
+        eTerrainCtx.beginPath();
+        eTerrainCtx.arc(px,py,s.size,0,Math.PI*2);
+        eTerrainCtx.fillStyle='rgba(0,0,0,1)';
+        eTerrainCtx.fill();
+      }
+      eTerrainCtx.globalCompositeOperation='source-over';
+    }else if(s.color){
+      eTerrainCtx.strokeStyle=s.color;
+      eTerrainCtx.lineWidth=s.size;
+      eTerrainCtx.lineCap='round';
+      eTerrainCtx.lineJoin='round';
+      eTerrainCtx.globalAlpha=0.8;
+      eTerrainCtx.beginPath();
+      if(s.pts.length===1){
+        eTerrainCtx.arc(s.pts[0].nx*eTerrainCtx.canvas.width,s.pts[0].ny*eTerrainCtx.canvas.height,s.size/2,0,Math.PI*2);
+        eTerrainCtx.fillStyle=s.color;
+        eTerrainCtx.fill();
+      }else{
+        eTerrainCtx.moveTo(s.pts[0].nx*eTerrainCtx.canvas.width,s.pts[0].ny*eTerrainCtx.canvas.height);
+        for(let i=1;i<s.pts.length;i++)
+          eTerrainCtx.lineTo(s.pts[i].nx*eTerrainCtx.canvas.width,s.pts[i].ny*eTerrainCtx.canvas.height);
+        eTerrainCtx.stroke();
+      }
+      eTerrainCtx.globalAlpha=1;
+    }
+  }
+}
+
 function eRedrawAll(){
   if(!eCtx)return;const cv=eCtx.canvas;eCtx.clearRect(0,0,cv.width,cv.height);eCtx.fillStyle='#1a2810';eCtx.fillRect(0,0,cv.width,cv.height);
   if(eBg&&eBgW>0){eCtx.drawImage(eBg,eBgX,eBgY,eBgW,eBgH);}else{eDrawDefaultBg();return;}
