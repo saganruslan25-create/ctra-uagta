@@ -723,7 +723,8 @@ function sampleTerrainAt(wx,wy){
   // Walk strokes in REVERSE (last drawn = highest priority)
   for(let i=G_terrainStrokes.length-1;i>=0;i--){
     const s=G_terrainStrokes[i];
-    const r=s.size/Math.max(mw,mh); // normalized radius
+    // size is stored as raw pixels from editor; normalize against map dimensions
+    const r=s.size/Math.max(mw,mh);
     for(let j=1;j<s.pts.length;j++){
       const ax=s.pts[j-1].nx,ay=s.pts[j-1].ny;
       const bx=s.pts[j].nx,by=s.pts[j].ny;
@@ -1225,14 +1226,6 @@ window.editorSaveMap=async()=>{
     }
     if(!bgUrl&&eBg){bgUrl=eBg.src;}
 
-    // Save terrain as JSON strokes — 100% reliable, no pixel conversion
-    const terrainStrokes=eTerrainStrokes.map(s=>({
-      type:s.type,color:s.color,
-      pts:s.pts.filter((_,i)=>i%2===0||i===s.pts.length-1), // thin out points
-      size:s.size,isErase:s.isErase||false
-    }));
-    const terrainDataUrl=null; // deprecated
-
     const date=new Date().toLocaleDateString('uk-UA');
     const spawns={
       blueBase:eMarkers.find(m=>m.type==='base'&&m.team==='blue')||null,
@@ -1240,8 +1233,30 @@ window.editorSaveMap=async()=>{
       units:eMarkers.filter(m=>m.type==='unit').map(m=>({team:m.team,unitType:m.unitType,nx:m.nx,ny:m.ny}))
     };
     const cities=eMarkers.filter(m=>m.type==='city').map(m=>({nx:m.nx,ny:m.ny,name:m.name}));
-    const mapEntry={url:bgUrl||cv.toDataURL('image/jpeg',.85),name:eMapName,date,spawns,cities,terrainStrokes};
+
+    // Save map metadata (no terrain — stored separately)
+    const mapEntry={url:bgUrl||cv.toDataURL('image/jpeg',.85),name:eMapName,date,spawns,cities};
     if(eMapIdx>=0){globalMaps[eMapIdx]=mapEntry;}else{globalMaps.push(mapEntry);}
+
+    // Determine map index for terrain doc key
+    const savedMapIdx=eMapIdx>=0?eMapIdx:globalMaps.length-1;
+
+    // Save terrain as SEPARATE Firestore doc (avoids 1MB limit on globalMaps)
+    // Thin out points to save space (every 2nd point is enough for smooth curves)
+    const terrainStrokes=eTerrainStrokes.map(s=>({
+      t:s.type,c:s.color,
+      p:s.pts.filter((_,i)=>i%3===0||i===s.pts.length-1).map(pt=>({
+        x:Math.round(pt.nx*10000)/10000,
+        y:Math.round(pt.ny*10000)/10000
+      })),
+      s:Math.round(s.size),e:s.isErase?1:0
+    }));
+    toast('⟳ Зберігаємо терен...');
+    await setDoc(doc(db,'appData','terrain_'+savedMapIdx),{
+      strokes:terrainStrokes,
+      updatedAt:serverTimestamp()
+    });
+
     await setDoc(doc(db,'appData','globalMaps'),{maps:globalMaps});
     renderLobbyGlobalMaps();if(isAdmin)renderAdminMaps();
     toast('✅ "'+eMapName+'" збережена!');showScreen('screen-menu');
@@ -1260,9 +1275,26 @@ function eLoadMapForEditing(m){
     // Draw bg (photo = the map)
     eCtx.fillStyle='#1a2810';eCtx.fillRect(0,0,cv.width,cv.height);
     eCtx.drawImage(img,eBgX,eBgY,eBgW,eBgH);
-    // Restore terrain strokes
-    eTerrainStrokes=m.terrainStrokes||[];
-    eRebuildTerrainCanvas();
+    // Restore terrain from separate Firestore doc (async, non-blocking)
+    eTerrainStrokes=[];
+    const mapIdx=eMapIdx>=0?eMapIdx:0;
+    getDoc(doc(db,'appData','terrain_'+mapIdx)).then(tsnap=>{
+      if(tsnap.exists()){
+        const raw=tsnap.data().strokes||[];
+        // Restore compressed format back to full stroke objects
+        eTerrainStrokes=raw.map(s=>({
+          type:s.t,color:s.c,
+          pts:(s.p||[]).map(pt=>({nx:pt.x,ny:pt.y})),
+          size:s.s,isErase:s.e===1
+        }));
+        eRebuildTerrainCanvas();
+        eRedrawAll();
+        toast('✅ Терен завантажено: '+eTerrainStrokes.length+' шарів');
+      }else{
+        eRebuildTerrainCanvas();
+        eRedrawAll();
+      }
+    }).catch(err=>{console.warn('terrain load err:',err);eRebuildTerrainCanvas();eRedrawAll();});
     eMarkers=[];
     if(m.spawns){
       if(m.spawns.blueBase)eMarkers.push({type:'base',team:'blue',nx:m.spawns.blueBase.nx,ny:m.spawns.blueBase.ny});
@@ -1361,8 +1393,23 @@ function initGameState(mapData,playerRole){
   loadTerrainFromMap(mapData);updateHUD();updateCitiesPanel();
 }
 function loadTerrainFromMap(mapEntry){
-  // Load strokes directly into G_terrainStrokes for runtime sampling
-  G_terrainStrokes=mapEntry?.terrainStrokes||[];
+  G_terrainStrokes=[];
+  // Find map index from globalMaps
+  const mapIdx=globalMaps.indexOf(mapEntry);
+  const idx=mapIdx>=0?mapIdx:0;
+  // Load from separate Firestore doc (same place editor saves)
+  getDoc(doc(db,'appData','terrain_'+idx)).then(tsnap=>{
+    if(tsnap.exists()){
+      const raw=tsnap.data().strokes||[];
+      G_terrainStrokes=raw.map(s=>({
+        type:s.t,color:s.c,
+        pts:(s.p||[]).map(pt=>({nx:pt.x,ny:pt.y})),
+        size:s.s, // raw pixel size, normalized in sampleTerrainAt
+        isErase:s.e===1
+      }));
+      console.log('[TERRAIN] Loaded',G_terrainStrokes.length,'strokes for map',idx);
+    }
+  }).catch(err=>console.warn('[TERRAIN] load err:',err));
 }
 function applyMapData(){
   if(!mapBgW||!mapBgH)return;const mw=mapBgW,mh=mapBgH;
