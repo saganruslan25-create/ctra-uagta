@@ -723,8 +723,9 @@ function sampleTerrainAt(wx,wy){
   // Walk strokes in REVERSE (last drawn = highest priority)
   for(let i=G_terrainStrokes.length-1;i>=0;i--){
     const s=G_terrainStrokes[i];
-    // size is stored as raw pixels from editor; normalize against map dimensions
-    const r=s.size/Math.max(mw,mh);
+    // size_px is brush size on 3840px editor canvas
+    // normalized radius = size_px / EDITOR_NATIVE_W (pts normalized to 0-1 of bg area)
+    const r=s.size/3840;
     for(let j=1;j<s.pts.length;j++){
       const ax=s.pts[j-1].nx,ay=s.pts[j-1].ny;
       const bx=s.pts[j].nx,by=s.pts[j].ny;
@@ -1238,8 +1239,9 @@ window.editorSaveMap=async()=>{
     const mapEntry={url:bgUrl||cv.toDataURL('image/jpeg',.85),name:eMapName,date,spawns,cities};
     if(eMapIdx>=0){globalMaps[eMapIdx]=mapEntry;}else{globalMaps.push(mapEntry);}
 
-    // Determine map index for terrain doc key
+    // Determine map index for terrain doc key — store it in map entry too
     const savedMapIdx=eMapIdx>=0?eMapIdx:globalMaps.length-1;
+    globalMaps[savedMapIdx].terrainIdx=savedMapIdx; // embed index so game can find it
 
     // Save terrain as SEPARATE Firestore doc (avoids 1MB limit on globalMaps)
     // Thin out points to save space (every 2nd point is enough for smooth curves)
@@ -1394,20 +1396,26 @@ function initGameState(mapData,playerRole){
 }
 function loadTerrainFromMap(mapEntry){
   G_terrainStrokes=[];
-  // Find map index from globalMaps
-  const mapIdx=globalMaps.indexOf(mapEntry);
-  const idx=mapIdx>=0?mapIdx:0;
-  // Load from separate Firestore doc (same place editor saves)
+  if(!mapEntry)return;
+  // Find terrain index: prefer embedded terrainIdx, fallback to URL match, then position
+  let idx=mapEntry.terrainIdx;
+  if(idx===undefined){
+    const byUrl=globalMaps.findIndex(m=>m.url===mapEntry.url);
+    idx=byUrl>=0?byUrl:0;
+  }
+  console.log('[TERRAIN] Loading terrain_'+idx+' for map: '+mapEntry.name);
   getDoc(doc(db,'appData','terrain_'+idx)).then(tsnap=>{
     if(tsnap.exists()){
       const raw=tsnap.data().strokes||[];
       G_terrainStrokes=raw.map(s=>({
         type:s.t,color:s.c,
         pts:(s.p||[]).map(pt=>({nx:pt.x,ny:pt.y})),
-        size:s.s, // raw pixel size, normalized in sampleTerrainAt
+        size:s.s, // raw pixel size in editor coords
         isErase:s.e===1
       }));
-      console.log('[TERRAIN] Loaded',G_terrainStrokes.length,'strokes for map',idx);
+      console.log('[TERRAIN] ✅ Loaded',G_terrainStrokes.length,'strokes');
+    }else{
+      console.log('[TERRAIN] No terrain doc found for idx',idx);
     }
   }).catch(err=>console.warn('[TERRAIN] load err:',err));
 }
