@@ -654,6 +654,7 @@ function captureMapBase64() {
 
 // ---- GENERATE EVENT ----
 let eventCounter = 0;
+let currentModel = 'gemini-2.0-flash';
 
 async function listModels() {
   const apiKey = document.getElementById('apiKeyInput').value.trim() || localStorage.getItem('war_gemini_key') || '';
@@ -772,16 +773,43 @@ async function listModels() {
   const apiKey = document.getElementById('apiKeyInput').value.trim() || localStorage.getItem('war_gemini_key') || '';
   if (!apiKey) { alert('Введи API ключ!'); return; }
   const el = document.getElementById('modelsList');
-  el.textContent = 'Завантаження...';
-  try {
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-    const d = await r.json();
-    if (d.error) { el.textContent = 'Помилка: ' + d.error.message; return; }
-    const vision = d.models
-      .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
-      .map(m => m.name.replace('models/',''));
-    el.innerHTML = '<b style="color:var(--accent)">Доступні моделі:</b><br>' + vision.join('<br>');
-  } catch(e) { el.textContent = 'Помилка: ' + e.message; }
+  el.textContent = 'Тестую моделі...';
+
+  const candidates = [
+    'gemini-2.0-flash',
+    'gemini-2.0-flash-001',
+    'gemini-1.5-flash',
+    'gemini-1.5-flash-001',
+    'gemini-1.5-flash-latest',
+    'gemini-1.5-pro',
+    'gemini-1.5-pro-latest',
+    'gemini-pro',
+    'gemini-pro-vision',
+  ];
+
+  const working = [];
+  for (const model of candidates) {
+    try {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: 'hi' }] }], generationConfig: { maxOutputTokens: 5 } })
+      });
+      const d = await r.json();
+      if (!d.error) {
+        working.push(model);
+        el.innerHTML = '<b style="color:var(--accent)">Працюють:</b><br>' + working.join('<br>');
+      }
+    } catch(e) {}
+  }
+
+  if (working.length === 0) {
+    el.innerHTML = '<span style="color:var(--red)">Жодна модель не відповіла. Перевір ключ.</span>';
+  } else {
+    // Auto-set first working model
+    currentModel = working[0];
+    el.innerHTML += `<br><span style="color:var(--accent)">✓ Встановлено: ${currentModel}</span>`;
+  }
 }
 
 function renderEvent(ev) {
