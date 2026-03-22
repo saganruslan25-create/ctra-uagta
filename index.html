@@ -463,6 +463,8 @@
       <div style="font-size:10px;color:var(--dim);margin-top:5px;letter-spacing:1px;">
         ⓘ Зберігається тільки локально в браузері
       </div>
+      <button class="tool-btn" style="margin-top:8px;width:100%;font-size:10px;" onclick="listModels()">⟳ Перевірити доступні моделі</button>
+      <div id="modelsList" style="font-size:10px;color:var(--accent);margin-top:6px;letter-spacing:0.5px;line-height:1.6;display:none;"></div>
     </div>
 
     <div class="panel-section">
@@ -485,6 +487,10 @@
         ▶ Генерувати івент
         <div class="spinner" id="spinner"></div>
       </button>
+      <button class="tool-btn" style="width:100%;margin-top:6px;padding:7px;" onclick="listModels()">
+        ⟳ Перевірити доступні моделі
+      </button>
+      <div id="modelsList" style="font-size:10px;color:var(--dim);margin-top:6px;letter-spacing:0.5px;line-height:1.6;"></div>
     </div>
 
     <div style="padding:12px 16px 6px;border-bottom:1px solid var(--border);">
@@ -649,6 +655,27 @@ function captureMapBase64() {
 // ---- GENERATE EVENT ----
 let eventCounter = 0;
 
+async function listModels() {
+  const apiKey = document.getElementById('apiKeyInput').value.trim() || localStorage.getItem('war_gemini_key') || '';
+  if (!apiKey) { alert('Введи API ключ!'); return; }
+  const el = document.getElementById('modelsList');
+  el.style.display = 'block';
+  el.textContent = 'Завантаження...';
+  try {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const d = await r.json();
+    const vision = d.models
+      ?.filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+      ?.map(m => m.name.replace('models/',''))
+      || [];
+    el.innerHTML = vision.length
+      ? '<b style="color:var(--dim)">Доступні моделі:</b><br>' + vision.map(m => `• ${m}`).join('<br>')
+      : 'Моделі не знайдено';
+  } catch(e) {
+    el.textContent = 'Помилка: ' + e.message;
+  }
+}
+
 async function generateEvent() {
   const apiKey = document.getElementById('apiKeyInput').value.trim() || localStorage.getItem('war_gemini_key') || '';
   if (!apiKey) {
@@ -695,7 +722,7 @@ async function generateEvent() {
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -739,6 +766,22 @@ async function generateEvent() {
     btn.disabled = false;
     spinner.style.display = 'none';
   }
+}
+
+async function listModels() {
+  const apiKey = document.getElementById('apiKeyInput').value.trim() || localStorage.getItem('war_gemini_key') || '';
+  if (!apiKey) { alert('Введи API ключ!'); return; }
+  const el = document.getElementById('modelsList');
+  el.textContent = 'Завантаження...';
+  try {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const d = await r.json();
+    if (d.error) { el.textContent = 'Помилка: ' + d.error.message; return; }
+    const vision = d.models
+      .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+      .map(m => m.name.replace('models/',''));
+    el.innerHTML = '<b style="color:var(--accent)">Доступні моделі:</b><br>' + vision.join('<br>');
+  } catch(e) { el.textContent = 'Помилка: ' + e.message; }
 }
 
 function renderEvent(ev) {
