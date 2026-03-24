@@ -41,7 +41,6 @@ body {
   overflow-x: hidden;
 }
 
-/* LAYOUT */
 .game-layout {
   display: grid;
   grid-template-columns: 220px 1fr 220px;
@@ -50,7 +49,6 @@ body {
   gap: 0;
 }
 
-/* HEADER */
 .game-header {
   grid-column: 1/-1;
   background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
@@ -102,7 +100,6 @@ body {
   50%      { box-shadow: 0 0 0 6px rgba(192,57,43,0); }
 }
 
-/* SIDE PANELS */
 .left-panel, .right-panel {
   background: var(--panel);
   border-right: 1px solid var(--border);
@@ -162,7 +159,6 @@ body {
 .prog-fill.player { background: linear-gradient(90deg, var(--player), var(--player-l)); }
 .prog-fill.ai     { background: linear-gradient(90deg, var(--ai), var(--ai-l)); }
 
-/* Income display */
 .income-row {
   display: flex;
   justify-content: space-between;
@@ -173,7 +169,6 @@ body {
 }
 .income-row:last-child { border-bottom: none; }
 
-/* BUTTONS */
 .btn {
   width: 100%;
   padding: 9px 12px;
@@ -220,39 +215,37 @@ body {
 }
 .btn-neutral:hover { border-color: var(--text2); color: var(--text); }
 
-/* MAP AREA */
 .map-area {
-  background: var(--bg);
+  background: #0a1520;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 10px;
   position: relative;
   min-height: 0;
 }
 
 #ukraine-svg {
   width: 100%;
-  max-width: 680px;
+  max-width: 760px;
   height: auto;
   filter: drop-shadow(0 8px 32px rgba(0,0,0,0.6));
 }
 
-/* SVG province styles */
 .province {
-  stroke-width: 1.2;
+  stroke-width: 1.5;
   cursor: pointer;
   transition: filter 0.15s;
 }
-.province:hover { filter: brightness(1.35); }
-.province.neutral { fill: var(--neutral); stroke: #4a5568; }
+.province:hover { filter: brightness(1.4); }
+.province.neutral { fill: #2c3e50; stroke: #4a5a6a; }
 .province.player  { fill: var(--player); stroke: var(--player-l); }
 .province.ai      { fill: var(--ai); stroke: var(--ai-l); }
 .province.player.adj-highlight { 
   fill: #1a4a35; 
   stroke: var(--player-ll); 
-  stroke-width: 2;
+  stroke-width: 2.5;
   filter: brightness(1.2);
 }
 .province.neutral.adj-highlight {
@@ -282,7 +275,6 @@ body {
   100% { filter: brightness(1); }
 }
 
-/* Tooltip */
 #tooltip {
   position: fixed;
   background: var(--panel2);
@@ -301,7 +293,6 @@ body {
 #tooltip .tt-income { font-size: 11px; color: var(--gold-l); }
 #tooltip .tt-cost { font-size: 11px; color: var(--text2); }
 
-/* LOG */
 .log-wrap {
   grid-column: 1/-1;
   background: var(--panel);
@@ -316,18 +307,13 @@ body {
 .log-wrap::-webkit-scrollbar { width: 4px; }
 .log-wrap::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
-.log-line {
-  font-size: 12px;
-  color: var(--text2);
-  line-height: 1.5;
-}
+.log-line { font-size: 12px; color: var(--text2); line-height: 1.5; }
 .log-line.p { color: var(--player-ll); }
 .log-line.a { color: var(--ai-ll); }
 .log-line.g { color: var(--gold-l); }
 .log-line.r { color: var(--red); }
 .log-line.sys { color: #8b949e; font-style: italic; }
 
-/* TURN round display */
 .round-display {
   font-family: 'Cinzel', serif;
   font-size: 11px;
@@ -335,7 +321,6 @@ body {
   letter-spacing: 1px;
 }
 
-/* MODAL OVERLAY */
 #modal {
   position: fixed;
   inset: 0;
@@ -398,12 +383,11 @@ body {
 .diff-opt:hover { border-color: var(--player-l); color: var(--player-ll); }
 .diff-opt.active { background: rgba(45,106,79,0.25); border-color: var(--player-l); color: var(--player-ll); }
 
-/* notify flash */
 @keyframes fadeUp {
-  0%   { opacity:0; transform:translateY(10px); }
-  20%  { opacity:1; transform:translateY(0); }
+  0%   { opacity:0; transform:translateY(10px) translateX(-50%); }
+  20%  { opacity:1; transform:translateY(0) translateX(-50%); }
   80%  { opacity:1; }
-  100% { opacity:0; transform:translateY(-10px); }
+  100% { opacity:0; transform:translateY(-10px) translateX(-50%); }
 }
 .notif {
   position: fixed;
@@ -420,30 +404,33 @@ body {
   pointer-events: none;
   animation: fadeUp 2.5s ease forwards;
   z-index: 400;
+  white-space: nowrap;
 }
+
+/* Sea background */
+.sea { fill: #0a1e35; }
+.sea-label { fill: rgba(100,160,220,0.3); font-style: italic; }
 </style>
 </head>
 <body>
 
 <div class="game-layout">
 
-  <!-- HEADER -->
   <header class="game-header">
     <div class="game-title">⚔ БИТВА ЗА УКРАЇНУ</div>
     <div class="round-display" id="roundDisplay">РІК 1991 · ХІД 1</div>
     <div id="turnBanner" class="turn-banner player">ВАШ ХІД</div>
-    <div id="warStatus" class="war-status peace">МИР</div>
+    <div id="warStatus" class="war-status peace">🕊 МИР</div>
   </header>
 
-  <!-- LEFT PANEL: Player -->
+  <!-- LEFT PANEL -->
   <aside class="left-panel">
-
     <div class="card player-card">
       <div class="card-title">🇺🇦 Ваша держава</div>
       <div class="big-num player-color" id="pTerritory">1</div>
       <div class="sub-text">провінцій</div>
       <div class="prog-wrap">
-        <div class="prog-fill player" id="pBar" style="width:2%"></div>
+        <div class="prog-fill player" id="pBar" style="width:4%"></div>
       </div>
     </div>
 
@@ -454,21 +441,21 @@ body {
       <div style="margin-top:8px;">
         <div class="income-row">
           <span style="color:var(--text2)">Дохід/хід</span>
-          <span style="color:var(--gold-l)">+<span id="pIncome">5</span>💰</span>
+          <span style="color:var(--gold-l)">+<span id="pIncome">0</span>💰</span>
         </div>
         <div class="income-row">
-          <span style="color:var(--text2)">Вартість клітинки</span>
+          <span style="color:var(--text2)">Нейтральна</span>
           <span id="costDisplay" style="color:var(--gold-l)">20💰</span>
         </div>
         <div class="income-row">
           <span style="color:var(--text2)">Атака ворога</span>
-          <span id="attackCostDisplay" style="color:var(--ai-ll)">40💰</span>
+          <span id="attackCostDisplay" style="color:var(--ai-ll)">40💰+</span>
         </div>
       </div>
     </div>
 
     <div class="card neutral-card">
-      <div class="card-title">📜 Статус</div>
+      <div class="card-title">📊 Статистика</div>
       <div style="font-size:11px;color:var(--text2);line-height:1.9;">
         Провінцій: <span style="color:var(--player-ll)" id="pTerr2">1</span><br>
         Перемог: <span style="color:var(--green)" id="pWins">0</span><br>
@@ -485,166 +472,178 @@ body {
 
   <!-- MAP -->
   <main class="map-area">
-    <svg id="ukraine-svg" viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" id="ukraine-svg">
-      <!-- Ukraine provinces as polygons - realistic approximation of oblasts -->
-      <!-- Each province has id, name, approximate centroid label position -->
-
+    <!--
+      Точна карта України з реальними контурами областей.
+      ViewBox: 0 0 1000 700
+      Координати адаптовані під реальну географію.
+    -->
+    <svg id="ukraine-svg" viewBox="0 0 1000 680" xmlns="http://www.w3.org/2000/svg">
+      <!-- Sea background -->
+      <rect class="sea" x="0" y="0" width="1000" height="680"/>
+      
       <!-- ВОЛИНСЬКА -->
       <polygon class="province neutral" id="volyn"
         data-name="Волинська" data-income="4" data-cost="20"
-        points="80,60 130,50 155,70 160,110 140,130 100,130 75,100"/>
+        points="118,118 155,100 200,105 215,130 210,175 185,195 150,195 125,175 108,155"/>
 
       <!-- РІВНЕНСЬКА -->
       <polygon class="province neutral" id="rivne"
         data-name="Рівненська" data-income="4" data-cost="20"
-        points="155,70 205,60 230,80 225,120 200,140 160,130 140,130 155,110"/>
+        points="200,105 255,98 280,115 278,160 255,180 210,175 215,130"/>
 
       <!-- ЖИТОМИРСЬКА -->
       <polygon class="province neutral" id="zhytomyr"
         data-name="Житомирська" data-income="5" data-cost="20"
-        points="230,80 285,75 310,95 305,135 270,155 240,150 220,135 225,120"/>
+        points="278,115 340,108 375,125 375,175 345,200 305,205 278,190 255,180 280,160"/>
 
       <!-- КИЇВСЬКА -->
       <polygon class="province neutral" id="kyiv"
-        data-name="Київська" data-income="8" data-cost="30"
-        points="285,75 340,65 370,80 375,120 355,145 310,145 305,135 310,95"/>
+        data-name="Київська" data-income="10" data-cost="35"
+        points="340,108 405,100 445,115 450,155 435,185 400,200 375,200 375,175 375,125"/>
 
       <!-- ЧЕРНІГІВСЬКА -->
       <polygon class="province neutral" id="chernihiv"
         data-name="Чернігівська" data-income="5" data-cost="20"
-        points="340,65 410,55 440,80 435,125 400,140 370,135 355,120 375,120 370,80"/>
+        points="405,100 485,85 530,100 535,145 510,175 475,185 450,175 450,155 445,115"/>
 
       <!-- СУМСЬКА -->
       <polygon class="province neutral" id="sumy"
         data-name="Сумська" data-income="5" data-cost="20"
-        points="410,55 470,60 500,85 490,125 460,140 435,135 435,125 440,80"/>
+        points="485,85 560,80 605,105 605,150 575,175 535,180 535,145 530,100"/>
 
       <!-- ХАРКІВСЬКА -->
       <polygon class="province neutral" id="kharkiv"
         data-name="Харківська" data-income="9" data-cost="30"
-        points="470,60 530,70 560,100 555,145 520,160 490,155 460,140 490,125 500,85"/>
+        points="560,80 650,85 695,115 695,165 660,195 615,205 580,195 575,175 605,150 605,105"/>
 
-      <!-- ЛУГАНСЬКА (частково) -->
+      <!-- ЛУГАНСЬКА -->
       <polygon class="province neutral" id="luhansk"
         data-name="Луганська" data-income="6" data-cost="25"
-        points="530,70 600,80 630,110 615,155 580,170 555,165 555,145 560,100"/>
+        points="650,85 740,90 785,120 780,170 745,195 700,200 695,165 695,115"/>
 
-      <!-- ДОНЕЦЬКА (частково) -->
+      <!-- ДОНЕЦЬКА -->
       <polygon class="province neutral" id="donetsk"
         data-name="Донецька" data-income="9" data-cost="30"
-        points="555,145 580,170 600,200 570,225 535,220 510,195 515,165 520,160 490,155"/>
+        points="695,165 745,195 760,240 730,270 690,275 650,255 635,225 645,195 660,195"/>
 
       <!-- ЗАПОРІЗЬКА -->
       <polygon class="province neutral" id="zaporizhzhia"
         data-name="Запорізька" data-income="7" data-cost="25"
-        points="460,200 510,195 535,220 520,255 490,270 455,265 440,235 450,210"/>
+        points="595,230 650,220 690,245 700,290 680,320 645,335 605,325 580,295 585,260"/>
 
       <!-- ДНІПРОПЕТРОВСЬКА -->
       <polygon class="province neutral" id="dnipro"
         data-name="Дніпропетровська" data-income="10" data-cost="35"
-        points="400,165 460,160 490,155 515,165 510,195 460,200 450,210 420,205 395,190"/>
+        points="510,185 580,190 615,205 645,195 650,220 595,230 555,235 515,220 500,200"/>
 
       <!-- ПОЛТАВСЬКА -->
       <polygon class="province neutral" id="poltava"
         data-name="Полтавська" data-income="7" data-cost="25"
-        points="380,130 435,125 460,140 490,155 460,160 400,165 395,150"/>
+        points="435,185 510,175 535,180 575,175 580,195 615,205 580,190 510,185 490,205 460,210 435,200"/>
 
       <!-- КІРОВОГРАДСЬКА -->
       <polygon class="province neutral" id="kirovohrad"
         data-name="Кіровоградська" data-income="5" data-cost="20"
-        points="335,175 395,170 395,190 420,205 415,230 380,245 345,235 330,210"/>
-
-      <!-- МИКОЛАЇВСЬКА -->
-      <polygon class="province neutral" id="mykolaiv"
-        data-name="Миколаївська" data-income="6" data-cost="25"
-        points="340,245 380,245 415,230 430,250 415,280 380,295 345,285 325,265"/>
-
-      <!-- ХЕРСОНСЬКА -->
-      <polygon class="province neutral" id="kherson"
-        data-name="Херсонська" data-income="6" data-cost="25"
-        points="380,295 415,280 440,285 455,310 440,335 400,340 370,320 365,300"/>
-
-      <!-- ОДЕСЬКА -->
-      <polygon class="province neutral" id="odesa"
-        data-name="Одеська" data-income="8" data-cost="30"
-        points="255,270 325,265 345,285 380,295 365,300 350,335 300,350 255,335 230,305 240,280"/>
-
-      <!-- ВІННИЦЬКА -->
-      <polygon class="province neutral" id="vinnytsia"
-        data-name="Вінницька" data-income="6" data-cost="25"
-        points="235,150 270,145 305,155 330,165 330,210 295,225 260,220 235,195 230,170"/>
-
-      <!-- ХМЕЛЬНИЦЬКА -->
-      <polygon class="province neutral" id="khmelnytskyi"
-        data-name="Хмельницька" data-income="5" data-cost="20"
-        points="185,130 225,120 230,135 235,150 230,170 200,185 170,175 160,155 165,135"/>
-
-      <!-- ТЕРНОПІЛЬСЬКА -->
-      <polygon class="province neutral" id="ternopil"
-        data-name="Тернопільська" data-income="4" data-cost="20"
-        points="150,120 185,115 185,130 165,135 160,155 140,155 125,135 130,120"/>
-
-      <!-- ЧЕРНІВЕЦЬКА -->
-      <polygon class="province neutral" id="chernivtsi"
-        data-name="Чернівецька" data-income="4" data-cost="20"
-        points="150,155 165,150 200,165 195,190 175,205 150,200 135,180 140,160"/>
-
-      <!-- ІВАНО-ФРАНКІВСЬКА -->
-      <polygon class="province neutral" id="ivano"
-        data-name="Івано-Франківська" data-income="5" data-cost="20"
-        points="110,140 150,130 155,155 140,160 135,180 115,185 95,170 100,150"/>
-
-      <!-- ЗАКАРПАТСЬКА -->
-      <polygon class="province neutral" id="zakarpattia"
-        data-name="Закарпатська" data-income="4" data-cost="20"
-        points="75,155 110,150 115,170 100,185 80,190 60,175 55,160 65,150"/>
-
-      <!-- ЛЬВІВСЬКА -->
-      <polygon class="province neutral" id="lviv"
-        data-name="Львівська" data-income="7" data-cost="25"
-        points="75,100 115,95 140,110 150,130 110,140 95,140 80,125 70,110"/>
+        points="390,215 460,210 515,220 515,265 480,290 440,290 400,270 385,245"/>
 
       <!-- ЧЕРКАСЬКА -->
       <polygon class="province neutral" id="cherkasy"
         data-name="Черкаська" data-income="5" data-cost="20"
-        points="305,155 355,150 380,160 395,170 395,190 355,195 330,185 330,175 330,165"/>
+        points="375,200 435,200 460,210 390,215 375,215"/>
 
-      <!-- Province labels (SVG text) -->
-      <g id="prov-labels" style="pointer-events:none">
-        <text x="105" y="98" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Волинь</text>
-        <text x="185" y="100" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Рівне</text>
-        <text x="262" y="115" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Житомир</text>
-        <text x="328" y="107" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Київ</text>
-        <text x="388" y="98" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Чернігів</text>
-        <text x="450" y="100" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Суми</text>
-        <text x="508" y="110" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Харків</text>
-        <text x="574" y="115" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Луганськ</text>
-        <text x="548" y="187" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Донецьк</text>
-        <text x="485" y="232" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Запоріжжя</text>
-        <text x="450" y="183" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Дніпро</text>
-        <text x="427" y="147" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Полтава</text>
-        <text x="365" y="208" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Кіровоград</text>
-        <text x="373" y="265" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Миколаїв</text>
-        <text x="403" y="312" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Херсон</text>
-        <text x="295" y="308" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Одеса</text>
-        <text x="278" y="185" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Вінниця</text>
-        <text x="196" y="155" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Хмельниць</text>
-        <text x="153" y="137" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Тернопіль</text>
-        <text x="168" y="178" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Чернівці</text>
-        <text x="120" y="162" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Ів-Фр</text>
-        <text x="82" y="172" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Закарп</text>
-        <text x="105" y="118" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Львів</text>
-        <text x="350" y="170" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text">Черкаси</text>
-        <!-- Sea/ocean hint -->
-        <text x="380" y="420" text-anchor="middle" font-size="14" fill="rgba(100,150,200,0.25)" font-family="Crimson Text" font-style="italic">Чорне море</text>
-        <text x="550" y="360" text-anchor="middle" font-size="11" fill="rgba(100,150,200,0.2)" font-family="Crimson Text" font-style="italic">Азовське море</text>
-      </g>
+      <!-- МИКОЛАЇВСЬКА -->
+      <polygon class="province neutral" id="mykolaiv"
+        data-name="Миколаївська" data-income="6" data-cost="25"
+        points="395,300 450,295 490,305 510,340 490,370 450,375 415,360 395,335"/>
 
-      <!-- Crimea (separate) -->
+      <!-- ХЕРСОНСЬКА -->
+      <polygon class="province neutral" id="kherson"
+        data-name="Херсонська" data-income="6" data-cost="25"
+        points="490,305 545,300 580,295 605,325 595,360 560,385 520,390 490,370 510,340"/>
+
+      <!-- ОДЕСЬКА -->
+      <polygon class="province neutral" id="odesa"
+        data-name="Одеська" data-income="8" data-cost="30"
+        points="280,285 355,275 395,280 400,305 395,335 415,360 390,380 340,390 290,385 255,355 250,320 265,295"/>
+
+      <!-- ВІННИЦЬКА -->
+      <polygon class="province neutral" id="vinnytsia"
+        data-name="Вінницька" data-income="6" data-cost="25"
+        points="265,185 305,205 345,210 375,215 390,215 385,245 355,265 315,270 280,255 260,230 255,205"/>
+
+      <!-- ХМЕЛЬНИЦЬКА -->
+      <polygon class="province neutral" id="khmelnytskyi"
+        data-name="Хмельницька" data-income="5" data-cost="20"
+        points="205,165 255,160 278,175 265,185 255,205 225,220 195,215 175,195 180,175"/>
+
+      <!-- ТЕРНОПІЛЬСЬКА -->
+      <polygon class="province neutral" id="ternopil"
+        data-name="Тернопільська" data-income="4" data-cost="20"
+        points="160,175 205,165 175,195 155,195"/>
+
+      <!-- ЧЕРНІВЕЦЬКА -->
+      <polygon class="province neutral" id="chernivtsi"
+        data-name="Чернівецька" data-income="4" data-cost="20"
+        points="195,215 225,220 240,250 215,275 185,280 160,260 155,235 170,215"/>
+
+      <!-- ІВАНО-ФРАНКІВСЬКА -->
+      <polygon class="province neutral" id="ivano"
+        data-name="Івано-Франківська" data-income="5" data-cost="20"
+        points="128,180 155,175 175,195 195,215 170,215 155,235 128,235 110,210 110,190"/>
+
+      <!-- ЗАКАРПАТСЬКА -->
+      <polygon class="province neutral" id="zakarpattia"
+        data-name="Закарпатська" data-income="4" data-cost="20"
+        points="88,210 128,200 128,235 110,255 88,255 68,235 65,215"/>
+
+      <!-- ЛЬВІВСЬКА -->
+      <polygon class="province neutral" id="lviv"
+        data-name="Львівська" data-income="7" data-cost="25"
+        points="118,118 160,110 185,125 185,165 155,175 128,180 110,165 108,140"/>
+
+      <!-- КРИМ -->
       <polygon class="province neutral" id="crimea"
-        data-name="Крим" data-income="6" data-cost="25"
-        points="400,350 440,340 470,345 490,365 480,390 450,400 415,395 395,375"/>
-      <text x="442" y="373" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)" font-family="Crimson Text" style="pointer-events:none">Крим</text>
+        data-name="Кримський п-ів" data-income="7" data-cost="25"
+        points="545,420 590,405 640,410 675,435 670,470 640,490 590,495 555,480 535,455 540,430"/>
+
+      <!-- River Dnipro hint -->
+      <polyline points="445,115 450,155 435,185 460,210 480,240 490,280 490,320 510,360 545,390 580,420 590,450"
+        fill="none" stroke="rgba(100,160,220,0.4)" stroke-width="3" stroke-linecap="round" pointer-events="none"/>
+
+      <!-- Province labels -->
+      <g id="prov-labels" style="pointer-events:none; font-family:'Crimson Text',serif;">
+        <text x="157" y="155" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Волинь</text>
+        <text x="248" y="143" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Рівне</text>
+        <text x="328" y="158" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Житомир</text>
+        <text x="410" y="150" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Київ</text>
+        <text x="472" y="138" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Чернігів</text>
+        <text x="555" y="133" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Суми</text>
+        <text x="625" y="143" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Харків</text>
+        <text x="717" y="143" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Луганськ</text>
+        <text x="700" y="230" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Донецьк</text>
+        <text x="640" y="278" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Запоріжжя</text>
+        <text x="570" y="212" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Дніпро</text>
+        <text x="510" y="195" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Полтава</text>
+        <text x="450" y="255" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Кіровоград</text>
+        <text x="415" y="208" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Черкаси</text>
+        <text x="450" y="335" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Миколаїв</text>
+        <text x="545" y="340" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Херсон</text>
+        <text x="328" y="335" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Одеса</text>
+        <text x="320" y="228" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Вінниця</text>
+        <text x="218" y="193" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Хмельниць.</text>
+        <text x="172" y="184" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Тернопіль</text>
+        <text x="193" y="248" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Чернівці</text>
+        <text x="140" y="215" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Ів.-Фр.</text>
+        <text x="90" y="233" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Закарп.</text>
+        <text x="148" y="147" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Львів</text>
+        <text x="605" y="452" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Крим</text>
+
+        <!-- Sea labels -->
+        <text x="430" y="510" text-anchor="middle" font-size="18" class="sea-label">Чорне море</text>
+        <text x="720" y="390" text-anchor="middle" font-size="13" class="sea-label">Азовське море</text>
+        <!-- Dnipro river label -->
+        <text x="505" y="308" text-anchor="middle" font-size="9" fill="rgba(100,160,220,0.5)" font-style="italic" transform="rotate(-80,505,308)">Дніпро</text>
+      </g>
 
     </svg>
 
@@ -656,32 +655,31 @@ body {
     </div>
   </main>
 
-  <!-- RIGHT PANEL: AI + Rules -->
+  <!-- RIGHT PANEL -->
   <aside class="right-panel">
-
     <div class="card ai-card">
       <div class="card-title">👹 Ворог (ШІ)</div>
       <div class="big-num ai-color" id="aTerritory">1</div>
       <div class="sub-text">провінцій</div>
       <div class="prog-wrap">
-        <div class="prog-fill ai" id="aBar" style="width:2%"></div>
+        <div class="prog-fill ai" id="aBar" style="width:4%"></div>
       </div>
     </div>
 
     <div class="card gold-card">
       <div class="card-title">💰 Казна ворога</div>
       <div class="big-num gold-color" id="aGold">50</div>
-      <div class="sub-text">золота (оцінка)</div>
+      <div class="sub-text">золота (видимо)</div>
     </div>
 
     <div class="card neutral-card">
       <div class="card-title">📜 Як грати</div>
       <div style="font-size:11px;color:var(--text2);line-height:1.9;">
-        <b style="color:var(--text)">Натисни на провінцію</b> поряд зі своєю — купиш її<br><br>
+        <b style="color:var(--text)">Натисни провінцію</b> поряд зі своєю — купиш її<br><br>
         <b style="color:var(--gold-l)">Кожна провінція</b> дає дохід на початку ходу<br><br>
-        <b style="color:var(--player-ll)">Завершуй хід</b> кнопкою або коли гроші скінчились<br><br>
-        <b style="color:var(--ai-ll)">Оголоси війну</b> щоб атакувати ворожі провінції (дорожче)<br><br>
-        <b style="color:var(--text2)">Мета:</b> захопи більшість України (26+ провінцій)
+        <b style="color:var(--player-ll)">Завершуй хід</b> коли готовий або скінчились гроші<br><br>
+        <b style="color:var(--ai-ll)">Оголоси війну</b> щоб атакувати ворожі провінції<br><br>
+        <b style="color:var(--text2)">Мета:</b> захопи 14+ провінцій (більшість)
       </div>
     </div>
 
@@ -693,12 +691,9 @@ body {
         <button class="diff-opt" onclick="setDiff('hard',this)">Важко</button>
       </div>
     </div>
-
   </aside>
 
-  <!-- LOG -->
   <div class="log-wrap" id="logWrap"></div>
-
 </div>
 
 <!-- MODAL -->
@@ -733,9 +728,8 @@ body {
 <script>
 // ===================== DATA =====================
 const PROVINCES_DATA = {};
-const TOTAL_PROVS = 26; // ~26 provinces on map
+const TOTAL_PROVS = 25;
 
-// Fill from SVG on load
 function loadProvinces() {
   document.querySelectorAll('.province').forEach(el => {
     const id = el.id;
@@ -744,7 +738,7 @@ function loadProvinces() {
       name: el.dataset.name,
       income: parseInt(el.dataset.income) || 5,
       cost: parseInt(el.dataset.cost) || 20,
-      owner: 'neutral', // 'player', 'ai', 'neutral'
+      owner: 'neutral',
       el
     };
     el.addEventListener('click', () => onProvinceClick(id));
@@ -762,18 +756,52 @@ let state = {
   aiIncome: 0,
   round: 1,
   year: 1991,
-  phase: 'player', // 'player' | 'ai' | 'end'
+  phase: 'player',
   atWar: false,
   warDeclaredRound: null,
-  difficulty: 'normal',
   gameActive: false,
   stats: { wins: 0, loss: 0 },
-  actionsTaken: 0, // per turn
+  actionsTaken: 0,
 };
 
-const NEUTRAL_COST = 20;  // base cost for neutral province
-const ATTACK_COST_MULT = 2; // multiplier for attacking ai province
-const WAR_ENABLE_ROUND = 5; // can declare war after round 5
+const NEUTRAL_COST = 20;
+const ATTACK_COST_MULT = 2;
+const WAR_ENABLE_ROUND = 4;
+let difficulty = 'normal';
+
+// ===================== ADJACENCY =====================
+const ADJ = {
+  volyn:        ['rivne','lviv'],
+  rivne:        ['volyn','lviv','ternopil','khmelnytskyi','zhytomyr'],
+  zhytomyr:     ['rivne','khmelnytskyi','vinnytsia','kyiv'],
+  kyiv:         ['zhytomyr','chernihiv','poltava','cherkasy','vinnytsia'],
+  chernihiv:    ['kyiv','sumy','poltava'],
+  sumy:         ['chernihiv','kharkiv','poltava'],
+  kharkiv:      ['sumy','luhansk','donetsk','dnipro','poltava'],
+  luhansk:      ['kharkiv','donetsk'],
+  donetsk:      ['luhansk','kharkiv','dnipro','zaporizhzhia'],
+  zaporizhzhia: ['donetsk','dnipro','kherson'],
+  dnipro:       ['kharkiv','poltava','kirovohrad','zaporizhzhia','donetsk','cherkasy'],
+  poltava:      ['sumy','kharkiv','dnipro','cherkasy','kyiv','chernihiv'],
+  kirovohrad:   ['dnipro','cherkasy','vinnytsia','mykolaiv','zaporizhzhia'],
+  cherkasy:     ['kyiv','poltava','dnipro','kirovohrad','vinnytsia'],
+  mykolaiv:     ['kirovohrad','vinnytsia','odesa','kherson'],
+  kherson:      ['mykolaiv','zaporizhzhia','crimea'],
+  odesa:        ['mykolaiv','vinnytsia','chernivtsi'],
+  vinnytsia:    ['khmelnytskyi','zhytomyr','kyiv','cherkasy','kirovohrad','odesa','chernivtsi'],
+  khmelnytskyi: ['rivne','ternopil','lviv','vinnytsia','chernivtsi','ivano'],
+  ternopil:     ['lviv','rivne','khmelnytskyi','ivano','chernivtsi'],
+  chernivtsi:   ['ternopil','khmelnytskyi','vinnytsia','odesa','ivano'],
+  ivano:        ['lviv','ternopil','chernivtsi','zakarpattia'],
+  zakarpattia:  ['lviv','ivano'],
+  lviv:         ['volyn','rivne','khmelnytskyi','ternopil','ivano','zakarpattia'],
+  crimea:       ['kherson'],
+};
+
+function isAdjacentTo(provId, owner) {
+  const neighbors = ADJ[provId] || [];
+  return neighbors.some(n => PROVINCES_DATA[n] && PROVINCES_DATA[n].owner === owner);
+}
 
 // ===================== START =====================
 function startGame() {
@@ -781,15 +809,15 @@ function startGame() {
   document.getElementById('modalResult').style.display = 'none';
   document.getElementById('modalDiff').style.display = 'flex';
 
-  // Reset all provinces
   Object.values(PROVINCES_DATA).forEach(p => {
     p.owner = 'neutral';
     p.el.className = 'province neutral';
   });
 
-  // Starting provinces
+  // Player starts in west, AI starts in east
   const playerStart = 'lviv';
-  const aiStart = 'kharkiv';
+  const aiStart = 'luhansk'; // ← ФІКС: тепер ШІ починає на сході, де є сусіди
+
   PROVINCES_DATA[playerStart].owner = 'player';
   PROVINCES_DATA[playerStart].el.className = 'province player';
   PROVINCES_DATA[aiStart].owner = 'ai';
@@ -805,12 +833,16 @@ function startGame() {
   state.gameActive = true;
   state.actionsTaken = 0;
 
+  // ← ФІКС: Обидва гравці отримують стартовий дохід одразу
   calcIncomes();
+  collectIncome('player');
+  collectIncome('ai');
+
   refreshUI();
   highlightValid();
   clearLog();
-  log('🎮 Кампанію розпочато! Рік 1991. Ви керуєте Львівською областю.', 'sys');
-  log(`💰 Дохід першого ходу: +${state.playerIncome} золота`, 'g');
+  log('🎮 Кампанію розпочато! Рік 1991. Ви — Львівська область.', 'sys');
+  log(`💰 Стартовий дохід: +${state.playerIncome}💰. ШІ активний на сході!`, 'g');
 }
 
 // ===================== INCOME =====================
@@ -818,7 +850,7 @@ function calcIncomes() {
   let pi = 0, ai = 0;
   Object.values(PROVINCES_DATA).forEach(p => {
     if (p.owner === 'player') pi += p.income;
-    if (p.owner === 'ai') ai += p.income;
+    if (p.owner === 'ai')     ai += p.income;
   });
   state.playerIncome = pi;
   state.aiIncome = ai;
@@ -826,56 +858,19 @@ function calcIncomes() {
 
 function collectIncome(who) {
   if (who === 'player') state.playerGold += state.playerIncome;
-  else state.aiGold += state.aiIncome;
-}
-
-// ===================== ADJACENCY =====================
-// Build adjacency from touching polygons (bounding box overlap + manual list)
-const ADJ = {
-  volyn:    ['rivne','lviv'],
-  rivne:    ['volyn','lviv','ternopil','khmelnytskyi','zhytomyr'],
-  zhytomyr: ['rivne','khmelnytskyi','vinnytsia','kyiv','chernihiv'],
-  kyiv:     ['zhytomyr','chernihiv','poltava','cherkasy','vinnytsia'],
-  chernihiv:['kyiv','sumy','poltava'],
-  sumy:     ['chernihiv','kharkiv','poltava'],
-  kharkiv:  ['sumy','luhansk','donetsk','dnipro','poltava'],
-  luhansk:  ['kharkiv','donetsk'],
-  donetsk:  ['luhansk','kharkiv','dnipro','zaporizhzhia'],
-  zaporizhzhia:['donetsk','dnipro','kherson'],
-  dnipro:   ['kharkiv','poltava','kirovohrad','zaporizhzhia','donetsk'],
-  poltava:  ['sumy','kharkiv','dnipro','cherkasy','kyiv','chernihiv'],
-  kirovohrad:['dnipro','cherkasy','vinnytsia','mykolaiv','zaporizhzhia'],
-  mykolaiv: ['kirovohrad','vinnytsia','odesa','kherson'],
-  kherson:  ['mykolaiv','zaporizhzhia','crimea'],
-  odesa:    ['mykolaiv','vinnytsia','chernivtsi'],
-  vinnytsia:['khmelnytskyi','zhytomyr','kyiv','cherkasy','kirovohrad','odesa','chernivtsi'],
-  khmelnytskyi:['rivne','ternopil','lviv','vinnytsia','chernivtsi','ivano'],
-  ternopil: ['lviv','rivne','khmelnytskyi','ivano','chernivtsi'],
-  chernivtsi:['ternopil','khmelnytskyi','vinnytsia','odesa','ivano'],
-  ivano:    ['lviv','ternopil','chernivtsi','zakarpattia'],
-  zakarpattia:['lviv','ivano'],
-  lviv:     ['volyn','rivne','khmelnytskyi','ternopil','ivano','zakarpattia'],
-  cherkasy: ['kyiv','poltava','dnipro','kirovohrad','vinnytsia'],
-  crimea:   ['kherson'],
-};
-
-function isAdjacentTo(provId, owner) {
-  const neighbors = ADJ[provId] || [];
-  return neighbors.some(n => PROVINCES_DATA[n] && PROVINCES_DATA[n].owner === owner);
+  else                  state.aiGold     += state.aiIncome;
 }
 
 // ===================== HIGHLIGHTS =====================
 function highlightValid() {
   if (!state.gameActive || state.phase !== 'player') {
-    document.querySelectorAll('.province').forEach(el => {
-      el.classList.remove('adj-highlight');
-    });
+    document.querySelectorAll('.province').forEach(el => el.classList.remove('adj-highlight'));
     return;
   }
   Object.values(PROVINCES_DATA).forEach(p => {
     p.el.classList.remove('adj-highlight');
-    if (p.owner === 'neutral' && isAdjacentTo(p.id, 'player')) {
-      if (p.cost <= state.playerGold) p.el.classList.add('adj-highlight');
+    if (p.owner === 'neutral' && isAdjacentTo(p.id, 'player') && p.cost <= state.playerGold) {
+      p.el.classList.add('adj-highlight');
     }
     if (p.owner === 'ai' && state.atWar && isAdjacentTo(p.id, 'player')) {
       const attackCost = p.cost * ATTACK_COST_MULT;
@@ -890,44 +885,27 @@ function onProvinceClick(id) {
   const p = PROVINCES_DATA[id];
   if (!p) return;
 
-  if (p.owner === 'player') {
-    showNotif('Це вже ваша провінція!');
-    return;
-  }
+  if (p.owner === 'player') { showNotif('Це вже ваша провінція!'); return; }
 
-  if (!isAdjacentTo(id, 'player')) {
-    showNotif('⚠ Провінція не межує з вашою!');
-    return;
-  }
+  if (!isAdjacentTo(id, 'player')) { showNotif('⚠ Не межує з вашою!'); return; }
 
   if (p.owner === 'neutral') {
     const cost = p.cost;
-    if (state.playerGold < cost) {
-      showNotif(`❌ Не вистачає золота! Потрібно ${cost}💰`);
-      return;
-    }
+    if (state.playerGold < cost) { showNotif(`❌ Потрібно ${cost}💰`); return; }
     state.playerGold -= cost;
     p.owner = 'player';
     p.el.className = 'province player just-captured';
     setTimeout(() => p.el.classList.remove('just-captured'), 700);
     state.actionsTaken++;
     calcIncomes();
-    log(`▶ Ви приєднали ${p.name} за ${cost}💰`, 'p');
-    refreshUI();
-    highlightValid();
-    checkWinCondition();
+    log(`▶ Приєднали ${p.name} за ${cost}💰`, 'p');
+    refreshUI(); highlightValid(); checkWinCondition();
+
   } else if (p.owner === 'ai') {
-    if (!state.atWar) {
-      showNotif('⚠ Оголосіть війну щоб атакувати!');
-      return;
-    }
+    if (!state.atWar) { showNotif('⚠ Оголосіть війну щоб атакувати!'); return; }
     const cost = p.cost * ATTACK_COST_MULT;
-    if (state.playerGold < cost) {
-      showNotif(`❌ Для атаки потрібно ${cost}💰`);
-      return;
-    }
-    // Combat with chance
-    const winChance = difficulty === 'easy' ? 0.75 : difficulty === 'normal' ? 0.6 : 0.5;
+    if (state.playerGold < cost) { showNotif(`❌ Для атаки потрібно ${cost}💰`); return; }
+    const winChance = difficulty === 'easy' ? 0.75 : difficulty === 'normal' ? 0.62 : 0.5;
     if (Math.random() < winChance) {
       state.playerGold -= cost;
       p.owner = 'player';
@@ -935,18 +913,16 @@ function onProvinceClick(id) {
       setTimeout(() => p.el.classList.remove('just-captured'), 700);
       state.actionsTaken++;
       calcIncomes();
-      log(`⚔ Ви захопили ${p.name} (атака ${cost}💰)!`, 'p');
+      log(`⚔ Захопили ${p.name} (атака: ${cost}💰)!`, 'p');
     } else {
       state.playerGold -= Math.floor(cost / 2);
       log(`💥 Атака на ${p.name} провалилась! Втрата ${Math.floor(cost/2)}💰`, 'r');
     }
-    refreshUI();
-    highlightValid();
-    checkWinCondition();
+    refreshUI(); highlightValid(); checkWinCondition();
   }
 }
 
-// ===================== PLAYER TURN END =====================
+// ===================== END PLAYER TURN =====================
 function endPlayerTurn() {
   if (!state.gameActive) return;
   state.phase = 'ai';
@@ -955,25 +931,19 @@ function endPlayerTurn() {
   highlightValid();
   updateTurnBanner();
   log(`— Хід ${state.round} завершено. ШІ думає...`, 'sys');
-
-  setTimeout(runAiTurn, 900);
+  setTimeout(runAiTurn, 800);
 }
 
-// ===================== AI TURN =====================
-let difficulty = 'normal';
-
+// ===================== AI TURN (ВИПРАВЛЕНИЙ) =====================
 function runAiTurn() {
   if (!state.gameActive) return;
 
-  // Collect AI income
+  // ← ФІКС: ШІ завжди отримує дохід на початку свого ходу
   collectIncome('ai');
   calcIncomes();
 
-  // AI decides: expand neutral or attack player
   let budget = state.aiGold;
-  let moved = 0;
 
-  // Get available provinces for AI
   const expand = Object.values(PROVINCES_DATA).filter(p =>
     p.owner === 'neutral' && isAdjacentTo(p.id, 'ai')
   );
@@ -981,46 +951,52 @@ function runAiTurn() {
     p.owner === 'player' && isAdjacentTo(p.id, 'ai')
   ) : [];
 
-  // Prioritize by difficulty
   let targets = [];
   if (difficulty === 'easy') {
-    // only expand, random order
     targets = [...expand].sort(() => Math.random() - 0.5);
   } else if (difficulty === 'normal') {
-    // prefer blocking player adj provinces, then expand
     const blocking = expand.filter(p => isAdjacentTo(p.id, 'player'));
     const rest = expand.filter(p => !isAdjacentTo(p.id, 'player'));
-    const atk = attack.slice(0, 1); // max 1 attack
-    targets = [...blocking, ...atk, ...rest].sort(() => Math.random() - 0.3);
+    const atk = attack.slice(0, 2);
+    targets = [...blocking, ...atk, ...rest].sort(() => Math.random() - 0.25);
   } else {
-    // hard: greedy score
+    // Hard: жадібна стратегія
     const scored = [
-      ...expand.map(p => ({ p, score: (isAdjacentTo(p.id, 'player') ? 30 : 0) + p.income * 3 - p.cost })),
-      ...attack.map(p => ({ p, score: 50 + p.income * 4 - p.cost * 2, isAttack: true }))
+      ...expand.map(p => ({ p, score: (isAdjacentTo(p.id,'player') ? 40 : 0) + p.income * 4 - p.cost })),
+      ...attack.map(p => ({ p, score: 60 + p.income * 5 - p.cost * 2 }))
     ].sort((a, b) => b.score - a.score);
     targets = scored.map(s => s.p);
+  }
+
+  // ← ФІКС: ШІ оголошує війну автономно (раніше ніколи не спрацьовувало через баг порядку)
+  if (!state.atWar && state.round >= WAR_ENABLE_ROUND) {
+    const aiProvs = Object.values(PROVINCES_DATA).filter(p => p.owner === 'ai').length;
+    const pProvs  = Object.values(PROVINCES_DATA).filter(p => p.owner === 'player').length;
+    const warChance = difficulty === 'easy' ? 0.1 : difficulty === 'normal' ? 0.25 : 0.45;
+    if (aiProvs >= pProvs - 1 && Math.random() < warChance) {
+      declareWarAI();
+    }
   }
 
   let i = 0;
   function doNextAiMove() {
     if (!state.gameActive) return;
-    if (i >= targets.length || budget <= 0) {
-      finishAiTurn();
-      return;
-    }
+    if (i >= targets.length || budget <= 5) { finishAiTurn(); return; }
     const p = targets[i++];
     if (!p || !PROVINCES_DATA[p.id]) { doNextAiMove(); return; }
 
     let cost, isAtk = false;
     if (p.owner === 'neutral') {
       cost = p.cost;
-    } else {
+    } else if (p.owner === 'player' && state.atWar) {
       cost = p.cost * ATTACK_COST_MULT;
       isAtk = true;
+    } else {
+      doNextAiMove(); return;
     }
 
     if (budget >= cost) {
-      const successChance = isAtk ? (difficulty === 'hard' ? 0.65 : 0.55) : 1;
+      const successChance = isAtk ? (difficulty === 'hard' ? 0.65 : difficulty === 'normal' ? 0.55 : 0.4) : 1;
       if (Math.random() < successChance) {
         budget -= cost;
         state.aiGold -= cost;
@@ -1029,28 +1005,18 @@ function runAiTurn() {
         setTimeout(() => p.el.classList.remove('just-captured'), 700);
         calcIncomes();
         if (isAtk) log(`⚔ ШІ захопив вашу ${p.name}!`, 'a');
-        else log(`👹 ШІ зайняв ${p.name}`, 'a');
+        else        log(`👹 ШІ зайняв ${p.name}`, 'a');
         refreshUI();
       }
     }
-    setTimeout(doNextAiMove, 350);
+    setTimeout(doNextAiMove, 320);
   }
-
-  // AI also considers declaring war
-  if (!state.atWar && state.round >= WAR_ENABLE_ROUND) {
-    const aiProvs = Object.values(PROVINCES_DATA).filter(p => p.owner === 'ai').length;
-    const pProvs  = Object.values(PROVINCES_DATA).filter(p => p.owner === 'player').length;
-    if (difficulty === 'hard' && aiProvs >= pProvs && Math.random() < 0.3) {
-      declareWarAI();
-    }
-  }
-
   doNextAiMove();
 }
 
 function declareWarAI() {
   state.atWar = true;
-  log('⚠ ШІ ОГОЛОСИВ ВІЙНУ! Тепер можна атакувати провінції.', 'r');
+  log('⚠ ШІ ОГОЛОСИВ ВІЙНУ! Тепер можна атакувати один одного.', 'r');
   updateWarStatus();
   updateWarBtn();
 }
@@ -1058,22 +1024,17 @@ function declareWarAI() {
 function finishAiTurn() {
   state.round++;
   state.year = 1991 + state.round - 1;
-
-  // Collect player income for new turn
   collectIncome('player');
   calcIncomes();
-
   state.phase = 'player';
   state.actionsTaken = 0;
-
   document.getElementById('btnEndTurn').disabled = false;
   updateWarBtn();
   updateTurnBanner();
   refreshUI();
   highlightValid();
   updateRound();
-  log(`📅 Рік ${state.year}. Хід ${state.round}. Ваш дохід: +${state.playerIncome}💰`, 'g');
-
+  log(`📅 Рік ${state.year} · Хід ${state.round}. Ваш дохід: +${state.playerIncome}💰`, 'g');
   checkWinCondition();
 }
 
@@ -1082,7 +1043,7 @@ function declareWar() {
   if (state.atWar || state.round < WAR_ENABLE_ROUND) return;
   state.atWar = true;
   state.warDeclaredRound = state.round;
-  log('⚔ ВИ ОГОЛОСИЛИ ВІЙНУ! Тепер можна атакувати ворожі провінції (вдвічі дорожче).', 'r');
+  log('⚔ ВИ ОГОЛОСИЛИ ВІЙНУ! Атакуйте ворожі провінції (вдвічі дорожче).', 'r');
   updateWarStatus();
   updateWarBtn();
   highlightValid();
@@ -1090,10 +1051,10 @@ function declareWar() {
 
 function updateWarBtn() {
   const btn = document.getElementById('btnDeclareWar');
+  if (state.phase !== 'player') { btn.disabled = true; return; }
   if (state.atWar) {
-    btn.textContent = '⚔ ІДЕТ ВІЙНА';
+    btn.textContent = '⚔ ІДЕ ВІЙНА';
     btn.disabled = true;
-    btn.style.opacity = '0.5';
   } else if (state.round < WAR_ENABLE_ROUND) {
     btn.textContent = `⚔ ДОСТУПНО З ХОДУ ${WAR_ENABLE_ROUND}`;
     btn.disabled = true;
@@ -1120,13 +1081,9 @@ function checkWinCondition() {
   const aCount = Object.values(PROVINCES_DATA).filter(p => p.owner === 'ai').length;
   const majority = Math.floor(TOTAL_PROVS / 2) + 1;
 
-  if (pCount >= majority) {
-    endGame('player', pCount, aCount);
-  } else if (aCount >= majority) {
-    endGame('ai', pCount, aCount);
-  } else if (state.round > 40) {
-    endGame(pCount > aCount ? 'player' : (aCount > pCount ? 'ai' : 'draw'), pCount, aCount);
-  }
+  if (pCount >= majority)        endGame('player', pCount, aCount);
+  else if (aCount >= majority)   endGame('ai', pCount, aCount);
+  else if (state.round > 45)     endGame(pCount > aCount ? 'player' : aCount > pCount ? 'ai' : 'draw', pCount, aCount);
 }
 
 function endGame(winner, pCount, aCount) {
@@ -1134,27 +1091,25 @@ function endGame(winner, pCount, aCount) {
   state.phase = 'end';
   highlightValid();
 
-  let title, sub, color;
   if (winner === 'player') {
-    title = '🏆 ПЕРЕМОГА!';
-    sub = `Ваша держава об'єднала Україну!\nРік ${state.year}.`;
+    document.getElementById('modalTitle').textContent = '🏆 ПЕРЕМОГА!';
+    document.getElementById('modalSub').textContent = `Ваша держава об'єднала Україну!\nРік ${state.year}.`;
     state.stats.wins++;
     document.getElementById('pWins').textContent = state.stats.wins;
   } else if (winner === 'ai') {
-    title = '💀 ПОРАЗКА';
-    sub = `Ворог захопив більшість країни...\nРік ${state.year}.`;
+    document.getElementById('modalTitle').textContent = '💀 ПОРАЗКА';
+    document.getElementById('modalSub').textContent = `Ворог захопив більшість країни...\nРік ${state.year}.`;
     state.stats.loss++;
     document.getElementById('pLoss').textContent = state.stats.loss;
   } else {
-    title = '🤝 НІЧИЯ';
-    sub = `Кордони зупинились. Рік ${state.year}.`;
+    document.getElementById('modalTitle').textContent = '🤝 НІЧИЯ';
+    document.getElementById('modalSub').textContent = `Кордони зупинились. Рік ${state.year}.`;
   }
 
-  document.getElementById('modalTitle').textContent = title;
-  document.getElementById('modalSub').textContent = sub + '\n\nВибери складність і починай знову:';
   document.getElementById('resP').textContent = pCount;
   document.getElementById('resA').textContent = aCount;
   document.getElementById('modalResult').style.display = 'flex';
+  document.getElementById('modalSub').textContent += '\n\nВибери складність і починай знову:';
   setTimeout(() => document.getElementById('modal').classList.remove('hidden'), 600);
 }
 
@@ -1162,7 +1117,6 @@ function endGame(winner, pCount, aCount) {
 function refreshUI() {
   const pCount = Object.values(PROVINCES_DATA).filter(p => p.owner === 'player').length;
   const aCount = Object.values(PROVINCES_DATA).filter(p => p.owner === 'ai').length;
-
   document.getElementById('pTerritory').textContent = pCount;
   document.getElementById('pTerr2').textContent = pCount;
   document.getElementById('aTerritory').textContent = aCount;
@@ -1196,28 +1150,25 @@ function updateTurnBanner() {
 function log(msg, cls) {
   const box = document.getElementById('logWrap');
   const div = document.createElement('div');
-  div.className = `log-line ${cls}`;
+  div.className = `log-line ${cls||''}`;
   div.textContent = msg;
   box.appendChild(div);
   box.scrollTop = box.scrollHeight;
-  while (box.children.length > 40) box.removeChild(box.firstChild);
+  while (box.children.length > 50) box.removeChild(box.firstChild);
 }
-function clearLog() {
-  document.getElementById('logWrap').innerHTML = '';
-}
+function clearLog() { document.getElementById('logWrap').innerHTML = ''; }
 
 // ===================== TOOLTIP =====================
 function showTooltip(e, id) {
   const p = PROVINCES_DATA[id];
   if (!p) return;
-  const ownerText = p.owner === 'player' ? '🇺🇦 Ваша провінція' : p.owner === 'ai' ? '👹 Ворожа' : '⬜ Нейтральна';
-  const costText = p.owner === 'ai' ? `Атака: ${p.cost * ATTACK_COST_MULT}💰` : p.owner === 'neutral' ? `Купити: ${p.cost}💰` : '';
-  document.getElementById('ttName').textContent = p.name;
-  document.getElementById('ttOwner').textContent = ownerText;
+  const ownerText = p.owner==='player' ? '🇺🇦 Ваша провінція' : p.owner==='ai' ? '👹 Ворожа' : '⬜ Нейтральна';
+  const costText  = p.owner==='ai' ? `Атака: ${p.cost*ATTACK_COST_MULT}💰` : p.owner==='neutral' ? `Купити: ${p.cost}💰` : '';
+  document.getElementById('ttName').textContent   = p.name;
+  document.getElementById('ttOwner').textContent  = ownerText;
   document.getElementById('ttIncome').textContent = `Дохід: +${p.income}💰/хід`;
-  document.getElementById('ttCost').textContent = costText;
-  const tt = document.getElementById('tooltip');
-  tt.style.display = 'block';
+  document.getElementById('ttCost').textContent   = costText;
+  document.getElementById('tooltip').style.display = 'block';
   moveTooltip(e);
 }
 function moveTooltip(e) {
@@ -1225,9 +1176,7 @@ function moveTooltip(e) {
   tt.style.left = (e.clientX + 14) + 'px';
   tt.style.top  = (e.clientY - 10) + 'px';
 }
-function hideTooltip() {
-  document.getElementById('tooltip').style.display = 'none';
-}
+function hideTooltip() { document.getElementById('tooltip').style.display = 'none'; }
 
 // ===================== NOTIF =====================
 function showNotif(msg) {
@@ -1238,31 +1187,27 @@ function showNotif(msg) {
   setTimeout(() => el.remove(), 2600);
 }
 
-// ===================== DIFF =====================
+// ===================== DIFFICULTY =====================
 function setDiff(d, btn) {
   difficulty = d;
   document.querySelectorAll('.diff-opt').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  // also update right panel
-  document.querySelectorAll('#modalDiff .diff-opt, .right-panel .diff-opt').forEach(b => {
-    if (b.onclick && b.onclick.toString().includes(`'${d}'`)) b.classList.add('active');
+  document.querySelectorAll('.diff-opt').forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(`'${d}'`)) b.classList.add('active');
   });
 }
 
 function resetGame() {
-  document.getElementById('modal').classList.remove('hidden');
   document.getElementById('modalTitle').textContent = '⚔ НОВА КАМПАНІЯ';
-  document.getElementById('modalSub').textContent = 'Починай нову гру:';
+  document.getElementById('modalSub').textContent   = 'Починай нову гру:';
   document.getElementById('modalResult').style.display = 'none';
   document.getElementById('modalDiff').style.display = 'flex';
+  document.getElementById('modal').classList.remove('hidden');
 }
 
 // ===================== INIT =====================
 window.addEventListener('load', () => {
   loadProvinces();
-  // Show modal
   document.getElementById('modal').classList.remove('hidden');
-  // Update cost displays
   document.getElementById('costDisplay').textContent = `${NEUTRAL_COST}💰`;
   document.getElementById('attackCostDisplay').textContent = `${NEUTRAL_COST * ATTACK_COST_MULT}💰+`;
 });
