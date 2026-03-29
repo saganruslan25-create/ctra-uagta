@@ -1,1216 +1,540 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Битва за Україну</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>GamePad</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@500;700&display=swap');
 
-:root {
-  --bg: #0d1117;
-  --panel: #161b22;
-  --panel2: #1c2333;
-  --border: #30363d;
-  --border2: #3d4a5c;
-  --player: #2d6a4f;
-  --player-l: #52b788;
-  --player-ll: #95d5b2;
-  --ai: #6b1a1a;
-  --ai-l: #c0392b;
-  --ai-ll: #e74c3c;
-  --neutral: #2c3e50;
-  --neutral-l: #34495e;
-  --gold: #d4a017;
-  --gold-l: #f0c040;
-  --text: #e6edf3;
-  --text2: #8b949e;
-  --red: #f85149;
-  --green: #3fb950;
-  --peace: #4a90d9;
-  --war: #c0392b;
-}
+  :root {
+    --bg: #0a0a0c;
+    --panel: #111116;
+    --border: #1e1e28;
+    --btn: #161620;
+    --btn-active: #1a1a2e;
+    --accent: #00e5ff;
+    --accent2: #7c3aed;
+    --warn: #ff4444;
+    --text: #c8c8d8;
+    --dim: #444458;
+  }
 
-* { margin:0; padding:0; box-sizing:border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Crimson Text', Georgia, serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    touch-action: none;
+  }
 
-.game-layout {
-  display: grid;
-  grid-template-columns: 220px 1fr 220px;
-  grid-template-rows: auto 1fr auto;
-  min-height: 100vh;
-  gap: 0;
-}
+  /* Header */
+  .hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px 8px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+  }
+  .hdr-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 2px;
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--warn);
+    box-shadow: 0 0 8px var(--warn);
+    transition: all .3s;
+  }
+  .status-dot.ok { background: #00ff88; box-shadow: 0 0 8px #00ff88; }
 
-.game-header {
-  grid-column: 1/-1;
-  background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-}
+  .ip-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding: 8px 16px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+  }
+  .ip-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    padding: 6px 10px;
+    outline: none;
+  }
+  .ip-input:focus { border-color: var(--accent); }
+  .connect-btn {
+    background: var(--accent2);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .connect-btn:active { opacity: .7; }
 
-.game-title {
-  font-family: 'Cinzel', serif;
-  font-size: 20px;
-  font-weight: 900;
-  letter-spacing: 3px;
-  background: linear-gradient(90deg, var(--player-l), #fff, var(--gold-l));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+  /* Main layout */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 12px;
+    gap: 10px;
+    overflow: hidden;
+  }
 
-.turn-banner {
-  font-family: 'Cinzel', serif;
-  font-size: 13px;
-  letter-spacing: 2px;
-  padding: 6px 18px;
-  border-radius: 4px;
-  border: 1px solid;
-  transition: all 0.4s;
-}
-.turn-banner.player { background: rgba(45,106,79,0.2); border-color: var(--player-l); color: var(--player-ll); }
-.turn-banner.ai     { background: rgba(107,26,26,0.2); border-color: var(--ai-l); color: var(--ai-ll); }
+  /* Quick action bar */
+  .quick-bar {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
 
-.war-status {
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
-  letter-spacing: 1px;
-  padding: 5px 14px;
-  border-radius: 4px;
-  border: 1px solid;
-  cursor: default;
-}
-.war-status.peace { background: rgba(74,144,217,0.15); border-color: var(--peace); color: var(--peace); }
-.war-status.war   { background: rgba(192,57,43,0.2); border-color: var(--war); color: var(--ai-ll); animation: pulse-war 1.5s infinite; }
+  /* Controls row */
+  .controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 10px;
+  }
 
-@keyframes pulse-war {
-  0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.4); }
-  50%      { box-shadow: 0 0 0 6px rgba(192,57,43,0); }
-}
+  /* WASD cluster */
+  .wasd {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 6px;
+    width: 175px;
+  }
+  .wasd .btn-w { grid-column: 2; }
+  .wasd .btn-a { grid-column: 1; }
+  .wasd .btn-s { grid-column: 2; }
+  .wasd .btn-d { grid-column: 3; grid-row: 2; }
 
-.left-panel, .right-panel {
-  background: var(--panel);
-  border-right: 1px solid var(--border);
-  padding: 14px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow-y: auto;
-}
-.right-panel { border-right: none; border-left: 1px solid var(--border); }
+  /* Right cluster */
+  .right-cluster {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 6px;
+    width: 175px;
+  }
 
-.card {
-  background: var(--panel2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 10px 12px;
-  position: relative;
-  overflow: hidden;
-}
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
-}
-.card.player-card::before { background: linear-gradient(90deg, var(--player), var(--player-l)); }
-.card.ai-card::before     { background: linear-gradient(90deg, var(--ai), var(--ai-l)); }
-.card.gold-card::before   { background: linear-gradient(90deg, var(--gold), var(--gold-l)); }
-.card.neutral-card::before { background: linear-gradient(90deg, #30363d, #4a5568); }
+  /* Base button */
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--btn);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 1px;
+    color: var(--dim);
+    cursor: pointer;
+    transition: color .1s, border-color .1s, background .1s;
+    position: relative;
+    overflow: hidden;
+    -webkit-touch-callout: none;
+  }
 
-.card-title {
-  font-family: 'Cinzel', serif;
-  font-size: 9px;
-  letter-spacing: 2px;
-  color: var(--text2);
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity .1s;
+  }
 
-.big-num {
-  font-family: 'Cinzel', serif;
-  font-size: 26px;
-  font-weight: 700;
-  line-height: 1;
-}
-.big-num.player-color { color: var(--player-ll); }
-.big-num.ai-color { color: var(--ai-ll); }
-.big-num.gold-color { color: var(--gold-l); }
+  .btn.pressed {
+    background: var(--btn-active);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.2), inset 0 0 8px rgba(0, 229, 255, 0.05);
+  }
+  .btn.pressed::after { opacity: 0.05; }
 
-.sub-text {
-  font-size: 11px;
-  color: var(--text2);
-  margin-top: 2px;
-}
+  .btn.btn-accent {
+    border-color: #2a1a4a;
+    color: #7c3aed88;
+  }
+  .btn.btn-accent.pressed {
+    border-color: var(--accent2);
+    color: var(--accent2);
+    box-shadow: 0 0 12px rgba(124, 58, 237, 0.3);
+  }
 
-.prog-wrap { height: 5px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden; }
-.prog-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
-.prog-fill.player { background: linear-gradient(90deg, var(--player), var(--player-l)); }
-.prog-fill.ai     { background: linear-gradient(90deg, var(--ai), var(--ai-l)); }
+  .btn.btn-danger {
+    border-color: #2a1010;
+    color: #ff444466;
+  }
+  .btn.btn-danger.pressed {
+    border-color: var(--warn);
+    color: var(--warn);
+    box-shadow: 0 0 12px rgba(255, 68, 68, 0.3);
+  }
 
-.income-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-  padding: 3px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-}
-.income-row:last-child { border-bottom: none; }
+  .btn-sm {
+    height: 42px;
+    font-size: 12px;
+    border-radius: 8px;
+    flex: 1;
+    letter-spacing: 0.5px;
+  }
 
-.btn {
-  width: 100%;
-  padding: 9px 12px;
-  border: 1px solid;
-  border-radius: 5px;
-  cursor: pointer;
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
-  letter-spacing: 1px;
-  transition: all 0.2s;
-  text-align: center;
-  background: transparent;
-}
-.btn:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+  /* Touchpad */
+  .touchpad-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .touchpad-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 2px;
+  }
+  .touchpad {
+    width: 100%;
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .touchpad-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .touchpad-cross {
+    opacity: 0.07;
+  }
+  .touchpad-ripple {
+    position: absolute;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+    pointer-events: none;
+    transition: opacity .05s;
+  }
+  .touchpad-ripple.show {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
 
-.btn-primary {
-  background: rgba(45,106,79,0.25);
-  border-color: var(--player-l);
-  color: var(--player-ll);
-}
-.btn-primary:hover { background: rgba(45,106,79,0.5); box-shadow: 0 0 12px rgba(82,183,136,0.3); }
+  /* LMB / RMB */
+  .mouse-btns {
+    display: flex;
+    gap: 4px;
+    height: 44px;
+  }
+  .mbtn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 11px;
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--dim);
+    cursor: pointer;
+    transition: all .1s;
+  }
+  .mbtn.pressed {
+    background: rgba(0,229,255,0.08);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
 
-.btn-end-turn {
-  background: rgba(212,160,23,0.2);
-  border-color: var(--gold);
-  color: var(--gold-l);
-  font-size: 13px;
-  padding: 12px;
-}
-.btn-end-turn:hover { background: rgba(212,160,23,0.35); box-shadow: 0 0 14px rgba(212,160,23,0.3); }
-
-.btn-war {
-  background: rgba(107,26,26,0.25);
-  border-color: var(--ai-l);
-  color: var(--ai-ll);
-}
-.btn-war:hover { background: rgba(107,26,26,0.5); box-shadow: 0 0 12px rgba(192,57,43,0.3); }
-
-.btn-neutral {
-  background: rgba(48,54,61,0.5);
-  border-color: var(--border2);
-  color: var(--text2);
-  font-size: 10px;
-}
-.btn-neutral:hover { border-color: var(--text2); color: var(--text); }
-
-.map-area {
-  background: #0a1520;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  position: relative;
-  min-height: 0;
-}
-
-#ukraine-svg {
-  width: 100%;
-  max-width: 760px;
-  height: auto;
-  filter: drop-shadow(0 8px 32px rgba(0,0,0,0.6));
-}
-
-.province {
-  stroke-width: 1.5;
-  cursor: pointer;
-  transition: filter 0.15s;
-}
-.province:hover { filter: brightness(1.4); }
-.province.neutral { fill: #2c3e50; stroke: #4a5a6a; }
-.province.player  { fill: var(--player); stroke: var(--player-l); }
-.province.ai      { fill: var(--ai); stroke: var(--ai-l); }
-.province.player.adj-highlight { 
-  fill: #1a4a35; 
-  stroke: var(--player-ll); 
-  stroke-width: 2.5;
-  filter: brightness(1.2);
-}
-.province.neutral.adj-highlight {
-  fill: #2a3f30;
-  stroke: var(--player-ll);
-  stroke-width: 2.5;
-  animation: glow-available 1.5s infinite;
-}
-.province.ai.adj-highlight {
-  stroke: #ff6b35;
-  stroke-width: 2.5;
-  animation: glow-attack 1.5s infinite;
-}
-@keyframes glow-available {
-  0%,100% { stroke-opacity: 1; }
-  50%      { stroke-opacity: 0.4; }
-}
-@keyframes glow-attack {
-  0%,100% { stroke-opacity: 1; filter: brightness(1.0); }
-  50%      { stroke-opacity: 0.5; filter: brightness(1.4); }
-}
-.province.just-captured {
-  animation: flash-cap 0.6s ease;
-}
-@keyframes flash-cap {
-  0%   { filter: brightness(2.5); }
-  100% { filter: brightness(1); }
-}
-
-#tooltip {
-  position: fixed;
-  background: var(--panel2);
-  border: 1px solid var(--border2);
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 12px;
-  pointer-events: none;
-  z-index: 200;
-  display: none;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-  max-width: 180px;
-}
-#tooltip .tt-name { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; margin-bottom: 4px; }
-#tooltip .tt-owner { font-size: 11px; margin-bottom: 2px; }
-#tooltip .tt-income { font-size: 11px; color: var(--gold-l); }
-#tooltip .tt-cost { font-size: 11px; color: var(--text2); }
-
-.log-wrap {
-  grid-column: 1/-1;
-  background: var(--panel);
-  border-top: 1px solid var(--border);
-  padding: 8px 16px;
-  height: 80px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-.log-wrap::-webkit-scrollbar { width: 4px; }
-.log-wrap::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
-.log-line { font-size: 12px; color: var(--text2); line-height: 1.5; }
-.log-line.p { color: var(--player-ll); }
-.log-line.a { color: var(--ai-ll); }
-.log-line.g { color: var(--gold-l); }
-.log-line.r { color: var(--red); }
-.log-line.sys { color: #8b949e; font-style: italic; }
-
-.round-display {
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
-  color: var(--text2);
-  letter-spacing: 1px;
-}
-
-#modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  backdrop-filter: blur(8px);
-  z-index: 300;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-#modal.hidden { display: none; }
-
-.modal-box {
-  background: var(--panel);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 32px 36px;
-  max-width: 440px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
-}
-.modal-title {
-  font-family: 'Cinzel', serif;
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  margin-bottom: 10px;
-}
-.modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; line-height: 1.7; }
-
-.result-bars {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin-bottom: 24px;
-}
-.result-bar-item { text-align: center; }
-.result-bar-num { font-family: 'Cinzel', serif; font-size: 32px; font-weight: 700; }
-.result-bar-lbl { font-size: 11px; color: var(--text2); margin-top: 4px; letter-spacing: 1px; }
-
-.diff-row {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-.diff-opt {
-  padding: 6px 16px;
-  border: 1px solid var(--border2);
-  border-radius: 4px;
-  background: var(--panel2);
-  color: var(--text2);
-  cursor: pointer;
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
-  letter-spacing: 1px;
-  transition: all 0.2s;
-}
-.diff-opt:hover { border-color: var(--player-l); color: var(--player-ll); }
-.diff-opt.active { background: rgba(45,106,79,0.25); border-color: var(--player-l); color: var(--player-ll); }
-
-@keyframes fadeUp {
-  0%   { opacity:0; transform:translateY(10px) translateX(-50%); }
-  20%  { opacity:1; transform:translateY(0) translateX(-50%); }
-  80%  { opacity:1; }
-  100% { opacity:0; transform:translateY(-10px) translateX(-50%); }
-}
-.notif {
-  position: fixed;
-  top: 70px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--panel2);
-  border: 1px solid var(--border2);
-  border-radius: 6px;
-  padding: 8px 20px;
-  font-family: 'Cinzel', serif;
-  font-size: 12px;
-  letter-spacing: 1px;
-  pointer-events: none;
-  animation: fadeUp 2.5s ease forwards;
-  z-index: 400;
-  white-space: nowrap;
-}
-
-/* Sea background */
-.sea { fill: #0a1e35; }
-.sea-label { fill: rgba(100,160,220,0.3); font-style: italic; }
+  /* Sensitivity control */
+  .sens-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+  }
+  .sens-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px rgba(0,229,255,0.5);
+  }
 </style>
 </head>
 <body>
 
-<div class="game-layout">
-
-  <header class="game-header">
-    <div class="game-title">⚔ БИТВА ЗА УКРАЇНУ</div>
-    <div class="round-display" id="roundDisplay">РІК 1991 · ХІД 1</div>
-    <div id="turnBanner" class="turn-banner player">ВАШ ХІД</div>
-    <div id="warStatus" class="war-status peace">🕊 МИР</div>
-  </header>
-
-  <!-- LEFT PANEL -->
-  <aside class="left-panel">
-    <div class="card player-card">
-      <div class="card-title">🇺🇦 Ваша держава</div>
-      <div class="big-num player-color" id="pTerritory">1</div>
-      <div class="sub-text">провінцій</div>
-      <div class="prog-wrap">
-        <div class="prog-fill player" id="pBar" style="width:4%"></div>
-      </div>
-    </div>
-
-    <div class="card gold-card">
-      <div class="card-title">💰 Казна</div>
-      <div class="big-num gold-color" id="pGold">50</div>
-      <div class="sub-text">золота</div>
-      <div style="margin-top:8px;">
-        <div class="income-row">
-          <span style="color:var(--text2)">Дохід/хід</span>
-          <span style="color:var(--gold-l)">+<span id="pIncome">0</span>💰</span>
-        </div>
-        <div class="income-row">
-          <span style="color:var(--text2)">Нейтральна</span>
-          <span id="costDisplay" style="color:var(--gold-l)">20💰</span>
-        </div>
-        <div class="income-row">
-          <span style="color:var(--text2)">Атака ворога</span>
-          <span id="attackCostDisplay" style="color:var(--ai-ll)">40💰+</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card neutral-card">
-      <div class="card-title">📊 Статистика</div>
-      <div style="font-size:11px;color:var(--text2);line-height:1.9;">
-        Провінцій: <span style="color:var(--player-ll)" id="pTerr2">1</span><br>
-        Перемог: <span style="color:var(--green)" id="pWins">0</span><br>
-        Поразок: <span style="color:var(--red)" id="pLoss">0</span>
-      </div>
-    </div>
-
-    <div style="margin-top:auto;display:flex;flex-direction:column;gap:6px;">
-      <button class="btn btn-war" id="btnDeclareWar" onclick="declareWar()" disabled>⚔ ОГОЛОСИТИ ВІЙНУ</button>
-      <button class="btn btn-end-turn" id="btnEndTurn" onclick="endPlayerTurn()">ЗАВЕРШИТИ ХІД ▶</button>
-      <button class="btn btn-neutral" onclick="resetGame()">↺ НОВА КАМПАНІЯ</button>
-    </div>
-  </aside>
-
-  <!-- MAP -->
-  <main class="map-area">
-    <!--
-      Точна карта України з реальними контурами областей.
-      ViewBox: 0 0 1000 700
-      Координати адаптовані під реальну географію.
-    -->
-    <svg id="ukraine-svg" viewBox="0 0 1000 680" xmlns="http://www.w3.org/2000/svg">
-      <!-- Sea background -->
-      <rect class="sea" x="0" y="0" width="1000" height="680"/>
-      
-      <!-- ВОЛИНСЬКА -->
-      <polygon class="province neutral" id="volyn"
-        data-name="Волинська" data-income="4" data-cost="20"
-        points="118,118 155,100 200,105 215,130 210,175 185,195 150,195 125,175 108,155"/>
-
-      <!-- РІВНЕНСЬКА -->
-      <polygon class="province neutral" id="rivne"
-        data-name="Рівненська" data-income="4" data-cost="20"
-        points="200,105 255,98 280,115 278,160 255,180 210,175 215,130"/>
-
-      <!-- ЖИТОМИРСЬКА -->
-      <polygon class="province neutral" id="zhytomyr"
-        data-name="Житомирська" data-income="5" data-cost="20"
-        points="278,115 340,108 375,125 375,175 345,200 305,205 278,190 255,180 280,160"/>
-
-      <!-- КИЇВСЬКА -->
-      <polygon class="province neutral" id="kyiv"
-        data-name="Київська" data-income="10" data-cost="35"
-        points="340,108 405,100 445,115 450,155 435,185 400,200 375,200 375,175 375,125"/>
-
-      <!-- ЧЕРНІГІВСЬКА -->
-      <polygon class="province neutral" id="chernihiv"
-        data-name="Чернігівська" data-income="5" data-cost="20"
-        points="405,100 485,85 530,100 535,145 510,175 475,185 450,175 450,155 445,115"/>
-
-      <!-- СУМСЬКА -->
-      <polygon class="province neutral" id="sumy"
-        data-name="Сумська" data-income="5" data-cost="20"
-        points="485,85 560,80 605,105 605,150 575,175 535,180 535,145 530,100"/>
-
-      <!-- ХАРКІВСЬКА -->
-      <polygon class="province neutral" id="kharkiv"
-        data-name="Харківська" data-income="9" data-cost="30"
-        points="560,80 650,85 695,115 695,165 660,195 615,205 580,195 575,175 605,150 605,105"/>
-
-      <!-- ЛУГАНСЬКА -->
-      <polygon class="province neutral" id="luhansk"
-        data-name="Луганська" data-income="6" data-cost="25"
-        points="650,85 740,90 785,120 780,170 745,195 700,200 695,165 695,115"/>
-
-      <!-- ДОНЕЦЬКА -->
-      <polygon class="province neutral" id="donetsk"
-        data-name="Донецька" data-income="9" data-cost="30"
-        points="695,165 745,195 760,240 730,270 690,275 650,255 635,225 645,195 660,195"/>
-
-      <!-- ЗАПОРІЗЬКА -->
-      <polygon class="province neutral" id="zaporizhzhia"
-        data-name="Запорізька" data-income="7" data-cost="25"
-        points="595,230 650,220 690,245 700,290 680,320 645,335 605,325 580,295 585,260"/>
-
-      <!-- ДНІПРОПЕТРОВСЬКА -->
-      <polygon class="province neutral" id="dnipro"
-        data-name="Дніпропетровська" data-income="10" data-cost="35"
-        points="510,185 580,190 615,205 645,195 650,220 595,230 555,235 515,220 500,200"/>
-
-      <!-- ПОЛТАВСЬКА -->
-      <polygon class="province neutral" id="poltava"
-        data-name="Полтавська" data-income="7" data-cost="25"
-        points="435,185 510,175 535,180 575,175 580,195 615,205 580,190 510,185 490,205 460,210 435,200"/>
-
-      <!-- КІРОВОГРАДСЬКА -->
-      <polygon class="province neutral" id="kirovohrad"
-        data-name="Кіровоградська" data-income="5" data-cost="20"
-        points="390,215 460,210 515,220 515,265 480,290 440,290 400,270 385,245"/>
-
-      <!-- ЧЕРКАСЬКА -->
-      <polygon class="province neutral" id="cherkasy"
-        data-name="Черкаська" data-income="5" data-cost="20"
-        points="375,200 435,200 460,210 390,215 375,215"/>
-
-      <!-- МИКОЛАЇВСЬКА -->
-      <polygon class="province neutral" id="mykolaiv"
-        data-name="Миколаївська" data-income="6" data-cost="25"
-        points="395,300 450,295 490,305 510,340 490,370 450,375 415,360 395,335"/>
-
-      <!-- ХЕРСОНСЬКА -->
-      <polygon class="province neutral" id="kherson"
-        data-name="Херсонська" data-income="6" data-cost="25"
-        points="490,305 545,300 580,295 605,325 595,360 560,385 520,390 490,370 510,340"/>
-
-      <!-- ОДЕСЬКА -->
-      <polygon class="province neutral" id="odesa"
-        data-name="Одеська" data-income="8" data-cost="30"
-        points="280,285 355,275 395,280 400,305 395,335 415,360 390,380 340,390 290,385 255,355 250,320 265,295"/>
-
-      <!-- ВІННИЦЬКА -->
-      <polygon class="province neutral" id="vinnytsia"
-        data-name="Вінницька" data-income="6" data-cost="25"
-        points="265,185 305,205 345,210 375,215 390,215 385,245 355,265 315,270 280,255 260,230 255,205"/>
-
-      <!-- ХМЕЛЬНИЦЬКА -->
-      <polygon class="province neutral" id="khmelnytskyi"
-        data-name="Хмельницька" data-income="5" data-cost="20"
-        points="205,165 255,160 278,175 265,185 255,205 225,220 195,215 175,195 180,175"/>
-
-      <!-- ТЕРНОПІЛЬСЬКА -->
-      <polygon class="province neutral" id="ternopil"
-        data-name="Тернопільська" data-income="4" data-cost="20"
-        points="160,175 205,165 175,195 155,195"/>
-
-      <!-- ЧЕРНІВЕЦЬКА -->
-      <polygon class="province neutral" id="chernivtsi"
-        data-name="Чернівецька" data-income="4" data-cost="20"
-        points="195,215 225,220 240,250 215,275 185,280 160,260 155,235 170,215"/>
-
-      <!-- ІВАНО-ФРАНКІВСЬКА -->
-      <polygon class="province neutral" id="ivano"
-        data-name="Івано-Франківська" data-income="5" data-cost="20"
-        points="128,180 155,175 175,195 195,215 170,215 155,235 128,235 110,210 110,190"/>
-
-      <!-- ЗАКАРПАТСЬКА -->
-      <polygon class="province neutral" id="zakarpattia"
-        data-name="Закарпатська" data-income="4" data-cost="20"
-        points="88,210 128,200 128,235 110,255 88,255 68,235 65,215"/>
-
-      <!-- ЛЬВІВСЬКА -->
-      <polygon class="province neutral" id="lviv"
-        data-name="Львівська" data-income="7" data-cost="25"
-        points="118,118 160,110 185,125 185,165 155,175 128,180 110,165 108,140"/>
-
-      <!-- КРИМ -->
-      <polygon class="province neutral" id="crimea"
-        data-name="Кримський п-ів" data-income="7" data-cost="25"
-        points="545,420 590,405 640,410 675,435 670,470 640,490 590,495 555,480 535,455 540,430"/>
-
-      <!-- River Dnipro hint -->
-      <polyline points="445,115 450,155 435,185 460,210 480,240 490,280 490,320 510,360 545,390 580,420 590,450"
-        fill="none" stroke="rgba(100,160,220,0.4)" stroke-width="3" stroke-linecap="round" pointer-events="none"/>
-
-      <!-- Province labels -->
-      <g id="prov-labels" style="pointer-events:none; font-family:'Crimson Text',serif;">
-        <text x="157" y="155" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Волинь</text>
-        <text x="248" y="143" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Рівне</text>
-        <text x="328" y="158" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Житомир</text>
-        <text x="410" y="150" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Київ</text>
-        <text x="472" y="138" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Чернігів</text>
-        <text x="555" y="133" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Суми</text>
-        <text x="625" y="143" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Харків</text>
-        <text x="717" y="143" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Луганськ</text>
-        <text x="700" y="230" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Донецьк</text>
-        <text x="640" y="278" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Запоріжжя</text>
-        <text x="570" y="212" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Дніпро</text>
-        <text x="510" y="195" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Полтава</text>
-        <text x="450" y="255" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Кіровоград</text>
-        <text x="415" y="208" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Черкаси</text>
-        <text x="450" y="335" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Миколаїв</text>
-        <text x="545" y="340" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Херсон</text>
-        <text x="328" y="335" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Одеса</text>
-        <text x="320" y="228" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Вінниця</text>
-        <text x="218" y="193" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Хмельниць.</text>
-        <text x="172" y="184" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Тернопіль</text>
-        <text x="193" y="248" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Чернівці</text>
-        <text x="140" y="215" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Ів.-Фр.</text>
-        <text x="90" y="233" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.65)">Закарп.</text>
-        <text x="148" y="147" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Львів</text>
-        <text x="605" y="452" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.65)">Крим</text>
-
-        <!-- Sea labels -->
-        <text x="430" y="510" text-anchor="middle" font-size="18" class="sea-label">Чорне море</text>
-        <text x="720" y="390" text-anchor="middle" font-size="13" class="sea-label">Азовське море</text>
-        <!-- Dnipro river label -->
-        <text x="505" y="308" text-anchor="middle" font-size="9" fill="rgba(100,160,220,0.5)" font-style="italic" transform="rotate(-80,505,308)">Дніпро</text>
-      </g>
-
-    </svg>
-
-    <div id="tooltip">
-      <div class="tt-name" id="ttName"></div>
-      <div class="tt-owner" id="ttOwner"></div>
-      <div class="tt-income" id="ttIncome"></div>
-      <div class="tt-cost" id="ttCost"></div>
-    </div>
-  </main>
-
-  <!-- RIGHT PANEL -->
-  <aside class="right-panel">
-    <div class="card ai-card">
-      <div class="card-title">👹 Ворог (ШІ)</div>
-      <div class="big-num ai-color" id="aTerritory">1</div>
-      <div class="sub-text">провінцій</div>
-      <div class="prog-wrap">
-        <div class="prog-fill ai" id="aBar" style="width:4%"></div>
-      </div>
-    </div>
-
-    <div class="card gold-card">
-      <div class="card-title">💰 Казна ворога</div>
-      <div class="big-num gold-color" id="aGold">50</div>
-      <div class="sub-text">золота (видимо)</div>
-    </div>
-
-    <div class="card neutral-card">
-      <div class="card-title">📜 Як грати</div>
-      <div style="font-size:11px;color:var(--text2);line-height:1.9;">
-        <b style="color:var(--text)">Натисни провінцію</b> поряд зі своєю — купиш її<br><br>
-        <b style="color:var(--gold-l)">Кожна провінція</b> дає дохід на початку ходу<br><br>
-        <b style="color:var(--player-ll)">Завершуй хід</b> коли готовий або скінчились гроші<br><br>
-        <b style="color:var(--ai-ll)">Оголоси війну</b> щоб атакувати ворожі провінції<br><br>
-        <b style="color:var(--text2)">Мета:</b> захопи 14+ провінцій (більшість)
-      </div>
-    </div>
-
-    <div class="card neutral-card">
-      <div class="card-title">⚙ Складність</div>
-      <div class="diff-row" style="flex-direction:column;gap:5px;">
-        <button class="diff-opt" onclick="setDiff('easy',this)">Легко</button>
-        <button class="diff-opt active" onclick="setDiff('normal',this)" id="diffNorm">Нормально</button>
-        <button class="diff-opt" onclick="setDiff('hard',this)">Важко</button>
-      </div>
-    </div>
-  </aside>
-
-  <div class="log-wrap" id="logWrap"></div>
-</div>
-
-<!-- MODAL -->
-<div id="modal">
-  <div class="modal-box">
-    <div class="modal-title" id="modalTitle">⚔ БИТВА ЗА УКРАЇНУ</div>
-    <div class="modal-sub" id="modalSub">
-      Ти керуєш державою на заході.<br>
-      Захопи більшість провінцій — переможеш!<br><br>
-      Вибери складність і починай:
-    </div>
-    <div class="diff-row" id="modalDiff">
-      <button class="diff-opt" onclick="setDiff('easy',this)">Легко</button>
-      <button class="diff-opt active" onclick="setDiff('normal',this)">Нормально</button>
-      <button class="diff-opt" onclick="setDiff('hard',this)">Важко</button>
-    </div>
-    <div class="result-bars" id="modalResult" style="display:none">
-      <div class="result-bar-item">
-        <div class="result-bar-num" id="resP" style="color:var(--player-ll)">0</div>
-        <div class="result-bar-lbl">ВИ</div>
-      </div>
-      <div class="result-bar-item" style="align-self:center;color:var(--text2);font-size:24px">vs</div>
-      <div class="result-bar-item">
-        <div class="result-bar-num" id="resA" style="color:var(--ai-ll)">0</div>
-        <div class="result-bar-lbl">ШІ</div>
-      </div>
-    </div>
-    <button class="btn btn-primary" onclick="startGame()" style="max-width:220px;margin:0 auto;display:block;padding:13px;">▶ ГРАТИ</button>
+<div class="hdr">
+  <span class="hdr-title">// GAMEPAD</span>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span id="status-txt" style="font-size:11px;color:var(--dim);font-family:'Share Tech Mono',monospace">OFFLINE</span>
+    <div class="status-dot" id="dot"></div>
   </div>
 </div>
 
+<div class="ip-row">
+  <input class="ip-input" id="ip" type="text" placeholder="192.168.1.XX" value="">
+  <button class="connect-btn" onclick="connect()">CONNECT</button>
+</div>
+
+<div class="main">
+
+  <!-- Quick bar: Esc, Tab, Shift, Space, E, R -->
+  <div class="quick-bar">
+    <button class="btn btn-sm btn-danger" data-key="esc">ESC</button>
+    <button class="btn btn-sm" data-key="tab">TAB</button>
+    <button class="btn btn-sm btn-accent" data-key="shift">SHIFT</button>
+    <button class="btn btn-sm btn-accent" data-key="space">SPACE</button>
+    <button class="btn btn-sm" data-key="e">E</button>
+    <button class="btn btn-sm" data-key="r">R</button>
+  </div>
+
+  <!-- Main controls -->
+  <div class="controls-row">
+
+    <!-- WASD -->
+    <div class="wasd">
+      <button class="btn btn-w" data-key="w">W</button>
+      <button class="btn btn-a" data-key="a">A</button>
+      <button class="btn btn-s" data-key="s">S</button>
+      <button class="btn btn-d" data-key="d">D</button>
+    </div>
+
+    <!-- Touchpad in middle -->
+    <div class="touchpad-wrap">
+      <span class="touchpad-label">MOUSE</span>
+      <div class="touchpad" id="touchpad">
+        <div class="touchpad-inner">
+          <svg class="touchpad-cross" width="60" height="60" viewBox="0 0 60 60">
+            <line x1="30" y1="0" x2="30" y2="60" stroke="#fff" stroke-width="1"/>
+            <line x1="0" y1="30" x2="60" y2="30" stroke="#fff" stroke-width="1"/>
+            <circle cx="30" cy="30" r="3" fill="#fff"/>
+          </svg>
+        </div>
+        <div class="touchpad-ripple" id="ripple"></div>
+      </div>
+      <div class="mouse-btns">
+        <div class="mbtn" id="lmb">LMB</div>
+        <div class="mbtn" id="rmb">RMB</div>
+      </div>
+    </div>
+
+    <!-- Right action cluster: F, G, Q, C, 1, 2 -->
+    <div class="right-cluster">
+      <button class="btn btn-accent" data-key="f">F</button>
+      <button class="btn btn-accent" data-key="g">G</button>
+      <button class="btn btn-accent" data-key="q">Q</button>
+      <button class="btn" data-key="c">C</button>
+      <button class="btn" data-key="1">1</button>
+      <button class="btn" data-key="2">2</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="sens-row">
+  <span class="sens-label">SENS</span>
+  <input type="range" id="sens" min="1" max="20" value="8">
+  <span class="sens-label" id="sens-val">8</span>
+</div>
+
 <script>
-// ===================== DATA =====================
-const PROVINCES_DATA = {};
-const TOTAL_PROVS = 25;
+let serverIP = localStorage.getItem('gp_ip') || '';
+let sensitivity = 8;
+let connected = false;
+let touchStartX = 0, touchStartY = 0;
+let lastTouchX = 0, lastTouchY = 0;
+let mouseMoveBuffer = {dx: 0, dy: 0};
+let sendInterval = null;
 
-function loadProvinces() {
-  document.querySelectorAll('.province').forEach(el => {
-    const id = el.id;
-    PROVINCES_DATA[id] = {
-      id,
-      name: el.dataset.name,
-      income: parseInt(el.dataset.income) || 5,
-      cost: parseInt(el.dataset.cost) || 20,
-      owner: 'neutral',
-      el
-    };
-    el.addEventListener('click', () => onProvinceClick(id));
-    el.addEventListener('mouseenter', (e) => showTooltip(e, id));
-    el.addEventListener('mousemove', (e) => moveTooltip(e));
-    el.addEventListener('mouseleave', hideTooltip);
-  });
-}
+// Restore IP
+const ipInput = document.getElementById('ip');
+if (serverIP) ipInput.value = serverIP;
 
-// ===================== GAME STATE =====================
-let state = {
-  playerGold: 50,
-  aiGold: 50,
-  playerIncome: 0,
-  aiIncome: 0,
-  round: 1,
-  year: 1991,
-  phase: 'player',
-  atWar: false,
-  warDeclaredRound: null,
-  gameActive: false,
-  stats: { wins: 0, loss: 0 },
-  actionsTaken: 0,
-};
-
-const NEUTRAL_COST = 20;
-const ATTACK_COST_MULT = 2;
-const WAR_ENABLE_ROUND = 4;
-let difficulty = 'normal';
-
-// ===================== ADJACENCY =====================
-const ADJ = {
-  volyn:        ['rivne','lviv'],
-  rivne:        ['volyn','lviv','ternopil','khmelnytskyi','zhytomyr'],
-  zhytomyr:     ['rivne','khmelnytskyi','vinnytsia','kyiv'],
-  kyiv:         ['zhytomyr','chernihiv','poltava','cherkasy','vinnytsia'],
-  chernihiv:    ['kyiv','sumy','poltava'],
-  sumy:         ['chernihiv','kharkiv','poltava'],
-  kharkiv:      ['sumy','luhansk','donetsk','dnipro','poltava'],
-  luhansk:      ['kharkiv','donetsk'],
-  donetsk:      ['luhansk','kharkiv','dnipro','zaporizhzhia'],
-  zaporizhzhia: ['donetsk','dnipro','kherson'],
-  dnipro:       ['kharkiv','poltava','kirovohrad','zaporizhzhia','donetsk','cherkasy'],
-  poltava:      ['sumy','kharkiv','dnipro','cherkasy','kyiv','chernihiv'],
-  kirovohrad:   ['dnipro','cherkasy','vinnytsia','mykolaiv','zaporizhzhia'],
-  cherkasy:     ['kyiv','poltava','dnipro','kirovohrad','vinnytsia'],
-  mykolaiv:     ['kirovohrad','vinnytsia','odesa','kherson'],
-  kherson:      ['mykolaiv','zaporizhzhia','crimea'],
-  odesa:        ['mykolaiv','vinnytsia','chernivtsi'],
-  vinnytsia:    ['khmelnytskyi','zhytomyr','kyiv','cherkasy','kirovohrad','odesa','chernivtsi'],
-  khmelnytskyi: ['rivne','ternopil','lviv','vinnytsia','chernivtsi','ivano'],
-  ternopil:     ['lviv','rivne','khmelnytskyi','ivano','chernivtsi'],
-  chernivtsi:   ['ternopil','khmelnytskyi','vinnytsia','odesa','ivano'],
-  ivano:        ['lviv','ternopil','chernivtsi','zakarpattia'],
-  zakarpattia:  ['lviv','ivano'],
-  lviv:         ['volyn','rivne','khmelnytskyi','ternopil','ivano','zakarpattia'],
-  crimea:       ['kherson'],
-};
-
-function isAdjacentTo(provId, owner) {
-  const neighbors = ADJ[provId] || [];
-  return neighbors.some(n => PROVINCES_DATA[n] && PROVINCES_DATA[n].owner === owner);
-}
-
-// ===================== START =====================
-function startGame() {
-  document.getElementById('modal').classList.add('hidden');
-  document.getElementById('modalResult').style.display = 'none';
-  document.getElementById('modalDiff').style.display = 'flex';
-
-  Object.values(PROVINCES_DATA).forEach(p => {
-    p.owner = 'neutral';
-    p.el.className = 'province neutral';
-  });
-
-  // Player starts in west, AI starts in east
-  const playerStart = 'lviv';
-  const aiStart = 'luhansk'; // ← ФІКС: тепер ШІ починає на сході, де є сусіди
-
-  PROVINCES_DATA[playerStart].owner = 'player';
-  PROVINCES_DATA[playerStart].el.className = 'province player';
-  PROVINCES_DATA[aiStart].owner = 'ai';
-  PROVINCES_DATA[aiStart].el.className = 'province ai';
-
-  state.playerGold = 50;
-  state.aiGold = 50;
-  state.round = 1;
-  state.year = 1991;
-  state.phase = 'player';
-  state.atWar = false;
-  state.warDeclaredRound = null;
-  state.gameActive = true;
-  state.actionsTaken = 0;
-
-  // ← ФІКС: Обидва гравці отримують стартовий дохід одразу
-  calcIncomes();
-  collectIncome('player');
-  collectIncome('ai');
-
-  refreshUI();
-  highlightValid();
-  clearLog();
-  log('🎮 Кампанію розпочато! Рік 1991. Ви — Львівська область.', 'sys');
-  log(`💰 Стартовий дохід: +${state.playerIncome}💰. ШІ активний на сході!`, 'g');
-}
-
-// ===================== INCOME =====================
-function calcIncomes() {
-  let pi = 0, ai = 0;
-  Object.values(PROVINCES_DATA).forEach(p => {
-    if (p.owner === 'player') pi += p.income;
-    if (p.owner === 'ai')     ai += p.income;
-  });
-  state.playerIncome = pi;
-  state.aiIncome = ai;
-}
-
-function collectIncome(who) {
-  if (who === 'player') state.playerGold += state.playerIncome;
-  else                  state.aiGold     += state.aiIncome;
-}
-
-// ===================== HIGHLIGHTS =====================
-function highlightValid() {
-  if (!state.gameActive || state.phase !== 'player') {
-    document.querySelectorAll('.province').forEach(el => el.classList.remove('adj-highlight'));
-    return;
-  }
-  Object.values(PROVINCES_DATA).forEach(p => {
-    p.el.classList.remove('adj-highlight');
-    if (p.owner === 'neutral' && isAdjacentTo(p.id, 'player') && p.cost <= state.playerGold) {
-      p.el.classList.add('adj-highlight');
-    }
-    if (p.owner === 'ai' && state.atWar && isAdjacentTo(p.id, 'player')) {
-      const attackCost = p.cost * ATTACK_COST_MULT;
-      if (attackCost <= state.playerGold) p.el.classList.add('adj-highlight');
-    }
-  });
-}
-
-// ===================== CLICK =====================
-function onProvinceClick(id) {
-  if (!state.gameActive || state.phase !== 'player') return;
-  const p = PROVINCES_DATA[id];
-  if (!p) return;
-
-  if (p.owner === 'player') { showNotif('Це вже ваша провінція!'); return; }
-
-  if (!isAdjacentTo(id, 'player')) { showNotif('⚠ Не межує з вашою!'); return; }
-
-  if (p.owner === 'neutral') {
-    const cost = p.cost;
-    if (state.playerGold < cost) { showNotif(`❌ Потрібно ${cost}💰`); return; }
-    state.playerGold -= cost;
-    p.owner = 'player';
-    p.el.className = 'province player just-captured';
-    setTimeout(() => p.el.classList.remove('just-captured'), 700);
-    state.actionsTaken++;
-    calcIncomes();
-    log(`▶ Приєднали ${p.name} за ${cost}💰`, 'p');
-    refreshUI(); highlightValid(); checkWinCondition();
-
-  } else if (p.owner === 'ai') {
-    if (!state.atWar) { showNotif('⚠ Оголосіть війну щоб атакувати!'); return; }
-    const cost = p.cost * ATTACK_COST_MULT;
-    if (state.playerGold < cost) { showNotif(`❌ Для атаки потрібно ${cost}💰`); return; }
-    const winChance = difficulty === 'easy' ? 0.75 : difficulty === 'normal' ? 0.62 : 0.5;
-    if (Math.random() < winChance) {
-      state.playerGold -= cost;
-      p.owner = 'player';
-      p.el.className = 'province player just-captured';
-      setTimeout(() => p.el.classList.remove('just-captured'), 700);
-      state.actionsTaken++;
-      calcIncomes();
-      log(`⚔ Захопили ${p.name} (атака: ${cost}💰)!`, 'p');
-    } else {
-      state.playerGold -= Math.floor(cost / 2);
-      log(`💥 Атака на ${p.name} провалилась! Втрата ${Math.floor(cost/2)}💰`, 'r');
-    }
-    refreshUI(); highlightValid(); checkWinCondition();
-  }
-}
-
-// ===================== END PLAYER TURN =====================
-function endPlayerTurn() {
-  if (!state.gameActive) return;
-  state.phase = 'ai';
-  document.getElementById('btnEndTurn').disabled = true;
-  document.getElementById('btnDeclareWar').disabled = true;
-  highlightValid();
-  updateTurnBanner();
-  log(`— Хід ${state.round} завершено. ШІ думає...`, 'sys');
-  setTimeout(runAiTurn, 800);
-}
-
-// ===================== AI TURN (ВИПРАВЛЕНИЙ) =====================
-function runAiTurn() {
-  if (!state.gameActive) return;
-
-  // ← ФІКС: ШІ завжди отримує дохід на початку свого ходу
-  collectIncome('ai');
-  calcIncomes();
-
-  let budget = state.aiGold;
-
-  const expand = Object.values(PROVINCES_DATA).filter(p =>
-    p.owner === 'neutral' && isAdjacentTo(p.id, 'ai')
-  );
-  const attack = state.atWar ? Object.values(PROVINCES_DATA).filter(p =>
-    p.owner === 'player' && isAdjacentTo(p.id, 'ai')
-  ) : [];
-
-  let targets = [];
-  if (difficulty === 'easy') {
-    targets = [...expand].sort(() => Math.random() - 0.5);
-  } else if (difficulty === 'normal') {
-    const blocking = expand.filter(p => isAdjacentTo(p.id, 'player'));
-    const rest = expand.filter(p => !isAdjacentTo(p.id, 'player'));
-    const atk = attack.slice(0, 2);
-    targets = [...blocking, ...atk, ...rest].sort(() => Math.random() - 0.25);
-  } else {
-    // Hard: жадібна стратегія
-    const scored = [
-      ...expand.map(p => ({ p, score: (isAdjacentTo(p.id,'player') ? 40 : 0) + p.income * 4 - p.cost })),
-      ...attack.map(p => ({ p, score: 60 + p.income * 5 - p.cost * 2 }))
-    ].sort((a, b) => b.score - a.score);
-    targets = scored.map(s => s.p);
-  }
-
-  // ← ФІКС: ШІ оголошує війну автономно (раніше ніколи не спрацьовувало через баг порядку)
-  if (!state.atWar && state.round >= WAR_ENABLE_ROUND) {
-    const aiProvs = Object.values(PROVINCES_DATA).filter(p => p.owner === 'ai').length;
-    const pProvs  = Object.values(PROVINCES_DATA).filter(p => p.owner === 'player').length;
-    const warChance = difficulty === 'easy' ? 0.1 : difficulty === 'normal' ? 0.25 : 0.45;
-    if (aiProvs >= pProvs - 1 && Math.random() < warChance) {
-      declareWarAI();
-    }
-  }
-
-  let i = 0;
-  function doNextAiMove() {
-    if (!state.gameActive) return;
-    if (i >= targets.length || budget <= 5) { finishAiTurn(); return; }
-    const p = targets[i++];
-    if (!p || !PROVINCES_DATA[p.id]) { doNextAiMove(); return; }
-
-    let cost, isAtk = false;
-    if (p.owner === 'neutral') {
-      cost = p.cost;
-    } else if (p.owner === 'player' && state.atWar) {
-      cost = p.cost * ATTACK_COST_MULT;
-      isAtk = true;
-    } else {
-      doNextAiMove(); return;
-    }
-
-    if (budget >= cost) {
-      const successChance = isAtk ? (difficulty === 'hard' ? 0.65 : difficulty === 'normal' ? 0.55 : 0.4) : 1;
-      if (Math.random() < successChance) {
-        budget -= cost;
-        state.aiGold -= cost;
-        p.owner = 'ai';
-        p.el.className = 'province ai just-captured';
-        setTimeout(() => p.el.classList.remove('just-captured'), 700);
-        calcIncomes();
-        if (isAtk) log(`⚔ ШІ захопив вашу ${p.name}!`, 'a');
-        else        log(`👹 ШІ зайняв ${p.name}`, 'a');
-        refreshUI();
-      }
-    }
-    setTimeout(doNextAiMove, 320);
-  }
-  doNextAiMove();
-}
-
-function declareWarAI() {
-  state.atWar = true;
-  log('⚠ ШІ ОГОЛОСИВ ВІЙНУ! Тепер можна атакувати один одного.', 'r');
-  updateWarStatus();
-  updateWarBtn();
-}
-
-function finishAiTurn() {
-  state.round++;
-  state.year = 1991 + state.round - 1;
-  collectIncome('player');
-  calcIncomes();
-  state.phase = 'player';
-  state.actionsTaken = 0;
-  document.getElementById('btnEndTurn').disabled = false;
-  updateWarBtn();
-  updateTurnBanner();
-  refreshUI();
-  highlightValid();
-  updateRound();
-  log(`📅 Рік ${state.year} · Хід ${state.round}. Ваш дохід: +${state.playerIncome}💰`, 'g');
-  checkWinCondition();
-}
-
-// ===================== WAR =====================
-function declareWar() {
-  if (state.atWar || state.round < WAR_ENABLE_ROUND) return;
-  state.atWar = true;
-  state.warDeclaredRound = state.round;
-  log('⚔ ВИ ОГОЛОСИЛИ ВІЙНУ! Атакуйте ворожі провінції (вдвічі дорожче).', 'r');
-  updateWarStatus();
-  updateWarBtn();
-  highlightValid();
-}
-
-function updateWarBtn() {
-  const btn = document.getElementById('btnDeclareWar');
-  if (state.phase !== 'player') { btn.disabled = true; return; }
-  if (state.atWar) {
-    btn.textContent = '⚔ ІДЕ ВІЙНА';
-    btn.disabled = true;
-  } else if (state.round < WAR_ENABLE_ROUND) {
-    btn.textContent = `⚔ ДОСТУПНО З ХОДУ ${WAR_ENABLE_ROUND}`;
-    btn.disabled = true;
-  } else {
-    btn.disabled = false;
-    btn.textContent = '⚔ ОГОЛОСИТИ ВІЙНУ';
-  }
-}
-
-function updateWarStatus() {
-  const el = document.getElementById('warStatus');
-  if (state.atWar) {
-    el.textContent = '⚔ ВІЙНА';
-    el.className = 'war-status war';
-  } else {
-    el.textContent = '🕊 МИР';
-    el.className = 'war-status peace';
-  }
-}
-
-// ===================== WIN =====================
-function checkWinCondition() {
-  const pCount = Object.values(PROVINCES_DATA).filter(p => p.owner === 'player').length;
-  const aCount = Object.values(PROVINCES_DATA).filter(p => p.owner === 'ai').length;
-  const majority = Math.floor(TOTAL_PROVS / 2) + 1;
-
-  if (pCount >= majority)        endGame('player', pCount, aCount);
-  else if (aCount >= majority)   endGame('ai', pCount, aCount);
-  else if (state.round > 45)     endGame(pCount > aCount ? 'player' : aCount > pCount ? 'ai' : 'draw', pCount, aCount);
-}
-
-function endGame(winner, pCount, aCount) {
-  state.gameActive = false;
-  state.phase = 'end';
-  highlightValid();
-
-  if (winner === 'player') {
-    document.getElementById('modalTitle').textContent = '🏆 ПЕРЕМОГА!';
-    document.getElementById('modalSub').textContent = `Ваша держава об'єднала Україну!\nРік ${state.year}.`;
-    state.stats.wins++;
-    document.getElementById('pWins').textContent = state.stats.wins;
-  } else if (winner === 'ai') {
-    document.getElementById('modalTitle').textContent = '💀 ПОРАЗКА';
-    document.getElementById('modalSub').textContent = `Ворог захопив більшість країни...\nРік ${state.year}.`;
-    state.stats.loss++;
-    document.getElementById('pLoss').textContent = state.stats.loss;
-  } else {
-    document.getElementById('modalTitle').textContent = '🤝 НІЧИЯ';
-    document.getElementById('modalSub').textContent = `Кордони зупинились. Рік ${state.year}.`;
-  }
-
-  document.getElementById('resP').textContent = pCount;
-  document.getElementById('resA').textContent = aCount;
-  document.getElementById('modalResult').style.display = 'flex';
-  document.getElementById('modalSub').textContent += '\n\nВибери складність і починай знову:';
-  setTimeout(() => document.getElementById('modal').classList.remove('hidden'), 600);
-}
-
-// ===================== UI =====================
-function refreshUI() {
-  const pCount = Object.values(PROVINCES_DATA).filter(p => p.owner === 'player').length;
-  const aCount = Object.values(PROVINCES_DATA).filter(p => p.owner === 'ai').length;
-  document.getElementById('pTerritory').textContent = pCount;
-  document.getElementById('pTerr2').textContent = pCount;
-  document.getElementById('aTerritory').textContent = aCount;
-  document.getElementById('pGold').textContent = Math.max(0, Math.floor(state.playerGold));
-  document.getElementById('aGold').textContent = Math.max(0, Math.floor(state.aiGold));
-  document.getElementById('pIncome').textContent = state.playerIncome;
-  document.getElementById('pBar').style.width = (pCount / TOTAL_PROVS * 100) + '%';
-  document.getElementById('aBar').style.width = (aCount / TOTAL_PROVS * 100) + '%';
-  updateWarStatus();
-  updateWarBtn();
-  updateRound();
-  updateTurnBanner();
-}
-
-function updateRound() {
-  document.getElementById('roundDisplay').textContent = `РІК ${state.year} · ХІД ${state.round}`;
-}
-
-function updateTurnBanner() {
-  const el = document.getElementById('turnBanner');
-  if (state.phase === 'player') {
-    el.textContent = 'ВАШ ХІД';
-    el.className = 'turn-banner player';
-  } else {
-    el.textContent = 'ШІ ДУМАЄ...';
-    el.className = 'turn-banner ai';
-  }
-}
-
-// ===================== LOG =====================
-function log(msg, cls) {
-  const box = document.getElementById('logWrap');
-  const div = document.createElement('div');
-  div.className = `log-line ${cls||''}`;
-  div.textContent = msg;
-  box.appendChild(div);
-  box.scrollTop = box.scrollHeight;
-  while (box.children.length > 50) box.removeChild(box.firstChild);
-}
-function clearLog() { document.getElementById('logWrap').innerHTML = ''; }
-
-// ===================== TOOLTIP =====================
-function showTooltip(e, id) {
-  const p = PROVINCES_DATA[id];
-  if (!p) return;
-  const ownerText = p.owner==='player' ? '🇺🇦 Ваша провінція' : p.owner==='ai' ? '👹 Ворожа' : '⬜ Нейтральна';
-  const costText  = p.owner==='ai' ? `Атака: ${p.cost*ATTACK_COST_MULT}💰` : p.owner==='neutral' ? `Купити: ${p.cost}💰` : '';
-  document.getElementById('ttName').textContent   = p.name;
-  document.getElementById('ttOwner').textContent  = ownerText;
-  document.getElementById('ttIncome').textContent = `Дохід: +${p.income}💰/хід`;
-  document.getElementById('ttCost').textContent   = costText;
-  document.getElementById('tooltip').style.display = 'block';
-  moveTooltip(e);
-}
-function moveTooltip(e) {
-  const tt = document.getElementById('tooltip');
-  tt.style.left = (e.clientX + 14) + 'px';
-  tt.style.top  = (e.clientY - 10) + 'px';
-}
-function hideTooltip() { document.getElementById('tooltip').style.display = 'none'; }
-
-// ===================== NOTIF =====================
-function showNotif(msg) {
-  const el = document.createElement('div');
-  el.className = 'notif';
-  el.textContent = msg;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2600);
-}
-
-// ===================== DIFFICULTY =====================
-function setDiff(d, btn) {
-  difficulty = d;
-  document.querySelectorAll('.diff-opt').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.diff-opt').forEach(b => {
-    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(`'${d}'`)) b.classList.add('active');
-  });
-}
-
-function resetGame() {
-  document.getElementById('modalTitle').textContent = '⚔ НОВА КАМПАНІЯ';
-  document.getElementById('modalSub').textContent   = 'Починай нову гру:';
-  document.getElementById('modalResult').style.display = 'none';
-  document.getElementById('modalDiff').style.display = 'flex';
-  document.getElementById('modal').classList.remove('hidden');
-}
-
-// ===================== INIT =====================
-window.addEventListener('load', () => {
-  loadProvinces();
-  document.getElementById('modal').classList.remove('hidden');
-  document.getElementById('costDisplay').textContent = `${NEUTRAL_COST}💰`;
-  document.getElementById('attackCostDisplay').textContent = `${NEUTRAL_COST * ATTACK_COST_MULT}💰+`;
+// Sensitivity
+document.getElementById('sens').addEventListener('input', function() {
+  sensitivity = parseInt(this.value);
+  document.getElementById('sens-val').textContent = sensitivity;
 });
+
+function getURL() {
+  const ip = ipInput.value.trim();
+  return `http://${ip}:5000`;
+}
+
+async function connect() {
+  try {
+    const r = await fetch(getURL() + '/ping', {signal: AbortSignal.timeout(2000)});
+    const d = await r.json();
+    if (d.status === 'ok') {
+      connected = true;
+      serverIP = ipInput.value.trim();
+      localStorage.setItem('gp_ip', serverIP);
+      document.getElementById('dot').className = 'status-dot ok';
+      document.getElementById('status-txt').textContent = 'ONLINE';
+    }
+  } catch(e) {
+    document.getElementById('dot').className = 'status-dot';
+    document.getElementById('status-txt').textContent = 'ERROR';
+    setTimeout(() => document.getElementById('status-txt').textContent = 'OFFLINE', 2000);
+  }
+}
+
+async function send(path, data) {
+  if (!connected) return;
+  try {
+    await fetch(getURL() + path, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data),
+      signal: AbortSignal.timeout(500)
+    });
+  } catch(e) {}
+}
+
+// Key buttons
+document.querySelectorAll('.btn[data-key]').forEach(btn => {
+  const key = btn.dataset.key;
+
+  // Touch events for hold
+  btn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    btn.classList.add('pressed');
+    send('/key/down', {key});
+  }, {passive: false});
+
+  btn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    btn.classList.remove('pressed');
+    send('/key/up', {key});
+  }, {passive: false});
+
+  btn.addEventListener('touchcancel', (e) => {
+    btn.classList.remove('pressed');
+    send('/key/up', {key});
+  });
+});
+
+// Mouse buttons
+function setupMouseBtn(id, button) {
+  const el = document.getElementById(id);
+  el.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    el.classList.add('pressed');
+    send('/mouse/click', {button});
+  }, {passive: false});
+  el.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    setTimeout(() => el.classList.remove('pressed'), 100);
+  }, {passive: false});
+}
+setupMouseBtn('lmb', 'left');
+setupMouseBtn('rmb', 'right');
+
+// Touchpad mouse movement
+const pad = document.getElementById('touchpad');
+const ripple = document.getElementById('ripple');
+
+// Buffer & send mouse moves at 30fps
+sendInterval = setInterval(() => {
+  if (mouseMoveBuffer.dx !== 0 || mouseMoveBuffer.dy !== 0) {
+    send('/mouse/move', {dx: mouseMoveBuffer.dx, dy: mouseMoveBuffer.dy});
+    mouseMoveBuffer = {dx: 0, dy: 0};
+  }
+}, 33);
+
+pad.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  const t = e.touches[0];
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
+  lastTouchX = t.clientX;
+  lastTouchY = t.clientY;
+  // Show ripple
+  const rect = pad.getBoundingClientRect();
+  ripple.style.left = (t.clientX - rect.left) + 'px';
+  ripple.style.top = (t.clientY - rect.top) + 'px';
+  ripple.classList.add('show');
+}, {passive: false});
+
+pad.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  const t = e.touches[0];
+  const dx = Math.round((t.clientX - lastTouchX) * sensitivity * 0.5);
+  const dy = Math.round((t.clientY - lastTouchY) * sensitivity * 0.5);
+  mouseMoveBuffer.dx += dx;
+  mouseMoveBuffer.dy += dy;
+  lastTouchX = t.clientX;
+  lastTouchY = t.clientY;
+  // Move ripple
+  const rect = pad.getBoundingClientRect();
+  ripple.style.left = (t.clientX - rect.left) + 'px';
+  ripple.style.top = (t.clientY - rect.top) + 'px';
+}, {passive: false});
+
+pad.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  ripple.classList.remove('show');
+}, {passive: false});
+
+// Release all on page hide
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) send('/release_all', {});
+});
+
+// Auto-connect if IP saved
+if (serverIP) setTimeout(connect, 500);
 </script>
 </body>
 </html>
