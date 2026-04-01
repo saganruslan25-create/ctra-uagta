@@ -111,7 +111,7 @@
   <div id="wood-count">🪵 Палок: <span id="woodNum">0</span> / 5</div>
 </div>
 
-<div id="hint">WASD — движение &nbsp;|&nbsp; Мышь — камера &nbsp;|&nbsp; E — действие</div>
+<div id="hint">WASD — движение &nbsp;|&nbsp; Кликни на экран для захвата мыши &nbsp;|&nbsp; E — действие</div>
 <div id="action-prompt" id="actionPrompt">Нажми E</div>
 <div id="overlay">
   <h1>ВЫ ЗАМЁРЗЛИ</h1>
@@ -405,8 +405,19 @@ document.addEventListener('keyup', e => { keys[e.code] = false; });
 
 // Mouse look
 let pointerLocked = false;
-document.addEventListener('click', () => { canvas.requestPointerLock(); });
-document.addEventListener('pointerlockchange', () => { pointerLocked = document.pointerLockElement === canvas; });
+let lockCooldown = false;
+
+function tryLock() {
+  if (lockCooldown || pointerLocked) return;
+  lockCooldown = true;
+  setTimeout(() => { lockCooldown = false; }, 1200);
+  canvas.requestPointerLock().catch(() => {});
+}
+
+canvas.addEventListener('click', () => { if (started && !gameOver) tryLock(); });
+document.addEventListener('pointerlockchange', () => {
+  pointerLocked = document.pointerLockElement === canvas;
+});
 document.addEventListener('mousemove', e => {
   if (!pointerLocked) return;
   player.yaw -= e.movementX * 0.002;
@@ -417,12 +428,6 @@ document.addEventListener('mousemove', e => {
 // ─── GAME STATE ────────────────────────────────────────────────────────────
 let heat = 80, fire = 60;
 let gameOver = false, started = false;
-
-const HOUSE_BOUNDS = { minX: -3.3, maxX: 3.3, minZ: -2.8, maxZ: 2.7 };
-function insideHouse(pos) {
-  return pos.x > HOUSE_BOUNDS.minX && pos.x < HOUSE_BOUNDS.maxX &&
-         pos.z > HOUSE_BOUNDS.minZ && pos.z < HOUSE_BOUNDS.maxZ;
-}
 
 function nearFire(pos) {
   const dx = pos.x - 0, dz = pos.z - 0.5;
@@ -459,40 +464,46 @@ document.addEventListener('keydown', e => {
 });
 
 // ─── COLLISION ─────────────────────────────────────────────────────────────
-function resolveCollision(pos) {
-  const HB = HOUSE_BOUNDS;
-  const inside = insideHouse(pos);
+const HB = { minX: -3.0, maxX: 3.0, minZ: -2.6, maxZ: 2.5 };
+const DOOR_MIN_X = -0.65, DOOR_MAX_X = 0.65;
 
-  if (!inside) {
-    // Can't walk through walls from outside (unless near door)
-    const nearDoor = Math.abs(pos.x) < 0.7 && pos.z > HB.maxZ - 0.3 && pos.z < HB.maxZ + 1.0;
-    if (!nearDoor) {
-      if (pos.x > HB.minX && pos.x < HB.maxX) {
-        if (pos.z > HB.minZ && pos.z < HB.maxZ + 0.4) {
-          if (pos.z < 0) pos.z = HB.minZ - 0.01;
-          else pos.z = HB.maxZ + 0.01;
-        }
-      }
-      if (pos.z > HB.minZ && pos.z < HB.maxZ) {
-        if (pos.x > HB.minX - 0.4 && pos.x < HB.maxX + 0.4) {
-          if (pos.x < 0) pos.x = HB.minX - 0.01;
-          else pos.x = HB.maxX + 0.01;
-        }
-      }
+function insideHouse(pos) {
+  return pos.x > HB.minX && pos.x < HB.maxX &&
+         pos.z > HB.minZ && pos.z < HB.maxZ;
+}
+
+function throughDoor(pos) {
+  return pos.x > DOOR_MIN_X && pos.x < DOOR_MAX_X;
+}
+
+function resolveCollision(newPos, oldPos) {
+  const wasInside = insideHouse(oldPos);
+  const nowInside = insideHouse(newPos);
+
+  if (wasInside && !nowInside) {
+    if (newPos.z > HB.maxZ) {
+      if (!throughDoor(newPos)) newPos.z = HB.maxZ - 0.01;
+    } else {
+      newPos.x = oldPos.x; newPos.z = oldPos.z;
     }
+  } else if (!wasInside && nowInside) {
+    if (oldPos.z >= HB.maxZ && throughDoor(oldPos)) {
+      // entering via door OK
+    } else {
+      newPos.x = oldPos.x; newPos.z = oldPos.z;
+    }
+  } else if (wasInside) {
+    newPos.x = Math.max(HB.minX + 0.05, Math.min(HB.maxX - 0.05, newPos.x));
+    newPos.z = Math.max(HB.minZ + 0.05, Math.min(HB.maxZ - 0.05, newPos.z));
   } else {
-    // Inside: prevent going through walls
-    pos.x = Math.max(HB.minX + 0.3, Math.min(HB.maxX - 0.3, pos.x));
-    pos.z = Math.max(HB.minZ + 0.3, Math.min(HB.maxZ - 0.3, pos.z));
-    // Door
-    const nearDoor2 = Math.abs(pos.x) < 0.7 && pos.z > HB.maxZ - 0.6;
-    if (nearDoor2) pos.z = Math.min(pos.z, HB.maxZ + 0.8);
+    const inX = newPos.x > HB.minX && newPos.x < HB.maxX;
+    const inZ = newPos.z > HB.minZ && newPos.z < HB.maxZ;
+    if (inX && inZ) { newPos.x = oldPos.x; newPos.z = oldPos.z; }
   }
 
-  // World bounds
-  pos.x = Math.max(-25, Math.min(25, pos.x));
-  pos.z = Math.max(-25, Math.min(25, pos.z));
-  pos.y = 1.7;
+  newPos.x = Math.max(-25, Math.min(25, newPos.x));
+  newPos.z = Math.max(-25, Math.min(25, newPos.z));
+  newPos.y = 1.7;
 }
 
 // ─── UI ────────────────────────────────────────────────────────────────────
@@ -531,7 +542,7 @@ document.getElementById('startBtn').addEventListener('click', () => {
   document.getElementById('intro').style.opacity = '0';
   setTimeout(() => document.getElementById('intro').style.display = 'none', 800);
   started = true;
-  canvas.requestPointerLock();
+  // Pointer lock requested on next canvas click to avoid SecurityError
 });
 
 // ─── GAME LOOP ─────────────────────────────────────────────────────────────
@@ -589,10 +600,11 @@ function loop(now) {
       moveDir.normalize();
       const yawQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, player.yaw, 0));
       moveDir.applyQuaternion(yawQ);
+      const oldPos = player.pos.clone();
       player.pos.addScaledVector(moveDir, player.speed * dt);
+      resolveCollision(player.pos, oldPos);
     }
-
-    resolveCollision(player.pos);
+    player.pos.y = 1.7;
   }
 
   // Camera
