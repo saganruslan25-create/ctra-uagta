@@ -2,621 +2,1412 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Избушка — Выживание у Костра</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Тактическое Командование</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { overflow: hidden; background: #0a0a14; font-family: 'Georgia', serif; }
-  #canvas { display: block; }
-
-  #ui {
-    position: fixed; top: 0; left: 0; right: 0;
-    padding: 18px 24px;
-    display: flex; align-items: center; gap: 20px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
-    pointer-events: none;
-  }
-  .bar-group { display: flex; flex-direction: column; gap: 5px; flex: 1; }
-  .bar-label {
-    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-    color: rgba(255,255,255,0.6);
-  }
-  .bar-track {
-    height: 8px; background: rgba(255,255,255,0.12);
-    border-radius: 4px; overflow: hidden;
-  }
-  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s, background 0.5s; }
-  #heatFill { background: linear-gradient(to right, #c0392b, #e67e22, #f1c40f); }
-  #fireFill { background: linear-gradient(to right, #8B4513, #CD853F, #FFA500); }
-
-  #wood-count {
-    background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 10px; padding: 8px 16px; color: #d4a96a;
-    font-size: 13px; white-space: nowrap;
-  }
-
-  #hint {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 30px; padding: 10px 24px;
-    color: rgba(255,255,255,0.7); font-size: 13px; letter-spacing: 0.5px;
-    pointer-events: none; transition: opacity 0.5s;
-    white-space: nowrap;
-  }
-
-  #action-prompt {
-    position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%);
-    background: rgba(230,130,30,0.85); border-radius: 20px;
-    padding: 8px 20px; color: #fff; font-size: 14px;
-    pointer-events: none; opacity: 0; transition: opacity 0.3s;
-    font-weight: bold; letter-spacing: 0.5px;
-  }
-
-  #overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.85);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 16px; color: #fff;
-    opacity: 0; pointer-events: none; transition: opacity 0.8s;
-  }
-  #overlay.show { opacity: 1; pointer-events: all; }
-  #overlay h1 { font-size: 42px; letter-spacing: 4px; color: #c0392b; }
-  #overlay p { font-size: 16px; color: rgba(255,255,255,0.6); }
-  #restartBtn {
-    margin-top: 10px; padding: 12px 40px;
-    background: transparent; border: 1px solid rgba(255,255,255,0.4);
-    color: #fff; font-size: 15px; border-radius: 30px;
-    cursor: pointer; letter-spacing: 2px;
-    transition: background 0.3s, border-color 0.3s;
-  }
-  #restartBtn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.7); }
-
-  #intro {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.9);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 14px; color: #fff; transition: opacity 0.8s;
-  }
-  #intro h1 { font-size: 36px; letter-spacing: 3px; color: #e67e22; }
-  #intro p { color: rgba(255,255,255,0.65); font-size: 14px; max-width: 380px; text-align: center; line-height: 1.7; }
-  #startBtn {
-    margin-top: 10px; padding: 12px 40px;
-    background: #e67e22; border: none;
-    color: #fff; font-size: 15px; border-radius: 30px;
-    cursor: pointer; letter-spacing: 2px;
-    transition: background 0.3s;
-  }
-  #startBtn:hover { background: #d35400; }
-  .controls-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px;
-    margin-top: 4px; font-size: 13px;
-  }
-  .ctrl { color: rgba(255,255,255,0.5); }
-  .ctrl b { color: #e67e22; }
+:root{--bg:#0d1208;--card:#161e10;--card2:#1e2816;--border:#2d3a1f;--fg:#d4cbb8;--muted:#7a7260;--accent:#c8a832;--accent2:#a08420;--red:#d44030;--red2:#a02018;--blue:#3080c0;--blue2:#185888;--green:#4a8c3f;--radius:6px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--fg);overflow:hidden;height:100vh;width:100vw;user-select:none}
+.screen{display:none;position:absolute;inset:0;flex-direction:column}
+.screen.active{display:flex}
+#menu-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,#1a2410 0%,#0d1208 70%)}
+.menu-title{font-size:clamp(28px,7vw,56px);font-weight:700;letter-spacing:4px;color:var(--accent);text-transform:uppercase;text-shadow:0 0 40px rgba(200,168,50,0.3);margin-bottom:8px}
+.menu-sub{font-size:clamp(12px,3vw,18px);color:var(--muted);letter-spacing:6px;text-transform:uppercase;margin-bottom:40px}
+.menu-btn{display:block;width:260px;padding:14px 0;margin:8px auto;background:var(--card);border:1px solid var(--border);color:var(--fg);font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:600;letter-spacing:2px;cursor:pointer;transition:all .2s;border-radius:var(--radius)}
+.menu-btn:hover,.menu-btn:active{background:var(--card2);border-color:var(--accent);color:var(--accent)}
+.menu-btn i{margin-right:10px}
+#editor-screen{background:var(--bg)}
+.ed-toolbar{display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--card);border-bottom:1px solid var(--border);align-items:center;z-index:2}
+.ed-btn{padding:8px 14px;background:var(--card2);border:1px solid var(--border);color:var(--fg);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border-radius:var(--radius);transition:all .15s}
+.ed-btn:hover,.ed-btn:active{border-color:var(--accent);color:var(--accent)}
+.ed-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.ed-btn i{margin-right:5px}
+.ed-sep{width:1px;height:28px;background:var(--border);margin:0 4px}
+#editor-canvas{flex:1;width:100%;cursor:crosshair}
+#game-screen{background:var(--bg)}
+.game-hud{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:var(--card);border-bottom:1px solid var(--border);z-index:2;flex-shrink:0;min-height:44px;gap:8px;flex-wrap:wrap}
+.hud-item{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600}
+.hud-item i{color:var(--accent);font-size:13px}
+.hud-val{font-family:'Share Tech Mono',monospace;color:var(--accent);font-size:15px}
+.hud-btn{padding:5px 10px;background:var(--card2);border:1px solid var(--border);color:var(--fg);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-radius:var(--radius);transition:all .15s}
+.hud-btn:hover,.hud-btn:active{border-color:var(--accent);color:var(--accent)}
+#game-canvas{flex:1;width:100%;touch-action:none}
+.game-panel{display:none;padding:10px 12px;background:var(--card);border-top:1px solid var(--border);z-index:2;flex-shrink:0;gap:8px;flex-wrap:wrap;align-items:center}
+.game-panel.active{display:flex}
+.panel-label{font-size:13px;color:var(--muted);width:100%;margin-bottom:2px}
+.div-btn{flex:1;min-width:120px;padding:10px 8px;background:var(--card2);border:1px solid var(--border);color:var(--fg);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-radius:var(--radius);transition:all .15s;text-align:center}
+.div-btn:hover:not(:disabled),.div-btn:active:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.div-btn:disabled{opacity:.35;cursor:not-allowed}
+.div-btn .div-name{display:block;font-size:15px;font-weight:700}
+.div-btn .div-cost{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted)}
+.div-btn i{margin-right:4px}
+.target-btn{padding:8px 16px;background:var(--accent);color:var(--bg);border:none;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:var(--radius);letter-spacing:1px}
+#toast-container{position:fixed;top:60px;right:12px;z-index:100;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;animation:toastIn .3s ease,toastOut .4s ease 2.6s forwards;pointer-events:auto;max-width:280px}
+.toast.warn{border-color:var(--accent);color:var(--accent)}
+.toast.error{border-color:var(--red);color:var(--red)}
+.toast.success{border-color:var(--green);color:var(--green)}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50;align-items:center;justify-content:center;padding:20px}
+#modal-overlay.active{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:24px;max-width:400px;width:100%;text-align:center}
+.modal-box h3{font-size:22px;font-weight:700;color:var(--accent);margin-bottom:12px}
+.modal-box p{font-size:15px;color:var(--muted);margin-bottom:18px;line-height:1.5}
+.modal-box .modal-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.modal-btn{padding:10px 22px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius);border:1px solid var(--border);transition:all .15s}
+.modal-btn.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.modal-btn.secondary{background:var(--card2);color:var(--fg)}
+.modal-btn:hover{filter:brightness(1.15)}
+.file-hidden{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+@media(max-width:600px){
+.menu-btn{width:220px;font-size:16px;padding:12px 0}
+.ed-btn{padding:6px 10px;font-size:12px}
+.hud-item{font-size:12px}
+.hud-val{font-size:13px}
+.hud-btn{padding:4px 8px;font-size:12px}
+.div-btn{min-width:90px;padding:8px 6px}
+.div-btn .div-name{font-size:13px}
+}
 </style>
 </head>
 <body>
 
-<canvas id="canvas"></canvas>
-
-<div id="ui">
-  <div class="bar-group">
-    <div class="bar-label">Тепло тела</div>
-    <div class="bar-track"><div class="bar-fill" id="heatFill" style="width:80%"></div></div>
-  </div>
-  <div class="bar-group">
-    <div class="bar-label">Костёр</div>
-    <div class="bar-track"><div class="bar-fill" id="fireFill" style="width:60%"></div></div>
-  </div>
-  <div id="wood-count">🪵 Палок: <span id="woodNum">0</span> / 5</div>
+<!-- ГЛАВНОЕ МЕНЮ -->
+<div id="menu-screen" class="screen active">
+  <div class="menu-title">Тактическое Командование</div>
+  <div class="menu-sub">Стратегия в реальном времени</div>
+  <button class="menu-btn" onclick="newGameDefault()"><i class="fas fa-crosshairs"></i>Новая игра</button>
+  <button class="menu-btn" onclick="newGameCustom()"><i class="fas fa-map"></i>Загрузить карту</button>
+  <button class="menu-btn" onclick="loadGame()"><i class="fas fa-save"></i>Загрузить сохранение</button>
+  <button class="menu-btn" onclick="showScreen('editor')"><i class="fas fa-pencil-ruler"></i>Редактор карт</button>
 </div>
 
-<div id="hint">WASD — движение &nbsp;|&nbsp; Кликни на экран для захвата мыши &nbsp;|&nbsp; E — действие</div>
-<div id="action-prompt" id="actionPrompt">Нажми E</div>
-<div id="overlay">
-  <h1>ВЫ ЗАМЁРЗЛИ</h1>
-  <p>Тепло упало до нуля. Поддерживайте костёр и не уходите далеко!</p>
-  <button id="restartBtn">НАЧАТЬ ЗАНОВО</button>
-</div>
-
-<div id="intro">
-  <h1>🔥 Избушка</h1>
-  <p>Вы застряли в лесу зимой. В избушке есть костёр — он ваша единственная надежда. Собирайте палки на улице и поддерживайте огонь, иначе замёрзнете.</p>
-  <div class="controls-grid">
-    <div class="ctrl"><b>WASD</b> — движение</div>
-    <div class="ctrl"><b>Мышь</b> — камера</div>
-    <div class="ctrl"><b>E</b> — подобрать / бросить</div>
-    <div class="ctrl"><b>Клик</b> — захват мыши</div>
+<!-- РЕДАКТОР КАРТ -->
+<div id="editor-screen" class="screen">
+  <div class="ed-toolbar">
+    <button class="ed-btn active" data-mode="city" onclick="setEdMode('city')"><i class="fas fa-city"></i>Город</button>
+    <button class="ed-btn" data-mode="road" onclick="setEdMode('road')"><i class="fas fa-road"></i>Дорога</button>
+    <button class="ed-btn" data-mode="delete" onclick="setEdMode('delete')"><i class="fas fa-trash"></i>Удалить</button>
+    <div class="ed-sep"></div>
+    <button class="ed-btn" onclick="edUploadImg()"><i class="fas fa-image"></i>Фон</button>
+    <button class="ed-btn" onclick="edSaveMap()"><i class="fas fa-download"></i>Сохранить</button>
+    <button class="ed-btn" onclick="edLoadMap()"><i class="fas fa-upload"></i>Загрузить</button>
+    <div class="ed-sep"></div>
+    <button class="ed-btn" onclick="showScreen('menu')"><i class="fas fa-arrow-left"></i>Назад</button>
   </div>
-  <button id="startBtn">НАЧАТЬ ИГРУ</button>
+  <canvas id="editor-canvas"></canvas>
+  <input type="file" id="ed-img-input" class="file-hidden" accept="image/*" onchange="edOnImgUpload(event)">
+  <input type="file" id="ed-map-input" class="file-hidden" accept=".json" onchange="edOnMapLoad(event)">
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- ИГРА -->
+<div id="game-screen" class="screen">
+  <div class="game-hud">
+    <div class="hud-item"><i class="fas fa-users"></i><span>Людей:</span><span class="hud-val" id="hud-personnel">0</span></div>
+    <div class="hud-item"><i class="fas fa-cloud-sun"></i><span id="hud-weather">Ясно</span></div>
+    <div class="hud-item">
+      <button class="hud-btn" onclick="cycleSpeed()"><i class="fas fa-forward"></i> <span id="hud-speed">x1</span></button>
+      <button class="hud-btn" onclick="saveGame()"><i class="fas fa-download"></i></button>
+      <button class="hud-btn" onclick="confirmQuit()"><i class="fas fa-door-open"></i></button>
+    </div>
+  </div>
+  <canvas id="game-canvas"></canvas>
+  <div class="game-panel" id="game-panel"></div>
+  <input type="file" id="game-load-input" class="file-hidden" accept=".json" onchange="onGameLoadFile(event)">
+  <input type="file" id="game-img-input" class="file-hidden" accept="image/*" onchange="onGameImgLoad(event)">
+</div>
+
+<div id="toast-container"></div>
+<div id="modal-overlay"><div class="modal-box" id="modal-box"></div></div>
+
 <script>
-// ─── SCENE SETUP ───────────────────────────────────────────────────────────
-const canvas = document.getElementById('canvas');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.setClearColor(0x0a0f1a);
-
-const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x0a0f1a, 0.045);
-
-const camera = new THREE.PerspectiveCamera(70, 1, 0.1, 200);
-camera.position.set(0, 1.7, 0);
-
-function resize() {
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-}
-resize();
-window.addEventListener('resize', resize);
-
-// ─── LIGHTING ──────────────────────────────────────────────────────────────
-const ambient = new THREE.AmbientLight(0x1a2a3a, 0.4);
-scene.add(ambient);
-
-const moonLight = new THREE.DirectionalLight(0x6688bb, 0.3);
-moonLight.position.set(10, 20, 10);
-scene.add(moonLight);
-
-const fireLight = new THREE.PointLight(0xff6b1a, 3, 12);
-fireLight.position.set(0, 1, 0);
-fireLight.castShadow = true;
-scene.add(fireLight);
-
-// ─── TEXTURES & MATERIALS ──────────────────────────────────────────────────
-const woodMat = new THREE.MeshLambertMaterial({ color: 0x6b3a1f });
-const logMat = new THREE.MeshLambertMaterial({ color: 0x8B5E3C });
-const roofMat = new THREE.MeshLambertMaterial({ color: 0x4a2a0f });
-const snowMat = new THREE.MeshLambertMaterial({ color: 0xddeeff });
-const stoneMat = new THREE.MeshLambertMaterial({ color: 0x555555 });
-const groundMat = new THREE.MeshLambertMaterial({ color: 0xc8dde8 });
-
-// ─── GROUND ────────────────────────────────────────────────────────────────
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), groundMat);
-ground.rotation.x = -Math.PI / 2;
-ground.receiveShadow = true;
-scene.add(ground);
-
-// Snow bumps
-for (let i = 0; i < 40; i++) {
-  const r = 1.5 + Math.random() * 1.5;
-  const bump = new THREE.Mesh(
-    new THREE.SphereGeometry(r, 6, 4),
-    new THREE.MeshLambertMaterial({ color: 0xd5eaf5 })
-  );
-  const angle = Math.random() * Math.PI * 2;
-  const dist = 4 + Math.random() * 18;
-  bump.position.set(Math.cos(angle) * dist, -r + 0.15, Math.sin(angle) * dist);
-  scene.add(bump);
-}
-
-// ─── CABIN ─────────────────────────────────────────────────────────────────
-function makeCabin() {
-  const g = new THREE.Group();
-
-  // Floor
-  const floor = new THREE.Mesh(new THREE.BoxGeometry(7, 0.15, 6), new THREE.MeshLambertMaterial({ color: 0x3d2210 }));
-  floor.position.set(0, 0.075, 0);
-  floor.receiveShadow = true;
-  g.add(floor);
-
-  // Log walls
-  const wallH = 2.4;
-  const rows = 8;
-  const logR = wallH / rows / 2;
-  const wallColor = [0x7a4a22, 0x8B5528, 0x6b3a18, 0x7d4e20];
-
-  function makeWall(wx, wz, wW, wH, rot) {
-    for (let r = 0; r < rows; r++) {
-      const c = wallColor[r % wallColor.length];
-      const log = new THREE.Mesh(
-        new THREE.CylinderGeometry(logR, logR, wW, 8),
-        new THREE.MeshLambertMaterial({ color: c })
-      );
-      if (rot) log.rotation.y = Math.PI / 2;
-      log.position.set(wx, logR * 2 * r + logR + 0.15, wz);
-      log.castShadow = true;
-      g.add(log);
-    }
-  }
-
-  makeWall(0, -3, 7.2, wallH, false);      // front
-  makeWall(0, 3, 7.2, wallH, false);       // back
-  makeWall(-3.5, 0, 6.2, wallH, true);     // left
-  makeWall(3.5, 0, 6.2, wallH, true);      // right
-
-  // Door opening (front wall partial override)
-  // We skip logs in front center — handled visually by gap
-  const doorFrame = new THREE.Mesh(
-    new THREE.BoxGeometry(1.2, 2.2, 0.15),
-    new THREE.MeshLambertMaterial({ color: 0x3a1a08 })
-  );
-  doorFrame.position.set(0, 1.1 + 0.15, -3.0);
-  g.add(doorFrame);
-
-  // Roof
-  const roofGeo = new THREE.ConeGeometry(5.5, 2.2, 4);
-  const roof = new THREE.Mesh(roofGeo, roofMat);
-  roof.position.set(0, wallH + 0.15 + 1.1, 0);
-  roof.rotation.y = Math.PI / 4;
-  roof.castShadow = true;
-  g.add(roof);
-
-  // Snow on roof
-  const snowRoof = new THREE.Mesh(
-    new THREE.ConeGeometry(5.4, 0.5, 4),
-    new THREE.MeshLambertMaterial({ color: 0xe8f4fc })
-  );
-  snowRoof.position.set(0, wallH + 0.15 + 2.0, 0);
-  snowRoof.rotation.y = Math.PI / 4;
-  g.add(snowRoof);
-
-  // Chimney
-  const chimney = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.2, 0.6), stoneMat);
-  chimney.position.set(1.5, wallH + 0.15 + 2.0, 0.5);
-  chimney.castShadow = true;
-  g.add(chimney);
-
-  // Windows
-  function makeWindow(x, z, rotY) {
-    const wg = new THREE.Group();
-    const frame = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.8, 0.12), new THREE.MeshLambertMaterial({ color: 0x3a1a08 }));
-    const glass = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.55, 0.05), new THREE.MeshLambertMaterial({ color: 0xaaddff, transparent: true, opacity: 0.5, emissive: 0x224422 }));
-    wg.add(frame); wg.add(glass);
-    wg.position.set(x, 1.4, z);
-    wg.rotation.y = rotY;
-    g.add(wg);
-  }
-  makeWindow(-2.0, -2.98, 0);
-  makeWindow(2.0, -2.98, 0);
-  makeWindow(-3.48, 0, Math.PI / 2);
-
-  g.position.set(0, 0, 0);
-  scene.add(g);
-}
-makeCabin();
-
-// ─── FIREPLACE ─────────────────────────────────────────────────────────────
-const stoneRingMat = new THREE.MeshLambertMaterial({ color: 0x666666 });
-const stoneRing = new THREE.Group();
-for (let i = 0; i < 8; i++) {
-  const angle = (i / 8) * Math.PI * 2;
-  const stone = new THREE.Mesh(new THREE.SphereGeometry(0.18, 5, 4), stoneRingMat);
-  stone.position.set(Math.cos(angle) * 0.55, 0.18, Math.sin(angle) * 0.55);
-  stone.scale.set(1.2, 0.7, 1.0);
-  stoneRing.add(stone);
-}
-stoneRing.position.set(0, 0.15, 0.5);
-scene.add(stoneRing);
-
-// Ash base
-const ash = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 0.05, 12), new THREE.MeshLambertMaterial({ color: 0x444444 }));
-ash.position.set(0, 0.18, 0.5);
-scene.add(ash);
-
-fireLight.position.set(0, 0.8, 0.5);
-
-// Fire particles (fake flame meshes)
-const flames = [];
-const flameMat = new THREE.MeshBasicMaterial({ color: 0xff6b00, transparent: true, opacity: 0.9, depthWrite: false });
-const flameMat2 = new THREE.MeshBasicMaterial({ color: 0xffcc00, transparent: true, opacity: 0.85, depthWrite: false });
-for (let i = 0; i < 6; i++) {
-  const geo = new THREE.ConeGeometry(0.08 + Math.random() * 0.06, 0.35 + Math.random() * 0.2, 5);
-  const mat = i % 2 === 0 ? flameMat : flameMat2;
-  const flame = new THREE.Mesh(geo, mat.clone());
-  const angle = (i / 6) * Math.PI * 2;
-  flame.position.set(
-    Math.cos(angle) * 0.18,
-    0.35,
-    0.5 + Math.sin(angle) * 0.18
-  );
-  flame._baseY = flame.position.y;
-  flame._phase = Math.random() * Math.PI * 2;
-  flame._speed = 2 + Math.random() * 2;
-  scene.add(flame);
-  flames.push(flame);
-}
-
-// ─── TREES ─────────────────────────────────────────────────────────────────
-function makeTree(x, z) {
-  const trunkMat = new THREE.MeshLambertMaterial({ color: 0x4a2f10 });
-  const leafMat = new THREE.MeshLambertMaterial({ color: 0x1a4020 });
-  const snowLeafMat = new THREE.MeshLambertMaterial({ color: 0xd0e8f0 });
-
-  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.18, 1.2, 6), trunkMat);
-  trunk.position.set(x, 0.6, z);
-  trunk.castShadow = true;
-  scene.add(trunk);
-
-  const heights = [0, 0.5, 1.0];
-  const radii = [0.9, 0.65, 0.4];
-  for (let i = 0; i < 3; i++) {
-    const cone = new THREE.Mesh(new THREE.ConeGeometry(radii[i], 1.2, 7), leafMat);
-    cone.position.set(x, 1.2 + heights[i], z);
-    cone.castShadow = true;
-    scene.add(cone);
-    if (i === 2) {
-      const snow = new THREE.Mesh(new THREE.ConeGeometry(radii[i] * 0.8, 0.3, 7), snowLeafMat);
-      snow.position.set(x, 2.3, z);
-      scene.add(snow);
-    }
-  }
-}
-
-const treePositions = [
-  [-8, -8], [-10, -4], [-9, 2], [-8, 7], [-6, 10],
-  [8, -8], [10, -3], [9, 3], [8, 8], [6, 10],
-  [-3, -10], [0, -11], [3, -10], [-2, 12], [2, 12],
-  [-14, 0], [14, 0], [-12, -12], [12, -12],
-];
-treePositions.forEach(([x, z]) => makeTree(x, z));
-
-// ─── STICKS ────────────────────────────────────────────────────────────────
-const stickPositions = [
-  [-6, -6], [-7, 1], [-5, 5], [6, -5], [7, 2],
-  [5, 6], [-3, -8], [3, -8], [-8, -2], [8, -1],
-  [0, -9], [-4, 8], [4, 8]
-];
-
-const stickObjs = [];
-const stickMeshMat = new THREE.MeshLambertMaterial({ color: 0x7a4a1a });
-
-stickPositions.forEach(([x, z]) => {
-  const g = new THREE.Group();
-  const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.8, 5), stickMeshMat);
-  stick.rotation.z = Math.PI / 2;
-  stick.rotation.y = Math.random() * Math.PI;
-  g.add(stick);
-  g.position.set(x, 0.05, z);
-  scene.add(g);
-  stickObjs.push({ mesh: g, collected: false, x, z });
-});
-
-// ─── STARS ─────────────────────────────────────────────────────────────────
-const starGeo = new THREE.BufferGeometry();
-const starVerts = [];
-for (let i = 0; i < 800; i++) {
-  const theta = Math.random() * Math.PI * 2;
-  const phi = Math.acos(2 * Math.random() - 1);
-  const r = 80 + Math.random() * 20;
-  starVerts.push(r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta));
-}
-starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starVerts, 3));
-const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.25, transparent: true, opacity: 0.8 }));
-scene.add(stars);
-
-// ─── PLAYER ────────────────────────────────────────────────────────────────
-const player = {
-  pos: new THREE.Vector3(0, 1.7, 2.5),
-  vel: new THREE.Vector3(),
-  yaw: 0, pitch: 0,
-  speed: 4.5,
-  wood: 0, maxWood: 5
+/* ===== КОНСТАНТЫ ===== */
+const DIV_TYPES = {
+  regular: { name:'Обычная', icon:'fa-shield-halved', speed:70, combat:1.0, label:'ОБЫЧН' },
+  drone:   { name:'Дроновая', icon:'fa-helicopter', speed:120, combat:0.5, label:'ДРОН' },
+  recon:   { name:'Разведывательная', icon:'fa-binoculars', speed:150, combat:0.1, label:'РАЗВ' }
 };
+const WEATHER = {
+  clear: { name:'Ясно', icon:'fa-sun', mod:{regular:1,drone:1,recon:1} },
+  rain:  { name:'Дождь', icon:'fa-cloud-rain', mod:{regular:.7,drone:.35,recon:.75} },
+  snow:  { name:'Снег', icon:'fa-snowflake', mod:{regular:.5,drone:.2,recon:.55} },
+  fog:   { name:'Туман', icon:'fa-smog', mod:{regular:.85,drone:.55,recon:1.05} }
+};
+const COST = 5000;
+const RATE = 50; // людей/сек на город
+const CITY_R = 20;
+const DIV_R = 9;
+const WEATHER_INTERVAL = 40; // секунд
 
-const keys = {};
-document.addEventListener('keydown', e => { keys[e.code] = true; });
-document.addEventListener('keyup', e => { keys[e.code] = false; });
+/* ===== СОСТОЯНИЕ ===== */
+let currentScreen = 'menu';
+let G = null; // состояние игры
+let E = null; // состояние редактора
+let cam = { x:0, y:0, zoom:1 };
+let bgImage = null; // фоновое изображение
+let weatherParts = [];
+let animFrame = 0;
 
-// Mouse look
-let pointerLocked = false;
-let lockCooldown = false;
+/* ===== УТИЛИТЫ ===== */
+const lerp = (a,b,t) => a+(b-a)*t;
+const dist = (x1,y1,x2,y2) => Math.hypot(x2-x1,y2-y1);
+const clamp = (v,mn,mx) => Math.max(mn,Math.min(mx,v));
+const rnd = (a,b) => a+Math.random()*(b-a);
+const rndInt = (a,b) => Math.floor(rnd(a,b+1));
+let nextId = 1;
+function genId() { return nextId++; }
 
-function tryLock() {
-  if (lockCooldown || pointerLocked) return;
-  lockCooldown = true;
-  setTimeout(() => { lockCooldown = false; }, 1200);
-  canvas.requestPointerLock().catch(() => {});
+/* ===== ЭКРАНЫ ===== */
+function showScreen(name) {
+  currentScreen = name;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(name+'-screen').classList.add('active');
+  if (name === 'editor') initEditor();
+  if (name === 'game') resizeGameCanvas();
 }
 
-canvas.addEventListener('click', () => { if (started && !gameOver) tryLock(); });
-document.addEventListener('pointerlockchange', () => {
-  pointerLocked = document.pointerLockElement === canvas;
-});
-document.addEventListener('mousemove', e => {
-  if (!pointerLocked) return;
-  player.yaw -= e.movementX * 0.002;
-  player.pitch -= e.movementY * 0.002;
-  player.pitch = Math.max(-1.2, Math.min(0.8, player.pitch));
-});
-
-// ─── GAME STATE ────────────────────────────────────────────────────────────
-let heat = 80, fire = 60;
-let gameOver = false, started = false;
-
-function nearFire(pos) {
-  const dx = pos.x - 0, dz = pos.z - 0.5;
-  return Math.sqrt(dx*dx + dz*dz) < 1.8;
+/* ===== ТОСТЫ ===== */
+function toast(msg, type='') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3100);
 }
 
-function nearStick(pos) {
-  for (const s of stickObjs) {
-    if (s.collected) continue;
-    const dx = pos.x - s.x, dz = pos.z - s.z;
-    if (Math.sqrt(dx*dx + dz*dz) < 1.4) return s;
+/* ===== МОДАЛКИ ===== */
+function showModal(html) {
+  document.getElementById('modal-box').innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('active');
+}
+function hideModal() {
+  document.getElementById('modal-overlay').classList.remove('active');
+}
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target.id === 'modal-overlay') hideModal();
+});
+
+/* ===== КАМЕРА ===== */
+function w2sx(wx) { return (wx - cam.x)*cam.zoom + gameCanvas().width/2; }
+function w2sy(wy) { return (wy - cam.y)*cam.zoom + gameCanvas().height/2; }
+function s2wx(sx) { return (sx - gameCanvas().width/2)/cam.zoom + cam.x; }
+function s2wy(sy) { return (sy - gameCanvas().height/2)/cam.zoom + cam.y; }
+function edW2sx(wx) { return (wx - cam.x)*cam.zoom + edCanvas().width/2; }
+function edW2sy(wy) { return (wy - cam.y)*cam.zoom + edCanvas().height/2; }
+function edS2wx(sx) { return (sx - edCanvas().width/2)/cam.zoom + cam.x; }
+function edS2wy(sy) { return (sy - edCanvas().height/2)/cam.zoom + cam.y; }
+function gameCanvas() { return document.getElementById('game-canvas'); }
+function edCanvas() { return document.getElementById('editor-canvas'); }
+
+/* ===== ПУТЬ (ДИКСТРА) ===== */
+function findPath(cities, roads, fromId, toId) {
+  if (fromId === toId) return [fromId];
+  const graph = {};
+  cities.forEach(c => graph[c.id] = []);
+  roads.forEach(r => {
+    const a = cities.find(c=>c.id===r.from), b = cities.find(c=>c.id===r.to);
+    if (!a||!b) return;
+    const d = dist(a.x,a.y,b.x,b.y);
+    graph[r.from].push({city:r.to, dist:d});
+    graph[r.to].push({city:r.from, dist:d});
+  });
+  const ds = {}, prev = {}, vis = new Set();
+  cities.forEach(c => { ds[c.id]=Infinity; prev[c.id]=null; });
+  ds[fromId] = 0;
+  const pq = [{city:fromId,d:0}];
+  while (pq.length) {
+    pq.sort((a,b)=>a.d-b.d);
+    const cur = pq.shift();
+    if (vis.has(cur.city)) continue;
+    vis.add(cur.city);
+    if (cur.city === toId) break;
+    for (const nb of (graph[cur.city]||[])) {
+      if (vis.has(nb.city)) continue;
+      const nd = ds[cur.city]+nb.dist;
+      if (nd < ds[nb.city]) { ds[nb.city]=nd; prev[nb.city]=cur.city; pq.push({city:nb.city,d:nd}); }
+    }
+  }
+  const path = [];
+  let c = toId;
+  while (c!==null) { path.unshift(c); c=prev[c]; }
+  return path[0]===fromId ? path : null;
+}
+
+/* ===== ПОГОДА ===== */
+function initWeatherParts() {
+  weatherParts = [];
+  for (let i=0;i<150;i++) weatherParts.push({x:rnd(-400,1400),y:rnd(-400,1200),sp:rnd(80,250),sz:rnd(1,3),dr:rnd(-30,30)});
+}
+function updateWeather(dt) {
+  if (!G) return;
+  G.weatherTimer -= dt;
+  if (G.weatherTimer <= 0) {
+    const types = Object.keys(WEATHER);
+    const nw = types[rndInt(0, types.length-1)];
+    if (nw !== G.weather) {
+      G.weather = nw;
+      toast('Погода: '+WEATHER[nw].name, 'warn');
+      updateHudWeather();
+    }
+    G.weatherTimer = WEATHER_INTERVAL + rnd(-10,10);
+  }
+  // Обновляем частицы
+  const w = G.weather;
+  weatherParts.forEach(p => {
+    if (w==='rain') { p.y+=p.sp*dt; p.x+=p.dr*dt; if(p.y>1000){p.y=-20;p.x=rnd(-400,1400);} }
+    else if (w==='snow') { p.y+=p.sp*0.3*dt; p.x+=Math.sin(p.y*0.01)*20*dt; if(p.y>1000){p.y=-20;p.x=rnd(-400,1400);} }
+    else if (w==='fog') { p.x+=Math.sin(animFrame*0.005+p.sz*10)*15*dt; }
+  });
+}
+function getSpeedMod(type) {
+  if (!G) return 1;
+  return WEATHER[G.weather].mod[type]||1;
+}
+function updateHudWeather() {
+  if (!G) return;
+  const w = WEATHER[G.weather];
+  document.getElementById('hud-weather').innerHTML = `<i class="fas ${w.icon}"></i> ${w.name}`;
+}
+
+/* ===== ДИВИЗИИ ===== */
+function createDivision(type, cityId, owner) {
+  const cost = COST;
+  const pool = owner==='blue' ? G.bluePersonnel : G.redPersonnel;
+  if (pool < cost) return false;
+  if (owner==='blue') G.bluePersonnel-=cost; else G.redPersonnel-=cost;
+  G.divisions.push({
+    id: genId(), type, owner,
+    cityId, roadFrom:null, roadTo:null,
+    progress:0, path:[], personnel:5000
+  });
+  return true;
+}
+function getDivSpeed(div) {
+  return DIV_TYPES[div.type].speed * getSpeedMod(div.type);
+}
+
+/* ===== ДВИЖЕНИЕ И БОЙ ===== */
+function getCity(id) { return G.cities.find(c=>c.id===id); }
+function getRoad(a,b) { return G.roads.find(r=>(r.from===a&&r.to===b)||(r.from===b&&r.to===a)); }
+
+function updateMovement(dt) {
+  const spd = G.gameSpeed * dt;
+  for (const d of G.divisions) {
+    if (!d.path || d.path.length===0) continue;
+    // Начать движение по новой дороге
+    if (d.roadFrom===null && d.path.length>0) {
+      d.roadFrom = d.cityId;
+      d.roadTo = d.path[0];
+      d.progress = 0;
+    }
+    if (d.roadFrom===null) continue;
+    const r = getRoad(d.roadFrom, d.roadTo);
+    if (!r) { d.path=[]; d.roadFrom=null; d.roadTo=null; continue; }
+    const fc = getCity(d.roadFrom), tc = getCity(d.roadTo);
+    if (!fc||!tc) continue;
+    const rLen = Math.max(1, dist(fc.x,fc.y,tc.x,tc.y));
+    const v = getDivSpeed(d);
+    d.progress += (v * spd) / rLen;
+    if (d.progress >= 1) {
+      d.progress = 0;
+      const arrivedId = d.path.shift();
+      d.cityId = arrivedId;
+      d.roadFrom = null;
+      d.roadTo = null;
+      // Проверяем бой в городе
+      checkCityBattle(d, arrivedId);
+      // Продолжаем путь если живы
+      if (d.personnel > 0 && d.path.length > 0) {
+        // авто-продолжение будет в следующем кадре
+      } else if (d.personnel > 0) {
+        // Захват города если вражеский/нейтральный и нет защитников
+        const city = getCity(arrivedId);
+        if (city && city.owner !== d.owner) {
+          const defenders = G.divisions.filter(x => x.id!==d.id && x.cityId===arrivedId && x.owner!==d.owner && x.personnel>0);
+          if (defenders.length===0) {
+            const oldOwner = city.owner;
+            city.owner = d.owner;
+            if (d.owner==='blue') toast('Город "'+city.name+'" захвачен!','success');
+            else toast('Город "'+city.name+'" потерян!','error');
+            checkWinLose();
+          }
+        }
+      }
+    }
+  }
+  // Столкновения на дорогах
+  checkRoadBattles();
+  // Удаляем уничтоженные
+  G.divisions = G.divisions.filter(d => d.personnel > 0);
+}
+
+function checkCityBattle(div, cityId) {
+  const enemies = G.divisions.filter(d => d.id!==div.id && d.cityId===cityId && d.owner!==div.owner && d.personnel>0 && (d.path.length===0 || d.roadFrom===null));
+  for (const e of enemies) {
+    resolveCombat(div, e);
+    if (div.personnel <= 0) break;
+  }
+}
+
+function checkRoadBattles() {
+  for (let i=0; i<G.divisions.length; i++) {
+    const a = G.divisions[i];
+    if (a.roadFrom===null || a.personnel<=0) continue;
+    for (let j=i+1; j<G.divisions.length; j++) {
+      const b = G.divisions[j];
+      if (b.roadFrom===null || b.personnel<=0) continue;
+      if (a.owner === b.owner) continue;
+      // На одной дороге в разных направлениях?
+      if ((a.roadFrom===b.roadTo && a.roadTo===b.roadFrom)) {
+        if (a.progress + b.progress >= 0.95) {
+          resolveCombat(a, b);
+        }
+      }
+    }
+  }
+}
+
+function resolveCombat(a, b) {
+  const aPow = a.personnel * DIV_TYPES[a.type].combat * rnd(0.85,1.15);
+  const bPow = b.personnel * DIV_TYPES[b.type].combat * rnd(0.85,1.15);
+  const total = aPow + bPow;
+  if (total === 0) return;
+  const aRatio = bPow / total;
+  const bRatio = aPow / total;
+  a.personnel = Math.max(0, Math.floor(a.personnel - a.personnel * aRatio));
+  b.personnel = Math.max(0, Math.floor(b.personnel - b.personnel * bRatio));
+  if (a.personnel <= 0) { a.path=[]; a.roadFrom=null; a.roadTo=null; if(a.owner==='blue') toast('Дивизия уничтожена!','error'); }
+  if (b.personnel <= 0) { b.path=[]; b.roadFrom=null; b.roadTo=null; if(b.owner==='blue') toast('Вражеская дивизия уничтожена!','success'); }
+}
+
+function checkWinLose() {
+  const blueCities = G.cities.filter(c=>c.owner==='blue').length;
+  const redCities = G.cities.filter(c=>c.owner==='red').length;
+  if (redCities === 0) endGame('blue');
+  else if (blueCities === 0) endGame('red');
+}
+
+function endGame(winner) {
+  G.gameSpeed = 0;
+  const isWin = winner === 'blue';
+  showModal(`
+    <h3>${isWin ? 'Победа!' : 'Поражение'}</h3>
+    <p>${isWin ? 'Все вражеские города захвачены. Отличная тактика!' : 'Все ваши города потеряны. Попробуйте другую стратегию.'}</p>
+    <div class="modal-btns">
+      <button class="modal-btn primary" onclick="hideModal();showScreen('menu')">В меню</button>
+    </div>
+  `);
+}
+
+/* ===== ИИ ===== */
+let aiTimer = 0;
+function updateAI(dt) {
+  aiTimer += dt;
+  if (aiTimer < 2.5) return;
+  aiTimer = 0;
+  // Создание дивизий
+  const redCities = G.cities.filter(c=>c.owner==='red');
+  if (redCities.length > 0 && G.redPersonnel >= COST) {
+    const idleCities = redCities.filter(c => !G.divisions.some(d=>d.cityId===c.id && d.owner==='red' && d.path.length===0));
+    const c = idleCities.length>0 ? idleCities[rndInt(0,idleCities.length-1)] : redCities[rndInt(0,redCities.length-1)];
+    // Выбираем тип: чаще обычные, иногда дроны
+    const r = Math.random();
+    const type = r < 0.6 ? 'regular' : r < 0.85 ? 'drone' : 'recon';
+    createDivision(type, c.id, 'red');
+  }
+  // Отправка дивизий
+  const idleDivs = G.divisions.filter(d => d.owner==='red' && d.cityId!==null && d.path.length===0 && d.roadFrom===null);
+  for (const d of idleDivs) {
+    const blueCities = G.cities.filter(c=>c.owner!=='red');
+    if (blueCities.length === 0) break;
+    // Находим ближайшую не-красную цель
+    const from = getCity(d.cityId);
+    if (!from) continue;
+    let bestTarget = null, bestDist = Infinity;
+    for (const bc of blueCities) {
+      const dd = dist(from.x,from.y,bc.x,bc.y);
+      // Приоритет: незащищённые города
+      const defenders = G.divisions.filter(x=>x.owner==='blue'&&x.cityId===bc.id&&x.path.length===0).length;
+      const score = dd - defenders*200;
+      if (score < bestDist) { bestDist=score; bestTarget=bc; }
+    }
+    if (bestTarget) {
+      const path = findPath(G.cities, G.roads, d.cityId, bestTarget.id);
+      if (path && path.length>1) {
+        d.path = path.slice(1);
+      }
+    }
+  }
+  // Оборона: если синие дивизии рядом с красным городом, отправить защитников
+  const threatened = redCities.filter(c => {
+    return G.divisions.some(d=>d.owner==='blue'&&d.path.length>0&&d.path.includes(c.id));
+  });
+  for (const tc of threatened) {
+    const defenders = G.divisions.filter(d=>d.owner==='red'&&d.cityId===tc.id&&d.path.length===0);
+    const attackers = G.divisions.filter(d=>d.owner==='blue'&&d.path.includes(tc.id));
+    if (attackers.length > defenders.length) {
+      // Найти ближайшую красную дивизию для отправки на защиту
+      const available = G.divisions.filter(d=>d.owner==='red'&&d.cityId!==null&&d.cityId!==tc.id&&d.path.length===0&&d.roadFrom===null);
+      if (available.length > 0) {
+        const av = available[rndInt(0,available.length-1)];
+        const path = findPath(G.cities, G.roads, av.cityId, tc.id);
+        if (path && path.length>1) av.path = path.slice(1);
+      }
+    }
+  }
+}
+
+/* ===== РЕНДЕР ИГРЫ ===== */
+function renderGame() {
+  const cv = gameCanvas(), ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  // Фон
+  ctx.fillStyle = '#0a0f06';
+  ctx.fillRect(0,0,W,H);
+  // Фоновое изображение
+  if (bgImage) {
+    ctx.globalAlpha = 0.35;
+    const ix = w2sx(0), iy = w2sy(0);
+    ctx.drawImage(bgImage, ix, iy, bgImage.width*cam.zoom, bgImage.height*cam.zoom);
+    ctx.globalAlpha = 1;
+  }
+  // Сетка
+  drawGrid(ctx, W, H);
+  // Дороги
+  for (const r of G.roads) {
+    const a = getCity(r.from), b = getCity(r.to);
+    if (!a||!b) continue;
+    drawRoad(ctx, a, b, r);
+  }
+  // Путь выбранной дивизии
+  if (G.selectedDiv) {
+    drawDivPath(ctx, G.selectedDiv);
+  }
+  // Города
+  for (const c of G.cities) drawCity(ctx, c);
+  // Дивизии
+  for (const d of G.divisions) drawDivision(ctx, d);
+  // Погода
+  drawWeatherFx(ctx, W, H);
+  // Режим выбора цели
+  if (G.targetMode) {
+    ctx.fillStyle = 'rgba(200,168,50,0.08)';
+    ctx.fillRect(0,0,W,H);
+    ctx.font = `bold ${clamp(14*cam.zoom,11,20)}px Rajdhani`;
+    ctx.fillStyle = 'rgba(200,168,50,0.7)';
+    ctx.textAlign = 'center';
+    ctx.fillText('НАЖМИТЕ НА ГОРОД-ЦЕЛЬ', W/2, 30);
+  }
+}
+
+function drawGrid(ctx, W, H) {
+  const step = 80 * cam.zoom;
+  if (step < 10) return;
+  const ox = (W/2 - cam.x*cam.zoom) % step;
+  const oy = (H/2 - cam.y*cam.zoom) % step;
+  ctx.strokeStyle = 'rgba(45,58,31,0.4)';
+  ctx.lineWidth = 1;
+  for (let x = ox; x < W; x += step) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y = oy; y < H; y += step) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+}
+
+function drawRoad(ctx, a, b, road) {
+  const ax=w2sx(a.x), ay=w2sy(a.y), bx=w2sx(b.x), by=w2sy(b.y);
+  // Обводка
+  ctx.strokeStyle = '#222a18';
+  ctx.lineWidth = Math.max(1, 8*cam.zoom);
+  ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
+  // Поверхность
+  ctx.strokeStyle = '#3a4530';
+  ctx.lineWidth = Math.max(1, 5*cam.zoom);
+  ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
+  // Пунктир
+  ctx.strokeStyle = '#5a6550';
+  ctx.lineWidth = Math.max(0.5, 1*cam.zoom);
+  ctx.setLineDash([Math.max(2,8*cam.zoom), Math.max(2,6*cam.zoom)]);
+  ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function teamColor(owner, alpha) {
+  if (owner==='blue') return `rgba(48,128,192,${alpha})`;
+  if (owner==='red') return `rgba(212,64,48,${alpha})`;
+  return `rgba(120,110,90,${alpha})`;
+}
+
+function drawCity(ctx, c) {
+  const sx=w2sx(c.x), sy=w2sy(c.y), r=Math.max(4,CITY_R*cam.zoom);
+  const sel = G.selectedCity === c.id;
+  // Свечение при выделении
+  if (sel) {
+    const pulse = 4 + Math.sin(animFrame*0.06)*3;
+    ctx.shadowColor = '#c8a832';
+    ctx.shadowBlur = pulse * cam.zoom;
+  }
+  // Внешний круг
+  ctx.beginPath(); ctx.arc(sx,sy,r,0,Math.PI*2);
+  ctx.fillStyle = teamColor(c.owner, 0.25);
+  ctx.fill();
+  ctx.strokeStyle = teamColor(c.owner, 0.9);
+  ctx.lineWidth = Math.max(1, 2.5*cam.zoom);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  // Внутренняя точка
+  ctx.beginPath(); ctx.arc(sx,sy,r*0.35,0,Math.PI*2);
+  ctx.fillStyle = teamColor(c.owner, 0.85);
+  ctx.fill();
+  // Имя
+  if (cam.zoom > 0.35) {
+    ctx.font = `600 ${clamp(Math.round(12*cam.zoom),9,18)}px Rajdhani`;
+    ctx.fillStyle = '#d4cbb8';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(c.name, sx, sy+r+4*cam.zoom);
+  }
+}
+
+function drawDivision(ctx, d) {
+  let sx, sy, angle = 0;
+  if (d.roadFrom !== null && d.roadTo !== null) {
+    const fc=getCity(d.roadFrom), tc=getCity(d.roadTo);
+    if (!fc||!tc) return;
+    sx = w2sx(lerp(fc.x,tc.x,d.progress));
+    sy = w2sy(lerp(fc.y,tc.y,d.progress));
+    angle = Math.atan2(tc.y-fc.y, tc.x-fc.x);
+  } else {
+    const c = getCity(d.cityId);
+    if (!c) return;
+    // Размещаем дивизии вокруг города
+    const sibs = G.divisions.filter(x=>x.cityId===d.cityId && x.owner===d.owner);
+    const idx = sibs.indexOf(d);
+    const off = (idx - (sibs.length-1)/2) * 14 * cam.zoom;
+    sx = w2sx(c.x) + off;
+    sy = w2sy(c.y) - (CITY_R+12)*cam.zoom;
+    angle = 0;
+  }
+  const sz = Math.max(3, DIV_R*cam.zoom);
+  const sel = G.selectedDiv && G.selectedDiv.id === d.id;
+  const col = d.owner==='blue' ? '#3080c0' : '#d44030';
+  if (sel) { ctx.shadowColor='#c8a832'; ctx.shadowBlur=8*cam.zoom; }
+  ctx.fillStyle = col;
+  ctx.strokeStyle = '#e0d8c8';
+  ctx.lineWidth = Math.max(0.5, 1.2*cam.zoom);
+  if (d.type === 'regular') {
+    ctx.fillRect(sx-sz,sy-sz*0.7,sz*2,sz*1.4);
+    ctx.strokeRect(sx-sz,sy-sz*0.7,sz*2,sz*1.4);
+  } else if (d.type === 'drone') {
+    ctx.save(); ctx.translate(sx,sy); ctx.rotate(angle);
+    ctx.beginPath(); ctx.moveTo(sz*1.2,0); ctx.lineTo(-sz*0.6,-sz*0.8); ctx.lineTo(-sz*0.6,sz*0.8); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.restore();
+  } else {
+    ctx.beginPath(); ctx.moveTo(sx,sy-sz); ctx.lineTo(sx+sz*0.7,sy); ctx.lineTo(sx,sy+sz); ctx.lineTo(sx-sz*0.7,sy); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+  }
+  ctx.shadowBlur = 0;
+  // Численность
+  if (cam.zoom > 0.5) {
+    ctx.font = `${clamp(Math.round(9*cam.zoom),7,13)}px 'Share Tech Mono'`;
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(d.personnel, sx, sy - sz - 3*cam.zoom);
+  }
+}
+
+function drawDivPath(ctx, div) {
+  if (!div.path || div.path.length===0) return;
+  ctx.strokeStyle = 'rgba(200,168,50,0.5)';
+  ctx.lineWidth = Math.max(1, 2*cam.zoom);
+  ctx.setLineDash([Math.max(2,6*cam.zoom),Math.max(2,4*cam.zoom)]);
+  ctx.beginPath();
+  let startCity;
+  if (div.roadFrom && div.roadTo) {
+    // Текущая позиция на дороге
+    const fc=getCity(div.roadFrom), tc=getCity(div.roadTo);
+    if (fc&&tc) {
+      ctx.moveTo(w2sx(lerp(fc.x,tc.x,div.progress)), w2sy(lerp(fc.y,tc.y,div.progress)));
+    }
+  } else {
+    startCity = getCity(div.cityId);
+    if (startCity) ctx.moveTo(w2sx(startCity.x), w2sy(startCity.y));
+  }
+  for (const pid of div.path) {
+    const c = getCity(pid);
+    if (c) ctx.lineTo(w2sx(c.x), w2sy(c.y));
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawWeatherFx(ctx, W, H) {
+  if (!G) return;
+  const w = G.weather;
+  if (w === 'clear') return;
+  if (w === 'rain') {
+    ctx.strokeStyle = 'rgba(150,170,200,0.3)';
+    ctx.lineWidth = 1;
+    weatherParts.forEach(p => {
+      const sx = w2sx(p.x), sy = w2sy(p.y);
+      ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(sx+2,sy+12*cam.zoom); ctx.stroke();
+    });
+  } else if (w === 'snow') {
+    ctx.fillStyle = 'rgba(220,230,240,0.5)';
+    weatherParts.forEach(p => {
+      const sx = w2sx(p.x), sy = w2sy(p.y);
+      ctx.beginPath(); ctx.arc(sx,sy,Math.max(1,p.sz*cam.zoom),0,Math.PI*2); ctx.fill();
+    });
+  } else if (w === 'fog') {
+    ctx.fillStyle = 'rgba(180,190,170,0.06)';
+    weatherParts.forEach(p => {
+      const sx = w2sx(p.x), sy = w2sy(p.y);
+      ctx.beginPath(); ctx.arc(sx,sy,Math.max(5,40*cam.zoom),0,Math.PI*2); ctx.fill();
+    });
+    ctx.fillStyle = 'rgba(180,190,170,0.04)';
+    ctx.fillRect(0,0,W,H);
+  }
+}
+
+/* ===== ВВОД ИГРЫ ===== */
+let drag = {active:false, sx:0, sy:0, cx:0, cy:0, moved:false};
+let pinch = {active:false, dist:0, zoom:1};
+let tapTimer = null;
+
+function handleGameDown(sx, sy) {
+  drag = {active:true, sx:sx, sy:sy, cx:cam.x, cy:cam.y, moved:false};
+}
+
+function handleGameMove(sx, sy) {
+  if (!drag.active) return;
+  const dx = sx - drag.sx, dy = sy - drag.sy;
+  if (Math.abs(dx)+Math.abs(dy) > 6) drag.moved = true;
+  if (drag.moved) {
+    cam.x = drag.cx - dx/cam.zoom;
+    cam.y = drag.cy - dy/cam.zoom;
+  }
+}
+
+function handleGameUp(sx, sy) {
+  if (!drag.moved && G) {
+    handleGameTap(sx, sy);
+  }
+  drag.active = false;
+}
+
+function handleGameTap(sx, sy) {
+  const wx = s2wx(sx), wy = s2wy(sy);
+  // Режим выбора цели
+  if (G.targetMode) {
+    const city = findCityAt(wx, wy);
+    if (city) {
+      const path = findPath(G.cities, G.roads, G.selectedDiv.cityId, city.id);
+      if (path && path.length > 1) {
+        G.selectedDiv.path = path.slice(1);
+        toast('Дивизия направлена в "'+city.name+'"');
+      } else {
+        toast('Нет пути к городу!', 'error');
+      }
+    }
+    G.targetMode = false;
+    updatePanel();
+    return;
+  }
+  // Проверяем клик по дивизии
+  const div = findDivAt(wx, wy);
+  if (div && div.owner === 'blue') {
+    G.selectedCity = null;
+    G.selectedDiv = div;
+    updatePanel();
+    return;
+  }
+  // Проверяем клик по городу
+  const city = findCityAt(wx, wy);
+  if (city) {
+    G.selectedDiv = null;
+    G.selectedCity = city.id;
+    updatePanel();
+    return;
+  }
+  // Пустое место — сброс
+  G.selectedCity = null;
+  G.selectedDiv = null;
+  G.targetMode = false;
+  updatePanel();
+}
+
+function findCityAt(wx, wy) {
+  const r = CITY_R + 10;
+  for (const c of G.cities) {
+    if (dist(c.x,c.y,wx,wy) < r/cam.zoom * (1/cam.zoom > 1 ? 1/cam.zoom : 1)) return c;
+  }
+  // Более точный поиск
+  for (const c of G.cities) {
+    if (dist(c.x,c.y,wx,wy) < (CITY_R+15)/cam.zoom) return c;
   }
   return null;
 }
 
-// ─── E KEY ACTION ──────────────────────────────────────────────────────────
-document.addEventListener('keydown', e => {
-  if (e.code !== 'KeyE' || gameOver || !started) return;
-  if (insideHouse(player.pos) && nearFire(player.pos) && player.wood > 0) {
-    player.wood--;
-    fire = Math.min(100, fire + 30);
-    document.getElementById('woodNum').textContent = player.wood;
+function findDivAt(wx, wy) {
+  const r = DIV_R + 8;
+  for (const d of G.divisions) {
+    let dx, dy;
+    if (d.roadFrom && d.roadTo) {
+      const fc=getCity(d.roadFrom), tc=getCity(d.roadTo);
+      if (!fc||!tc) continue;
+      dx = lerp(fc.x,tc.x,d.progress);
+      dy = lerp(fc.y,tc.y,d.progress);
+    } else {
+      const c = getCity(d.cityId);
+      if (!c) continue;
+      const sibs = G.divisions.filter(x=>x.cityId===d.cityId&&x.owner===d.owner);
+      const idx = sibs.indexOf(d);
+      const off = (idx-(sibs.length-1)/2)*14;
+      dx = c.x + off;
+      dy = c.y - (CITY_R+12);
+    }
+    if (dist(dx,dy,wx,wy) < (r+5)/cam.zoom) return d;
+  }
+  return null;
+}
+
+/* ===== ПАНЕЛЬ ИГРЫ ===== */
+function updatePanel() {
+  const panel = document.getElementById('game-panel');
+  if (!G) { panel.classList.remove('active'); return; }
+  // Если выбрана дивизия
+  if (G.selectedDiv) {
+    const d = G.selectedDiv;
+    const t = DIV_TYPES[d.type];
+    const canTarget = d.cityId !== null && d.roadFrom === null && d.path.length === 0;
+    panel.innerHTML = `
+      <span class="panel-label"><i class="fas ${t.icon}"></i> ${t.name} — ${d.personnel} чел. ${d.cityId ? '(' + (getCity(d.cityId)?.name||'') + ')' : '(в пути)'}</span>
+      ${canTarget ? '<button class="target-btn" onclick="startTargetMode()"><i class="fas fa-location-crosshairs"></i> Указать цель</button>' : ''}
+    `;
+    panel.classList.add('active');
     return;
   }
-  if (!insideHouse(player.pos) && player.wood < player.maxWood) {
-    const s = nearStick(player.pos);
-    if (s) {
-      s.collected = true;
-      s.mesh.visible = false;
-      player.wood++;
-      document.getElementById('woodNum').textContent = player.wood;
+  // Если выбран город (свой)
+  if (G.selectedCity) {
+    const c = getCity(G.selectedCity);
+    if (!c || c.owner !== 'blue') { panel.classList.remove('active'); return; }
+    const canAfford = G.bluePersonnel >= COST;
+    let btns = '';
+    for (const [key, t] of Object.entries(DIV_TYPES)) {
+      btns += `<button class="div-btn" ${!canAfford?'disabled':''} onclick="tryCreateDiv('${key}',${c.id})">
+        <span class="div-name"><i class="fas ${t.icon}"></i> ${t.name}</span>
+        <span class="div-cost">${COST} чел. | Скорость: ${t.speed}</span>
+      </button>`;
+    }
+    panel.innerHTML = `<span class="panel-label"><i class="fas fa-city"></i> ${c.name} — создать дивизию</span>${btns}`;
+    panel.classList.add('active');
+    return;
+  }
+  panel.classList.remove('active');
+}
+
+function tryCreateDiv(type, cityId) {
+  if (G.bluePersonnel < COST) { toast('Недостаточно людей!','error'); return; }
+  if (createDivision(type, cityId, 'blue')) {
+    toast(DIV_TYPES[type].name+' дивизия создана','success');
+    updatePanel();
+  }
+}
+
+function startTargetMode() {
+  if (!G.selectedDiv) return;
+  G.targetMode = true;
+  updatePanel();
+}
+
+/* ===== СОХРАНЕНИЕ / ЗАГРУЗКА ===== */
+function saveGame() {
+  if (!G) return;
+  const data = {
+    version: 1,
+    cities: G.cities,
+    roads: G.roads,
+    divisions: G.divisions,
+    bluePersonnel: G.bluePersonnel,
+    redPersonnel: G.redPersonnel,
+    weather: G.weather,
+    weatherTimer: G.weatherTimer,
+    gameSpeed: G.gameSpeed,
+    hasCustomImage: !!bgImage,
+    nextId
+  };
+  downloadJSON(data, 'tactical_save.json');
+  toast('Игра сохранена','success');
+}
+
+function loadGame() {
+  document.getElementById('game-load-input').click();
+}
+
+function onGameLoadFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.hasCustomImage) {
+        // Нужно загрузить изображение
+        G = null;
+        showModal(`
+          <h3>Загрузите фоновое изображение</h3>
+          <p>В этом сохранении использовалось пользовательское изображение карты. Пожалуйста, загрузите его повторно.</p>
+          <div class="modal-btns">
+            <button class="modal-btn primary" onclick="hideModal();document.getElementById('game-img-input').click()">Загрузить</button>
+            <button class="modal-btn secondary" onclick="loadGameData(null)">Пропустить</button>
+          </div>
+        `);
+        window._pendingSave = data;
+      } else {
+        loadGameData(data, null);
+      }
+    } catch(err) { toast('Ошибка загрузки файла','error'); }
+  };
+  reader.readAsText(file);
+}
+
+function onGameImgLoad(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const img = new Image();
+    img.onload = () => loadGameData(window._pendingSave, img);
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function loadGameData(data, img) {
+  hideModal();
+  if (!data) return;
+  nextId = data.nextId || 100;
+  G = {
+    cities: data.cities,
+    roads: data.roads,
+    divisions: data.divisions,
+    bluePersonnel: data.bluePersonnel,
+    redPersonnel: data.redPersonnel,
+    weather: data.weather || 'clear',
+    weatherTimer: data.weatherTimer || WEATHER_INTERVAL,
+    gameSpeed: data.gameSpeed || 1,
+    selectedCity: null,
+    selectedDiv: null,
+    targetMode: false
+  };
+  bgImage = img || null;
+  centerCamera();
+  initWeatherParts();
+  updateHudWeather();
+  showScreen('game');
+  toast('Игра загружена','success');
+}
+
+function downloadJSON(data, filename) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ===== РЕДАКТОР КАРТ ===== */
+function initEditor() {
+  if (!E) {
+    E = { cities:[], roads:[], mode:'city', roadStart:null, img:null };
+  }
+  const cv = edCanvas();
+  cv.width = cv.parentElement.clientWidth - 0;
+  cv.height = cv.parentElement.clientHeight - 0;
+  if (E.cities.length === 0) cam = {x:500, y:350, zoom:0.8};
+  renderEditor();
+}
+
+function setEdMode(mode) {
+  E.mode = mode;
+  E.roadStart = null;
+  document.querySelectorAll('.ed-btn[data-mode]').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  renderEditor();
+}
+
+function edUploadImg() {
+  document.getElementById('ed-img-input').click();
+}
+function edOnImgUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const img = new Image();
+    img.onload = () => { E.img = img; renderEditor(); toast('Фон загружен','success'); };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function edSaveMap() {
+  if (E.cities.length === 0) { toast('Добавьте хотя бы один город','error'); return; }
+  const data = { cities: E.cities.map(c=>({id:c.id,x:c.x,y:c.y,name:c.name})), roads: E.roads };
+  downloadJSON(data, 'tactical_map.json');
+  toast('Карта сохранена','success');
+}
+
+function edLoadMap() {
+  document.getElementById('ed-map-input').click();
+}
+function edOnMapLoad(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      E.cities = data.cities;
+      E.roads = data.roads;
+      nextId = Math.max(...E.cities.map(c=>c.id), ...E.roads.flatMap(r=>[r.from,r.to]), 0) + 1;
+      centerCameraOnCities(E.cities);
+      renderEditor();
+      toast('Карта загружена','success');
+    } catch(err) { toast('Ошибка загрузки','error'); }
+  };
+  reader.readAsText(file);
+}
+
+function renderEditor() {
+  const cv = edCanvas(), ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.fillStyle = '#0a0f06';
+  ctx.fillRect(0,0,W,H);
+  if (E.img) {
+    ctx.globalAlpha = 0.4;
+    ctx.drawImage(E.img, edW2sx(0), edW2sy(0), E.img.width*cam.zoom, E.img.height*cam.zoom);
+    ctx.globalAlpha = 1;
+  }
+  drawEdGrid(ctx, W, H);
+  // Дороги
+  for (const r of E.roads) {
+    const a = E.cities.find(c=>c.id===r.from), b = E.cities.find(c=>c.id===r.to);
+    if (!a||!b) continue;
+    const ax=edW2sx(a.x),ay=edW2sy(a.y),bx=edW2sx(b.x),by=edW2sy(b.y);
+    ctx.strokeStyle = '#3a4530'; ctx.lineWidth = Math.max(1,5*cam.zoom); ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
+    ctx.strokeStyle = '#5a6550'; ctx.lineWidth = Math.max(0.5,1*cam.zoom);
+    ctx.setLineDash([Math.max(2,8*cam.zoom),Math.max(2,6*cam.zoom)]);
+    ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  // Линия строящейся дороги
+  if (E.mode==='road' && E.roadStart!==null && E._mouseWorld) {
+    const a = E.cities.find(c=>c.id===E.roadStart);
+    if (a) {
+      ctx.strokeStyle = 'rgba(200,168,50,0.6)';
+      ctx.lineWidth = Math.max(1,2*cam.zoom);
+      ctx.setLineDash([6,4]);
+      ctx.beginPath(); ctx.moveTo(edW2sx(a.x),edW2sy(a.y)); ctx.lineTo(edW2sx(E._mouseWorld.x),edW2sy(E._mouseWorld.y)); ctx.stroke();
+      ctx.setLineDash([]);
     }
   }
-});
-
-// ─── COLLISION ─────────────────────────────────────────────────────────────
-const HB = { minX: -3.0, maxX: 3.0, minZ: -2.6, maxZ: 2.5 };
-const DOOR_MIN_X = -0.65, DOOR_MAX_X = 0.65;
-
-function insideHouse(pos) {
-  return pos.x > HB.minX && pos.x < HB.maxX &&
-         pos.z > HB.minZ && pos.z < HB.maxZ;
+  // Города
+  for (const c of E.cities) {
+    const sx=edW2sx(c.x), sy=edW2sy(c.y), r=Math.max(4,CITY_R*cam.zoom);
+    const isStart = E.roadStart === c.id;
+    if (isStart) { ctx.shadowColor='#c8a832'; ctx.shadowBlur=10*cam.zoom; }
+    ctx.beginPath(); ctx.arc(sx,sy,r,0,Math.PI*2);
+    ctx.fillStyle = isStart ? 'rgba(200,168,50,0.3)' : 'rgba(120,110,90,0.25)';
+    ctx.fill();
+    ctx.strokeStyle = isStart ? '#c8a832' : 'rgba(120,110,90,0.8)';
+    ctx.lineWidth = Math.max(1,2.5*cam.zoom);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.beginPath(); ctx.arc(sx,sy,r*0.35,0,Math.PI*2);
+    ctx.fillStyle = isStart ? '#c8a832' : 'rgba(120,110,90,0.7)';
+    ctx.fill();
+    if (cam.zoom > 0.35) {
+      ctx.font = `600 ${clamp(Math.round(12*cam.zoom),9,18)}px Rajdhani`;
+      ctx.fillStyle = '#d4cbb8'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillText(c.name, sx, sy+r+4*cam.zoom);
+    }
+  }
+  // Подсказка режима
+  ctx.font = `600 14px Rajdhani`;
+  ctx.fillStyle = 'rgba(200,168,50,0.6)'; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  const hints = {city:'Нажмите для добавления города', road:'Нажмите на два города для дороги', delete:'Нажмите на объект для удаления'};
+  ctx.fillText(hints[E.mode]||'', 10, 10);
 }
 
-function throughDoor(pos) {
-  return pos.x > DOOR_MIN_X && pos.x < DOOR_MAX_X;
+function drawEdGrid(ctx, W, H) {
+  const step = 80*cam.zoom;
+  if (step<10) return;
+  const ox = (W/2-cam.x*cam.zoom)%step, oy = (H/2-cam.y*cam.zoom)%step;
+  ctx.strokeStyle = 'rgba(45,58,31,0.35)'; ctx.lineWidth = 1;
+  for (let x=ox;x<W;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for (let y=oy;y<H;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
 }
 
-function resolveCollision(newPos, oldPos) {
-  const wasInside = insideHouse(oldPos);
-  const nowInside = insideHouse(newPos);
+// Ввод редактора
+let edDrag = {active:false, sx:0, sy:0, cx:0, cy:0, moved:false};
+let edPinch = {active:false, dist:0};
 
-  if (wasInside && !nowInside) {
-    if (newPos.z > HB.maxZ) {
-      if (!throughDoor(newPos)) newPos.z = HB.maxZ - 0.01;
+function edDown(sx, sy) {
+  edDrag = {active:true, sx, sy, cx:cam.x, cy:cam.y, moved:false};
+}
+function edMove(sx, sy) {
+  const wx = edS2wx(sx), wy = edS2wy(sy);
+  E._mouseWorld = {x:wx, y:wy};
+  if (!edDrag.active) { renderEditor(); return; }
+  const dx=sx-edDrag.sx, dy=sy-edDrag.sy;
+  if (Math.abs(dx)+Math.abs(dy)>6) edDrag.moved=true;
+  if (edDrag.moved) { cam.x=edDrag.cx-dx/cam.zoom; cam.y=edDrag.cy-dy/cam.zoom; }
+  renderEditor();
+}
+function edUp(sx, sy) {
+  if (!edDrag.moved) edTap(sx, sy);
+  edDrag.active = false;
+}
+function edTap(sx, sy) {
+  const wx = edS2wx(sx), wy = edS2wy(sy);
+  if (E.mode === 'city') {
+    const name = 'Город ' + (E.cities.length+1);
+    E.cities.push({id:genId(), x:wx, y:wy, name});
+    toast(name+' добавлен');
+  } else if (E.mode === 'road') {
+    const city = findEdCityAt(wx, wy);
+    if (!city) return;
+    if (E.roadStart === null) {
+      E.roadStart = city.id;
     } else {
-      newPos.x = oldPos.x; newPos.z = oldPos.z;
+      if (E.roadStart !== city.id) {
+        const exists = E.roads.some(r=>(r.from===E.roadStart&&r.to===city.id)||(r.from===city.id&&r.to===E.roadStart));
+        if (!exists) { E.roads.push({from:E.roadStart, to:city.id}); toast('Дорога построена'); }
+        else toast('Дорога уже существует','warn');
+      }
+      E.roadStart = null;
     }
-  } else if (!wasInside && nowInside) {
-    if (oldPos.z >= HB.maxZ && throughDoor(oldPos)) {
-      // entering via door OK
+  } else if (E.mode === 'delete') {
+    const city = findEdCityAt(wx, wy);
+    if (city) {
+      E.roads = E.roads.filter(r=>r.from!==city.id&&r.to!==city.id);
+      E.cities = E.cities.filter(c=>c.id!==city.id);
+      toast('Город удалён');
+      return;
+    }
+    // Удаление дороги — клик рядом с дорогой
+    let bestR = null, bestD = 20/cam.zoom;
+    for (const r of E.roads) {
+      const a = E.cities.find(c=>c.id===r.from), b = E.cities.find(c=>c.id===r.to);
+      if (!a||!b) continue;
+      const d = pointToSegDist(wx,wy,a.x,a.y,b.x,b.y);
+      if (d < bestD) { bestD=d; bestR=r; }
+    }
+    if (bestR) { E.roads = E.roads.filter(r=>r!==bestR); toast('Дорога удалена'); }
+  }
+  renderEditor();
+}
+
+function findEdCityAt(wx, wy) {
+  for (const c of E.cities) {
+    if (dist(c.x,c.y,wx,wy) < (CITY_R+15)/cam.zoom) return c;
+  }
+  return null;
+}
+
+function pointToSegDist(px,py,ax,ay,bx,by) {
+  const dx=bx-ax, dy=by-ay, len2=dx*dx+dy*dy;
+  if (len2===0) return dist(px,py,ax,ay);
+  let t = ((px-ax)*dx+(py-ay)*dy)/len2;
+  t = clamp(t,0,1);
+  return dist(px,py,ax+t*dx,ay+t*dy);
+}
+
+/* ===== НОВАЯ ИГРА ===== */
+function newGameDefault() {
+  startGame(getDefaultMap(), null);
+}
+
+function newGameCustom() {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.json'; inp.style.display = 'none';
+  inp.onchange = function(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        const data = JSON.parse(ev.target.result);
+        startGame(data, null);
+      } catch(err) { toast('Ошибка загрузки карты','error'); }
+    };
+    reader.readAsText(file);
+  };
+  document.body.appendChild(inp); inp.click(); inp.remove();
+}
+
+function startGame(mapData, img) {
+  nextId = Math.max(...mapData.cities.map(c=>c.id), ...mapData.roads.flatMap(r=>[r.from,r.to]), 0) + 1;
+  // Распределяем владельцев
+  const sorted = [...mapData.cities].sort((a,b)=>a.x-b.x);
+  const cities = sorted.map((c,i) => {
+    let owner = 'neutral';
+    const n = sorted.length;
+    if (n >= 6) {
+      if (i < Math.ceil(n*0.2)) owner = 'blue';
+      else if (i >= n - Math.ceil(n*0.2)) owner = 'red';
+    } else if (n >= 4) {
+      if (i === 0 || i === 1) owner = 'blue';
+      else if (i === n-1 || i === n-2) owner = 'red';
     } else {
-      newPos.x = oldPos.x; newPos.z = oldPos.z;
+      if (i === 0) owner = 'blue';
+      else if (i === n-1) owner = 'red';
     }
-  } else if (wasInside) {
-    newPos.x = Math.max(HB.minX + 0.05, Math.min(HB.maxX - 0.05, newPos.x));
-    newPos.z = Math.max(HB.minZ + 0.05, Math.min(HB.maxZ - 0.05, newPos.z));
-  } else {
-    const inX = newPos.x > HB.minX && newPos.x < HB.maxX;
-    const inZ = newPos.z > HB.minZ && newPos.z < HB.maxZ;
-    if (inX && inZ) { newPos.x = oldPos.x; newPos.z = oldPos.z; }
-  }
-
-  newPos.x = Math.max(-25, Math.min(25, newPos.x));
-  newPos.z = Math.max(-25, Math.min(25, newPos.z));
-  newPos.y = 1.7;
+    return {...c, owner};
+  });
+  G = {
+    cities, roads: mapData.roads,
+    divisions: [], bluePersonnel: 0, redPersonnel: 0,
+    weather: 'clear', weatherTimer: WEATHER_INTERVAL,
+    gameSpeed: 1, selectedCity: null, selectedDiv: null, targetMode: false
+  };
+  bgImage = img;
+  centerCameraOnCities(cities);
+  initWeatherParts();
+  aiTimer = 0;
+  document.getElementById('hud-speed').textContent = 'x1';
+  updateHudWeather();
+  showScreen('game');
+  toast('Боевое задание получено. Удачи, командир!','success');
 }
 
-// ─── UI ────────────────────────────────────────────────────────────────────
-function updateUI() {
-  document.getElementById('heatFill').style.width = heat + '%';
-  document.getElementById('fireFill').style.width = fire + '%';
-  const hf = document.getElementById('heatFill');
-  if (heat < 25) hf.style.background = '#c0392b';
-  else if (heat < 50) hf.style.background = 'linear-gradient(to right,#c0392b,#e67e22)';
-  else hf.style.background = 'linear-gradient(to right,#c0392b,#e67e22,#f1c40f)';
+function centerCameraOnCities(cities) {
+  if (cities.length === 0) { cam = {x:500,y:350,zoom:0.8}; return; }
+  let mx=0,my=0;
+  cities.forEach(c=>{mx+=c.x;my+=c.y;});
+  mx/=cities.length; my/=cities.length;
+  cam.x = mx; cam.y = my;
+  let maxD = 0;
+  cities.forEach(c=>{maxD=Math.max(maxD,dist(c.x,c.y,mx,my));});
+  const cv = gameCanvas();
+  const minDim = Math.min(cv.width||800, cv.height||600);
+  cam.zoom = clamp(minDim / (maxD*2.8), 0.2, 2.5);
+}
+function centerCamera() { if(G) centerCameraOnCities(G.cities); }
 
-  // Action prompt
-  const ap = document.getElementById('action-prompt');
-  const p = player.pos;
-  if (insideHouse(p) && nearFire(p) && player.wood > 0) {
-    ap.textContent = '[E] Бросить палку в огонь';
-    ap.style.opacity = '1';
-  } else if (!insideHouse(p) && nearStick(p) && player.wood < player.maxWood) {
-    ap.textContent = '[E] Подобрать палку';
-    ap.style.opacity = '1';
-  } else {
-    ap.style.opacity = '0';
-  }
+/* ===== СКОРОСТЬ ИГРЫ ===== */
+function cycleSpeed() {
+  if (!G) return;
+  const speeds = [0,1,2,3];
+  const labels = ['Пауза','x1','x2','x3'];
+  let idx = speeds.indexOf(G.gameSpeed);
+  idx = (idx+1) % speeds.length;
+  G.gameSpeed = speeds[idx];
+  document.getElementById('hud-speed').textContent = labels[idx];
 }
 
-// ─── OVERLAY ───────────────────────────────────────────────────────────────
-document.getElementById('restartBtn').addEventListener('click', () => {
-  document.getElementById('overlay').classList.remove('show');
-  heat = 80; fire = 60; gameOver = false;
-  player.pos.set(0, 1.7, 2.5); player.wood = 0;
-  document.getElementById('woodNum').textContent = '0';
-  stickObjs.forEach(s => { s.collected = false; s.mesh.visible = true; });
-});
+function confirmQuit() {
+  showModal(`
+    <h3>Выйти в меню?</h3>
+    <p>Текущий прогресс будет потерян, если не сохраните игру.</p>
+    <div class="modal-btns">
+      <button class="modal-btn primary" onclick="hideModal();G=null;showScreen('menu')">Выйти</button>
+      <button class="modal-btn secondary" onclick="hideModal();saveGame()">Сохранить и выйти</button>
+      <button class="modal-btn secondary" onclick="hideModal()">Отмена</button>
+    </div>
+  `);
+}
 
-document.getElementById('startBtn').addEventListener('click', () => {
-  document.getElementById('intro').style.opacity = '0';
-  setTimeout(() => document.getElementById('intro').style.display = 'none', 800);
-  started = true;
-  // Pointer lock requested on next canvas click to avoid SecurityError
-});
+/* ===== КАРТА ПО УМОЛЧАНИЮ ===== */
+function getDefaultMap() {
+  return {
+    cities: [
+      {id:1, x:120, y:300, name:'Синяя Ставка'},
+      {id:2, x:100, y:560, name:'Западный Пост'},
+      {id:3, x:350, y:130, name:'Северный Перевал'},
+      {id:4, x:330, y:430, name:'Центральная Деревня'},
+      {id:5, x:550, y:280, name:'Перекрёсток'},
+      {id:6, x:500, y:560, name:'Южный Мост'},
+      {id:7, x:750, y:180, name:'Восточный Форпост'},
+      {id:8, x:720, y:420, name:'Равнинный Город'},
+      {id:9, x:950, y:300, name:'Красная Ставка'},
+      {id:10, x:900, y:580, name:'Красный Аванпост'}
+    ],
+    roads: [
+      {from:1,to:3},{from:1,to:4},{from:1,to:2},
+      {from:2,to:4},{from:2,to:6},
+      {from:3,to:5},{from:3,to:7},
+      {from:4,to:5},{from:4,to:6},
+      {from:5,to:7},{from:5,to:8},
+      {from:6,to:8},{from:6,to:10},
+      {from:7,to:9},{from:8,to:9},{from:8,to:10},
+      {from:9,to:10}
+    ]
+  };
+}
 
-// ─── GAME LOOP ─────────────────────────────────────────────────────────────
-let prev = performance.now();
+/* ===== ИГРОВОЙ ЦИКЛ ===== */
+let lastTime = 0;
+function gameLoop(time) {
+  animFrame++;
+  const dt = Math.min(0.1, (time - lastTime)/1000);
+  lastTime = time;
 
-function loop(now) {
-  requestAnimationFrame(loop);
-  const dt = Math.min((now - prev) / 1000, 0.05);
-  prev = now;
-
-  // Fire & heat decay
-  if (started && !gameOver) {
-    fire = Math.max(0, fire - 2.5 * dt);
-    const inside = insideHouse(player.pos);
-    const nf = nearFire(player.pos);
-    const heatDecay = inside ? 1.8 : 5;
-    const heatGain = (nf && fire > 0) ? 10 : 0;
-    heat = Math.max(0, Math.min(100, heat - heatDecay * dt + heatGain * dt));
-
-    if (heat <= 0 && !gameOver) {
-      gameOver = true;
-      document.getElementById('overlay').classList.add('show');
+  if (currentScreen === 'game' && G) {
+    if (G.gameSpeed > 0) {
+      const gameDt = dt * G.gameSpeed;
+      // Начисление людей
+      const blueCities = G.cities.filter(c=>c.owner==='blue').length;
+      const redCities = G.cities.filter(c=>c.owner==='red').length;
+      G.bluePersonnel += blueCities * RATE * gameDt;
+      G.redPersonnel += redCities * RATE * gameDt;
+      // Погода
+      updateWeather(gameDt);
+      // Движение и бой
+      updateMovement(gameDt);
+      // ИИ
+      updateAI(gameDt);
     }
+    // Обновляем HUD
+    document.getElementById('hud-personnel').textContent = Math.floor(G.bluePersonnel).toLocaleString('ru');
+    // Рендер
+    renderGame();
+    // Обновляем панель если нужно
+    if (animFrame % 30 === 0) updatePanel();
   }
 
-  // Fire visuals
-  const fi = fire / 100;
-  fireLight.intensity = fi > 0 ? 2.5 * fi + Math.sin(now * 0.007) * 0.4 * fi : 0;
-  fireLight.color.setHSL(0.07 + Math.sin(now * 0.005) * 0.02, 1, 0.55);
+  if (currentScreen === 'editor' && E) {
+    // Рендер редактора (уже в обработчиках ввода)
+  }
 
-  const t = now * 0.001;
-  flames.forEach((f, i) => {
-    const alive = fire > 2;
-    f.visible = alive;
-    if (alive) {
-      f.position.y = f._baseY + Math.sin(t * f._speed + f._phase) * 0.08 * fi;
-      f.scale.y = fi * (0.7 + Math.sin(t * f._speed * 1.3 + f._phase) * 0.3);
-      f.scale.x = fi * (0.8 + Math.sin(t * f._speed + f._phase + 1) * 0.2);
-      f.material.opacity = 0.6 + Math.sin(t * f._speed + f._phase) * 0.3;
+  requestAnimationFrame(gameLoop);
+}
+
+/* ===== РЕСАЙЗ ===== */
+function resizeGameCanvas() {
+  const cv = gameCanvas();
+  const hud = cv.previousElementSibling;
+  const panel = cv.nextElementSibling;
+  const hudH = hud ? hud.offsetHeight : 0;
+  const panelH = panel && panel.classList.contains('active') ? panel.offsetHeight : 0;
+  cv.width = window.innerWidth;
+  cv.height = window.innerHeight - hudH;
+}
+
+function resizeEdCanvas() {
+  if (currentScreen !== 'editor') return;
+  const cv = edCanvas();
+  const tb = cv.previousElementSibling;
+  cv.width = window.innerWidth;
+  cv.height = window.innerHeight - (tb?tb.offsetHeight:0);
+  renderEditor();
+}
+
+/* ===== ТАЧ-СОБЫТИЯ ===== */
+function setupTouch(canvas, downFn, moveFn, upFn) {
+  let touches = [];
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    touches = [...e.touches];
+    if (touches.length === 1) {
+      const t = touches[0];
+      const r = canvas.getBoundingClientRect();
+      downFn(t.clientX-r.left, t.clientY-r.top);
     }
+    if (touches.length === 2) {
+      const dx=touches[0].clientX-touches[1].clientX, dy=touches[0].clientY-touches[1].clientY;
+      if (canvas === gameCanvas()) pinch = {active:true, dist:Math.hypot(dx,dy), zoom:cam.zoom};
+      else edPinch = {active:true, dist:Math.hypot(dx,dy)};
+    }
+  }, {passive:false});
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const newTouches = [...e.touches];
+    if (newTouches.length === 1 && touches.length === 1) {
+      const t = newTouches[0];
+      const r = canvas.getBoundingClientRect();
+      moveFn(t.clientX-r.left, t.clientY-r.top);
+    }
+    if (newTouches.length === 2) {
+      const dx=newTouches[0].clientX-newTouches[1].clientX, dy=newTouches[0].clientY-newTouches[1].clientY;
+      const d = Math.hypot(dx,dy);
+      const p = canvas===gameCanvas() ? pinch : edPinch;
+      if (p.active && p.dist > 0) {
+        const scale = d / p.dist;
+        cam.zoom = clamp(cam.zoom * scale, 0.15, 4);
+        p.dist = d;
+        if (canvas === edCanvas()) renderEditor();
+      }
+    }
+    touches = newTouches;
+  }, {passive:false});
+  canvas.addEventListener('touchend', e => {
+    e.preventDefault();
+    if (e.touches.length === 0) {
+      if (touches.length === 1) {
+        const t = touches[0];
+        const r = canvas.getBoundingClientRect();
+        upFn(t.clientX-r.left, t.clientY-r.top);
+      }
+      if (canvas===gameCanvas()) pinch.active=false;
+      else edPinch.active=false;
+    }
+    touches = [...e.touches];
+  }, {passive:false});
+
+  // Мышь
+  canvas.addEventListener('mousedown', e => {
+    const r = canvas.getBoundingClientRect();
+    downFn(e.clientX-r.left, e.clientY-r.top);
+  });
+  canvas.addEventListener('mousemove', e => {
+    const r = canvas.getBoundingClientRect();
+    moveFn(e.clientX-r.left, e.clientY-r.top);
+  });
+  canvas.addEventListener('mouseup', e => {
+    const r = canvas.getBoundingClientRect();
+    upFn(e.clientX-r.left, e.clientY-r.top);
+  });
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const scale = e.deltaY > 0 ? 0.9 : 1.1;
+    cam.zoom = clamp(cam.zoom * scale, 0.15, 4);
+    if (canvas === edCanvas()) renderEditor();
+  }, {passive:false});
+}
+
+/* ===== ИНИЦИАЛИЗАЦИЯ ===== */
+function init() {
+  // Настраиваем тач для игры
+  const gcv = gameCanvas();
+  setupTouch(gcv, handleGameDown, handleGameMove, handleGameUp);
+
+  // Настраиваем тач для редактора
+  const ecv = edCanvas();
+  setupTouch(ecv, edDown, edMove, edUp);
+
+  // Ресайз
+  window.addEventListener('resize', () => {
+    if (currentScreen === 'game') resizeGameCanvas();
+    if (currentScreen === 'editor') resizeEdCanvas();
   });
 
-  // Ambient flicker
-  ambient.intensity = 0.3 + fi * 0.15 + Math.sin(t * 3.7) * 0.05 * fi;
-
-  // Player movement
-  if (!gameOver && started) {
-    const moveDir = new THREE.Vector3();
-    if (keys['KeyW'] || keys['ArrowUp']) moveDir.z -= 1;
-    if (keys['KeyS'] || keys['ArrowDown']) moveDir.z += 1;
-    if (keys['KeyA'] || keys['ArrowLeft']) moveDir.x -= 1;
-    if (keys['KeyD'] || keys['ArrowRight']) moveDir.x += 1;
-
-    if (moveDir.length() > 0) {
-      moveDir.normalize();
-      const yawQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, player.yaw, 0));
-      moveDir.applyQuaternion(yawQ);
-      const oldPos = player.pos.clone();
-      player.pos.addScaledVector(moveDir, player.speed * dt);
-      resolveCollision(player.pos, oldPos);
-    }
-    player.pos.y = 1.7;
-  }
-
-  // Camera
-  camera.position.copy(player.pos);
-  const euler = new THREE.Euler(player.pitch, player.yaw, 0, 'YXZ');
-  camera.quaternion.setFromEuler(euler);
-
-  updateUI();
-  renderer.render(scene, camera);
+  // Запуск цикла
+  requestAnimationFrame(gameLoop);
 }
 
-requestAnimationFrame(loop);
+window.addEventListener('load', init);
 </script>
 </body>
 </html>
