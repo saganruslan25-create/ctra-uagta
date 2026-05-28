@@ -1,1413 +1,1612 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Тактическое Командование</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRONTLINE — Стратегія</title>
 <style>
-:root{--bg:#0d1208;--card:#161e10;--card2:#1e2816;--border:#2d3a1f;--fg:#d4cbb8;--muted:#7a7260;--accent:#c8a832;--accent2:#a08420;--red:#d44030;--red2:#a02018;--blue:#3080c0;--blue2:#185888;--green:#4a8c3f;--radius:6px}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--fg);overflow:hidden;height:100vh;width:100vw;user-select:none}
-.screen{display:none;position:absolute;inset:0;flex-direction:column}
-.screen.active{display:flex}
-#menu-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,#1a2410 0%,#0d1208 70%)}
-.menu-title{font-size:clamp(28px,7vw,56px);font-weight:700;letter-spacing:4px;color:var(--accent);text-transform:uppercase;text-shadow:0 0 40px rgba(200,168,50,0.3);margin-bottom:8px}
-.menu-sub{font-size:clamp(12px,3vw,18px);color:var(--muted);letter-spacing:6px;text-transform:uppercase;margin-bottom:40px}
-.menu-btn{display:block;width:260px;padding:14px 0;margin:8px auto;background:var(--card);border:1px solid var(--border);color:var(--fg);font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:600;letter-spacing:2px;cursor:pointer;transition:all .2s;border-radius:var(--radius)}
-.menu-btn:hover,.menu-btn:active{background:var(--card2);border-color:var(--accent);color:var(--accent)}
-.menu-btn i{margin-right:10px}
-#editor-screen{background:var(--bg)}
-.ed-toolbar{display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--card);border-bottom:1px solid var(--border);align-items:center;z-index:2}
-.ed-btn{padding:8px 14px;background:var(--card2);border:1px solid var(--border);color:var(--fg);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border-radius:var(--radius);transition:all .15s}
-.ed-btn:hover,.ed-btn:active{border-color:var(--accent);color:var(--accent)}
-.ed-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
-.ed-btn i{margin-right:5px}
-.ed-sep{width:1px;height:28px;background:var(--border);margin:0 4px}
-#editor-canvas{flex:1;width:100%;cursor:crosshair}
-#game-screen{background:var(--bg)}
-.game-hud{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:var(--card);border-bottom:1px solid var(--border);z-index:2;flex-shrink:0;min-height:44px;gap:8px;flex-wrap:wrap}
-.hud-item{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600}
-.hud-item i{color:var(--accent);font-size:13px}
-.hud-val{font-family:'Share Tech Mono',monospace;color:var(--accent);font-size:15px}
-.hud-btn{padding:5px 10px;background:var(--card2);border:1px solid var(--border);color:var(--fg);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-radius:var(--radius);transition:all .15s}
-.hud-btn:hover,.hud-btn:active{border-color:var(--accent);color:var(--accent)}
-#game-canvas{flex:1;width:100%;touch-action:none}
-.game-panel{display:none;padding:10px 12px;background:var(--card);border-top:1px solid var(--border);z-index:2;flex-shrink:0;gap:8px;flex-wrap:wrap;align-items:center}
-.game-panel.active{display:flex}
-.panel-label{font-size:13px;color:var(--muted);width:100%;margin-bottom:2px}
-.div-btn{flex:1;min-width:120px;padding:10px 8px;background:var(--card2);border:1px solid var(--border);color:var(--fg);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-radius:var(--radius);transition:all .15s;text-align:center}
-.div-btn:hover:not(:disabled),.div-btn:active:not(:disabled){border-color:var(--accent);color:var(--accent)}
-.div-btn:disabled{opacity:.35;cursor:not-allowed}
-.div-btn .div-name{display:block;font-size:15px;font-weight:700}
-.div-btn .div-cost{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted)}
-.div-btn i{margin-right:4px}
-.target-btn{padding:8px 16px;background:var(--accent);color:var(--bg);border:none;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:var(--radius);letter-spacing:1px}
-#toast-container{position:fixed;top:60px;right:12px;z-index:100;display:flex;flex-direction:column;gap:6px;pointer-events:none}
-.toast{padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;animation:toastIn .3s ease,toastOut .4s ease 2.6s forwards;pointer-events:auto;max-width:280px}
-.toast.warn{border-color:var(--accent);color:var(--accent)}
-.toast.error{border-color:var(--red);color:var(--red)}
-.toast.success{border-color:var(--green);color:var(--green)}
-@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
-@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
-#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50;align-items:center;justify-content:center;padding:20px}
-#modal-overlay.active{display:flex}
-.modal-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:24px;max-width:400px;width:100%;text-align:center}
-.modal-box h3{font-size:22px;font-weight:700;color:var(--accent);margin-bottom:12px}
-.modal-box p{font-size:15px;color:var(--muted);margin-bottom:18px;line-height:1.5}
-.modal-box .modal-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.modal-btn{padding:10px 22px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius);border:1px solid var(--border);transition:all .15s}
-.modal-btn.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
-.modal-btn.secondary{background:var(--card2);color:var(--fg)}
-.modal-btn:hover{filter:brightness(1.15)}
-.file-hidden{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
-@media(max-width:600px){
-.menu-btn{width:220px;font-size:16px;padding:12px 0}
-.ed-btn{padding:6px 10px;font-size:12px}
-.hud-item{font-size:12px}
-.hud-val{font-size:13px}
-.hud-btn{padding:4px 8px;font-size:12px}
-.div-btn{min-width:90px;padding:8px 6px}
-.div-btn .div-name{font-size:13px}
-}
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+
+  :root {
+    --bg: #0a0c0f;
+    --panel: #0f1318;
+    --border: #1e2832;
+    --accent: #c8a84b;
+    --accent2: #e05c2a;
+    --blue: #2a6fc8;
+    --red: #c82a2a;
+    --green: #2ac86e;
+    --text: #d4cfc0;
+    --text-dim: #6b7280;
+    --grid-size: 20;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ========== SCREENS ========== */
+  .screen { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+  .screen.active { display: flex; }
+
+  /* ========== MAIN MENU ========== */
+  #screen-menu {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 50% 30%, #1a1f2e 0%, #0a0c0f 70%);
+    gap: 0;
+  }
+
+  .menu-bg-lines {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: 
+      linear-gradient(rgba(200,168,75,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,168,75,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .menu-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 72px;
+    font-weight: 700;
+    letter-spacing: 12px;
+    color: var(--accent);
+    text-shadow: 0 0 40px rgba(200,168,75,0.3), 0 4px 0 rgba(0,0,0,0.8);
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .menu-subtitle {
+    font-size: 13px;
+    letter-spacing: 6px;
+    color: var(--text-dim);
+    margin-bottom: 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .menu-btn {
+    position: relative; z-index: 1;
+    width: 280px;
+    padding: 16px 0;
+    margin: 8px 0;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+
+  .menu-btn:hover {
+    background: var(--accent);
+    color: var(--bg);
+    box-shadow: 0 0 20px rgba(200,168,75,0.4);
+  }
+
+  .menu-btn.secondary {
+    border-color: var(--border);
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
+  .menu-btn.secondary:hover {
+    border-color: var(--text-dim);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+  }
+
+  .menu-version {
+    position: absolute; bottom: 20px;
+    font-size: 11px; color: var(--text-dim); letter-spacing: 2px;
+    z-index: 1;
+  }
+
+  /* ========== LOAD SCREEN ========== */
+  #screen-load {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background: var(--bg);
+  }
+
+  .load-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px;
+    letter-spacing: 8px;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .upload-zone {
+    width: 500px;
+    height: 300px;
+    border: 2px dashed var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    background: var(--panel);
+  }
+
+  .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: rgba(200,168,75,0.05); }
+
+  .upload-zone img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  }
+
+  .upload-zone-text { color: var(--text-dim); font-size: 13px; letter-spacing: 2px; text-align: center; line-height: 2; z-index: 1; }
+
+  .upload-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.3; }
+
+  .btn-primary {
+    padding: 14px 40px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .btn-primary.ready { opacity: 1; pointer-events: all; }
+  .btn-primary:hover { box-shadow: 0 0 20px rgba(200,168,75,0.5); }
+
+  .btn-back {
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-back:hover { border-color: var(--text-dim); color: var(--text); }
+
+  /* ========== EDITOR ========== */
+  #screen-editor {
+    flex-direction: column;
+    background: var(--bg);
+  }
+
+  .editor-top {
+    height: 50px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .editor-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .tool-btn {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .tool-btn:hover { border-color: var(--text); color: var(--text); }
+  .tool-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(200,168,75,0.1); }
+  .tool-btn.city-tool.active { border-color: var(--green); color: var(--green); background: rgba(42,200,110,0.1); }
+  .tool-btn.enemy-tool.active { border-color: var(--red); color: var(--red); background: rgba(200,42,42,0.1); }
+  .tool-btn.road-tool.active { border-color: #4a9eff; color: #4a9eff; background: rgba(74,158,255,0.1); }
+  .tool-btn.front-tool.active { border-color: var(--accent2); color: var(--accent2); background: rgba(224,92,42,0.1); }
+
+  .tool-sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+
+  .btn-start-game {
+    margin-left: auto;
+    padding: 8px 20px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    cursor: pointer;
+    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+    transition: all 0.2s;
+  }
+
+  .btn-start-game:hover { box-shadow: 0 0 14px rgba(200,168,75,0.5); }
+
+  .editor-canvas-wrap {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    cursor: crosshair;
+  }
+
+  #editorCanvas {
+    display: block;
+  }
+
+  /* ========== GAME SCREEN ========== */
+  #screen-game {
+    flex-direction: row;
+    background: var(--bg);
+  }
+
+  .game-sidebar {
+    width: 220px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    gap: 12px;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .sidebar-section {
+    border: 1px solid var(--border);
+    padding: 10px;
+  }
+
+  .sidebar-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+
+  .stat-label { color: var(--text-dim); }
+  .stat-value { color: var(--accent); font-weight: bold; }
+  .stat-value.red { color: var(--red); }
+  .stat-value.green { color: var(--green); }
+
+  .city-list { max-height: 120px; overflow-y: auto; }
+
+  .city-item {
+    padding: 4px 0;
+    font-size: 11px;
+    color: var(--text-dim);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .city-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+  .game-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .game-topbar {
+    height: 40px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 10px;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .topbar-item { color: var(--text-dim); display: flex; align-items: center; gap: 6px; }
+  .topbar-item strong { color: var(--text); }
+  .topbar-sep { width: 1px; height: 16px; background: var(--border); }
+
+  .game-canvas-wrap {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+  }
+
+  #gameCanvas { display: block; cursor: default; }
+
+  .game-log {
+    height: 90px;
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 6px 14px;
+    flex-shrink: 0;
+  }
+
+  .log-entry {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    border-left: 2px solid transparent;
+    padding-left: 6px;
+    margin-bottom: 2px;
+  }
+
+  .log-entry.player { border-color: var(--blue); color: #7ab8ff; }
+  .log-entry.enemy { border-color: var(--red); color: #ff8888; }
+  .log-entry.event { border-color: var(--accent); color: var(--accent); }
+
+  .game-btns { display: flex; flex-direction: column; gap: 6px; }
+
+  .g-btn {
+    padding: 8px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .g-btn:hover { border-color: var(--text); color: var(--text); }
+  .g-btn.attack { border-color: var(--accent2); color: var(--accent2); }
+  .g-btn.attack:hover { background: rgba(224,92,42,0.15); }
+  .g-btn.save { border-color: var(--accent); color: var(--accent); }
+  .g-btn.save:hover { background: rgba(200,168,75,0.1); }
+  .g-btn.pause { border-color: var(--blue); color: #7ab8ff; }
+
+  /* Progress bar */
+  .progress-bar-wrap { background: rgba(255,255,255,0.05); height: 6px; border-radius: 0; overflow: hidden; margin-top: 4px; }
+  .progress-bar-fill { height: 100%; transition: width 0.3s; }
+  .progress-bar-fill.blue { background: var(--blue); }
+  .progress-bar-fill.red { background: var(--red); }
+
+  /* Toast */
+  #toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: var(--panel);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 10px 24px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  #toast.show { opacity: 1; }
+
+  /* Legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 6px; }
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--text-dim); }
+  .legend-color { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* Front line indicator */
+  .front-info {
+    font-size: 11px;
+    color: var(--accent2);
+    letter-spacing: 1px;
+  }
+
+  /* Mobilize button */
+  .g-btn.mobilize { border-color: var(--green); color: var(--green); }
+  .g-btn.mobilize:hover { background: rgba(42,200,110,0.1); }
+
+  /* Hidden file inputs */
+  input[type=file] { display: none; }
+
+  /* Attack mode overlay */
+  #attack-mode-bar {
+    display: none;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 32px;
+    background: rgba(224,92,42,0.15);
+    border-bottom: 1px solid var(--accent2);
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--accent2);
+    letter-spacing: 2px;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  #attack-mode-bar.show { display: flex; }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+
+  /* City input */
+  .city-input-wrap {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--panel);
+    border: 1px solid var(--accent);
+    padding: 20px;
+    z-index: 100;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 260px;
+  }
+  .city-input-wrap.show { display: flex; }
+  .city-input-wrap h3 { font-family: 'Oswald'; letter-spacing: 3px; color: var(--accent); font-size: 14px; }
+  .city-input-wrap input {
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: 8px 12px;
+    font-family: 'Share Tech Mono'; font-size: 13px; outline: none;
+  }
+  .city-input-wrap input:focus { border-color: var(--accent); }
+  .city-input-btns { display: flex; gap: 8px; }
 </style>
 </head>
 <body>
 
-<!-- ГЛАВНОЕ МЕНЮ -->
-<div id="menu-screen" class="screen active">
-  <div class="menu-title">Тактическое Командование</div>
-  <div class="menu-sub">Стратегия в реальном времени</div>
-  <button class="menu-btn" onclick="newGameDefault()"><i class="fas fa-crosshairs"></i>Новая игра</button>
-  <button class="menu-btn" onclick="newGameCustom()"><i class="fas fa-map"></i>Загрузить карту</button>
-  <button class="menu-btn" onclick="loadGame()"><i class="fas fa-save"></i>Загрузить сохранение</button>
-  <button class="menu-btn" onclick="showScreen('editor')"><i class="fas fa-pencil-ruler"></i>Редактор карт</button>
+<!-- MAIN MENU -->
+<div id="screen-menu" class="screen active">
+  <div class="menu-bg-lines"></div>
+  <div class="menu-title">FRONTLINE</div>
+  <div class="menu-subtitle">ТАКТИЧНА СТРАТЕГІЯ · ЗАХИСТ РУБЕЖІВ</div>
+  <button class="menu-btn" onclick="showLoad()">▶ ГРАТИ</button>
+  <button class="menu-btn secondary" onclick="document.getElementById('save-input').click()">⬆ ЗАВАНТАЖИТИ ЗБЕРЕЖЕННЯ</button>
+  <div class="menu-version">v1.0.0 · FRONTLINE ENGINE</div>
 </div>
 
-<!-- РЕДАКТОР КАРТ -->
-<div id="editor-screen" class="screen">
-  <div class="ed-toolbar">
-    <button class="ed-btn active" data-mode="city" onclick="setEdMode('city')"><i class="fas fa-city"></i>Город</button>
-    <button class="ed-btn" data-mode="road" onclick="setEdMode('road')"><i class="fas fa-road"></i>Дорога</button>
-    <button class="ed-btn" data-mode="delete" onclick="setEdMode('delete')"><i class="fas fa-trash"></i>Удалить</button>
-    <div class="ed-sep"></div>
-    <button class="ed-btn" onclick="edUploadImg()"><i class="fas fa-image"></i>Фон</button>
-    <button class="ed-btn" onclick="edSaveMap()"><i class="fas fa-download"></i>Сохранить</button>
-    <button class="ed-btn" onclick="edLoadMap()"><i class="fas fa-upload"></i>Загрузить</button>
-    <div class="ed-sep"></div>
-    <button class="ed-btn" onclick="showScreen('menu')"><i class="fas fa-arrow-left"></i>Назад</button>
+<!-- LOAD SCREEN -->
+<div id="screen-load" class="screen">
+  <div class="load-title">ЗАВАНТАЖИТИ КАРТУ</div>
+  <div class="upload-zone" id="upload-zone" onclick="document.getElementById('map-input').click()">
+    <div class="upload-icon">🗺</div>
+    <div class="upload-zone-text">НАТИСНІТЬ АБО ПЕРЕТЯГНІТЬ ФОТО КАРТИ<br>PNG · JPG · WEBP</div>
   </div>
-  <canvas id="editor-canvas"></canvas>
-  <input type="file" id="ed-img-input" class="file-hidden" accept="image/*" onchange="edOnImgUpload(event)">
-  <input type="file" id="ed-map-input" class="file-hidden" accept=".json" onchange="edOnMapLoad(event)">
+  <button class="btn-primary" id="btn-proceed" onclick="goToEditor()">ДАЛІ — РЕДАКТОР →</button>
+  <button class="btn-back" onclick="showMenu()">← НАЗАД</button>
+  <input type="file" id="map-input" accept="image/*" onchange="handleMapUpload(this)">
 </div>
 
-<!-- ИГРА -->
-<div id="game-screen" class="screen">
-  <div class="game-hud">
-    <div class="hud-item"><i class="fas fa-users"></i><span>Людей:</span><span class="hud-val" id="hud-personnel">0</span></div>
-    <div class="hud-item"><i class="fas fa-cloud-sun"></i><span id="hud-weather">Ясно</span></div>
-    <div class="hud-item">
-      <button class="hud-btn" onclick="cycleSpeed()"><i class="fas fa-forward"></i> <span id="hud-speed">x1</span></button>
-      <button class="hud-btn" onclick="saveGame()"><i class="fas fa-download"></i></button>
-      <button class="hud-btn" onclick="confirmQuit()"><i class="fas fa-door-open"></i></button>
+<!-- EDITOR SCREEN -->
+<div id="screen-editor" class="screen">
+  <div class="editor-top">
+    <span class="editor-label">РЕДАКТОР</span>
+    <div class="tool-sep"></div>
+    <button class="tool-btn city-tool" id="tool-city" onclick="setTool('city')" title="Позначте міста (дають мобілізаційні ресурси)">🏙 МІСТО</button>
+    <button class="tool-btn road-tool" id="tool-road" onclick="setTool('road')" title="Намалюйте дороги">🛣 ДОРОГА</button>
+    <button class="tool-btn enemy-tool" id="tool-enemy" onclick="setTool('enemy')" title="Обведіть ворожу територію">🔴 ВОРОГ</button>
+    <button class="tool-btn front-tool" id="tool-front" onclick="setTool('front')" title="Намалюйте лінію фронту">⚔ ФРОНТ</button>
+    <div class="tool-sep"></div>
+    <button class="tool-btn" onclick="undoEditor()">↩ СКАСУВАТИ</button>
+    <button class="tool-btn" onclick="clearEditor()">🗑 ОЧИСТИТИ</button>
+    <button class="btn-start-game" onclick="startGame()">ПОЧАТИ БИТВУ ▶</button>
+  </div>
+  <div class="editor-canvas-wrap" id="editor-canvas-wrap">
+    <canvas id="editorCanvas"></canvas>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="screen-game" class="screen">
+  <div class="game-sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">⚔ РЕСУРСИ</div>
+      <div class="stat-row">
+        <span class="stat-label">Мобілізовані</span>
+        <span class="stat-value green" id="stat-troops">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Прибуток/с</span>
+        <span class="stat-value" id="stat-income">+0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Ворог</span>
+        <span class="stat-value red" id="stat-enemy-troops">0</span>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">🏙 МІСТА</div>
+      <div class="city-list" id="city-list"></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">📊 ФРОНТ</div>
+      <div class="stat-row">
+        <span class="stat-label">Наші сектори</span>
+        <span class="stat-value blue-text" id="stat-our-sectors" style="color:#7ab8ff">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Ворожі</span>
+        <span class="stat-value red" id="stat-enemy-sectors">0</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill blue" id="front-bar" style="width:50%"></div>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">🗺 ЛЕГЕНДА</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-color" style="background:#2a6fc8;opacity:0.5"></div>Наші</div>
+        <div class="legend-item"><div class="legend-color" style="background:#c82a2a;opacity:0.5"></div>Ворог</div>
+        <div class="legend-item"><div class="legend-color" style="background:#c8a84b;opacity:0.8"></div>Фронт</div>
+        <div class="legend-item"><div class="legend-color" style="background:#2ac86e"></div>Місто</div>
+        <div class="legend-item"><div class="legend-color" style="background:#777"></div>Нейтраль</div>
+      </div>
+    </div>
+    <div class="game-btns">
+      <button class="g-btn attack" id="btn-attack-mode" onclick="toggleAttackMode()">⚔ РЕЖИМ АТАКИ</button>
+      <button class="g-btn mobilize" onclick="mobilize()">👥 МОБІЛІЗАЦІЯ (+50)</button>
+      <button class="g-btn save" onclick="saveGame()">💾 ЗБЕРЕГТИ</button>
+      <button class="g-btn pause" id="btn-pause" onclick="togglePause()">⏸ ПАУЗА</button>
+      <button class="g-btn" onclick="confirmQuit()">✖ ГОЛОВНЕ МЕНЮ</button>
     </div>
   </div>
-  <canvas id="game-canvas"></canvas>
-  <div class="game-panel" id="game-panel"></div>
-  <input type="file" id="game-load-input" class="file-hidden" accept=".json" onchange="onGameLoadFile(event)">
-  <input type="file" id="game-img-input" class="file-hidden" accept="image/*" onchange="onGameImgLoad(event)">
+  <div class="game-main">
+    <div class="game-topbar">
+      <div class="topbar-item">⏱ ЧАС: <strong id="top-time">00:00</strong></div>
+      <div class="topbar-sep"></div>
+      <div class="topbar-item">⚔ ЧАС ДО АТАКИ: <strong id="top-attack-cd">2.0с</strong></div>
+      <div class="topbar-sep"></div>
+      <div class="topbar-item" id="top-status">Статус: <strong>ОЧІКУВАННЯ</strong></div>
+    </div>
+    <div class="game-canvas-wrap" id="game-canvas-wrap">
+      <div id="attack-mode-bar" class="show">⚔ РЕЖИМ АТАКИ — КЛІКАЙТЕ НА ВОРОЖІ СЕКТОРИ</div>
+      <canvas id="gameCanvas" onclick="handleGameClick(event)"></canvas>
+    </div>
+    <div class="game-log" id="game-log">
+      <div class="log-entry event">▶ Гра розпочата. Виберіть режим атаки та захоплюйте сектори!</div>
+    </div>
+  </div>
 </div>
 
-<div id="toast-container"></div>
-<div id="modal-overlay"><div class="modal-box" id="modal-box"></div></div>
+<!-- City name input popup -->
+<div class="city-input-wrap" id="city-input-popup">
+  <h3>🏙 НАЗВА МІСТА</h3>
+  <input type="text" id="city-name-input" placeholder="Введіть назву..." maxlength="20">
+  <div class="city-input-btns">
+    <button class="g-btn" style="flex:1" onclick="confirmCity()">✓ ДОДАТИ</button>
+    <button class="g-btn" style="flex:1" onclick="cancelCity()">✕ СКАСУВАТИ</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Save file input -->
+<input type="file" id="save-input" accept=".fls" onchange="loadSave(this)">
+<input type="file" id="save-map-input" accept="image/*" onchange="loadSaveMap(this)">
 
 <script>
-/* ===== КОНСТАНТЫ ===== */
-const DIV_TYPES = {
-  regular: { name:'Обычная', icon:'fa-shield-halved', speed:70, combat:1.0, label:'ОБЫЧН' },
-  drone:   { name:'Дроновая', icon:'fa-helicopter', speed:120, combat:0.5, label:'ДРОН' },
-  recon:   { name:'Разведывательная', icon:'fa-binoculars', speed:150, combat:0.1, label:'РАЗВ' }
+// ====================== STATE ======================
+const state = {
+  // Global
+  currentScreen: 'menu',
+  mapImage: null,
+  mapDataURL: null,
+
+  // Editor
+  editorTool: null,
+  editorObjects: {
+    cities: [],     // {x, y, name, r}
+    roads: [],      // [{x,y}...]
+    enemyZones: [], // [{x,y}...]
+    frontLine: [],  // [{x,y}...]
+  },
+  editorDrawing: false,
+  editorCurrentPath: [],
+  pendingCity: null,
+
+  // Grid
+  gridCols: 0,
+  gridRows: 0,
+  cellW: 0,
+  cellH: 0,
+  grid: [], // 0=neutral, 1=player, 2=enemy, 3=city-player, 4=city-enemy
+
+  // Game
+  troops: 200,
+  enemyTroops: 300,
+  income: 0,
+  enemyIncome: 0,
+  cities: [],
+  attackMode: false,
+  paused: false,
+  gameTime: 0,
+  attackCooldown: 0,
+  enemyAttackCooldown: 0,
+  ATTACK_INTERVAL: 2000, // ms
+  gameInterval: null,
+  incomeInterval: null,
+  logEntries: [],
+
+  // AI state
+  ai: {
+    aggression: 1.0,
+    focusAreas: [],
+    lostRecently: {},
+    strategyTimer: 0,
+  },
+
+  // Save context
+  pendingSaveData: null,
 };
-const WEATHER = {
-  clear: { name:'Ясно', icon:'fa-sun', mod:{regular:1,drone:1,recon:1} },
-  rain:  { name:'Дождь', icon:'fa-cloud-rain', mod:{regular:.7,drone:.35,recon:.75} },
-  snow:  { name:'Снег', icon:'fa-snowflake', mod:{regular:.5,drone:.2,recon:.55} },
-  fog:   { name:'Туман', icon:'fa-smog', mod:{regular:.85,drone:.55,recon:1.05} }
-};
-const COST = 5000;
-const RATE = 50; // людей/сек на город
-const CITY_R = 20;
-const DIV_R = 9;
-const WEATHER_INTERVAL = 40; // секунд
 
-/* ===== СОСТОЯНИЕ ===== */
-let currentScreen = 'menu';
-let G = null; // состояние игры
-let E = null; // состояние редактора
-let cam = { x:0, y:0, zoom:1 };
-let bgImage = null; // фоновое изображение
-let weatherParts = [];
-let animFrame = 0;
-
-/* ===== УТИЛИТЫ ===== */
-const lerp = (a,b,t) => a+(b-a)*t;
-const dist = (x1,y1,x2,y2) => Math.hypot(x2-x1,y2-y1);
-const clamp = (v,mn,mx) => Math.max(mn,Math.min(mx,v));
-const rnd = (a,b) => a+Math.random()*(b-a);
-const rndInt = (a,b) => Math.floor(rnd(a,b+1));
-let nextId = 1;
-function genId() { return nextId++; }
-
-/* ===== ЭКРАНЫ ===== */
-function showScreen(name) {
-  currentScreen = name;
+// ====================== SCREEN NAV ======================
+function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(name+'-screen').classList.add('active');
-  if (name === 'editor') initEditor();
-  if (name === 'game') resizeGameCanvas();
+  document.getElementById('screen-' + id).classList.add('active');
+  state.currentScreen = id;
 }
 
-/* ===== ТОСТЫ ===== */
-function toast(msg, type='') {
-  const c = document.getElementById('toast-container');
-  const t = document.createElement('div');
-  t.className = 'toast ' + type;
-  t.textContent = msg;
-  c.appendChild(t);
-  setTimeout(() => t.remove(), 3100);
+function showMenu() { stopGame(); showScreen('menu'); }
+function showLoad() { showScreen('load'); }
+
+// ====================== MAP UPLOAD ======================
+function handleMapUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    state.mapDataURL = e.target.result;
+    const img = new Image();
+    img.onload = () => {
+      state.mapImage = img;
+      const zone = document.getElementById('upload-zone');
+      zone.innerHTML = `<img src="${e.target.result}">`;
+      document.getElementById('btn-proceed').classList.add('ready');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
-/* ===== МОДАЛКИ ===== */
-function showModal(html) {
-  document.getElementById('modal-box').innerHTML = html;
-  document.getElementById('modal-overlay').classList.add('active');
-}
-function hideModal() {
-  document.getElementById('modal-overlay').classList.remove('active');
-}
-document.getElementById('modal-overlay').addEventListener('click', e => {
-  if (e.target.id === 'modal-overlay') hideModal();
+// Drag & drop
+const uploadZone = document.getElementById('upload-zone');
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    const dt = new DataTransfer(); dt.items.add(file);
+    const input = document.getElementById('map-input');
+    input.files = dt.files;
+    handleMapUpload(input);
+  }
 });
 
-/* ===== КАМЕРА ===== */
-function w2sx(wx) { return (wx - cam.x)*cam.zoom + gameCanvas().width/2; }
-function w2sy(wy) { return (wy - cam.y)*cam.zoom + gameCanvas().height/2; }
-function s2wx(sx) { return (sx - gameCanvas().width/2)/cam.zoom + cam.x; }
-function s2wy(sy) { return (sy - gameCanvas().height/2)/cam.zoom + cam.y; }
-function edW2sx(wx) { return (wx - cam.x)*cam.zoom + edCanvas().width/2; }
-function edW2sy(wy) { return (wy - cam.y)*cam.zoom + edCanvas().height/2; }
-function edS2wx(sx) { return (sx - edCanvas().width/2)/cam.zoom + cam.x; }
-function edS2wy(sy) { return (sy - edCanvas().height/2)/cam.zoom + cam.y; }
-function gameCanvas() { return document.getElementById('game-canvas'); }
-function edCanvas() { return document.getElementById('editor-canvas'); }
+// ====================== EDITOR ======================
+let editorCtx;
+const GRID_CELL_PX = 20;
 
-/* ===== ПУТЬ (ДИКСТРА) ===== */
-function findPath(cities, roads, fromId, toId) {
-  if (fromId === toId) return [fromId];
-  const graph = {};
-  cities.forEach(c => graph[c.id] = []);
-  roads.forEach(r => {
-    const a = cities.find(c=>c.id===r.from), b = cities.find(c=>c.id===r.to);
-    if (!a||!b) return;
-    const d = dist(a.x,a.y,b.x,b.y);
-    graph[r.from].push({city:r.to, dist:d});
-    graph[r.to].push({city:r.from, dist:d});
+function goToEditor() {
+  if (!state.mapImage) return;
+  showScreen('editor');
+  setupEditorCanvas();
+}
+
+function setupEditorCanvas() {
+  const canvas = document.getElementById('editorCanvas');
+  const img = state.mapImage;
+  canvas.width = img.width;
+  canvas.height = img.height;
+  editorCtx = canvas.getContext('2d');
+
+  // Grid dims
+  state.gridCols = Math.floor(img.width / GRID_CELL_PX);
+  state.gridRows = Math.floor(img.height / GRID_CELL_PX);
+  state.cellW = GRID_CELL_PX;
+  state.cellH = GRID_CELL_PX;
+
+  drawEditor();
+
+  canvas.onmousedown = editorMouseDown;
+  canvas.onmousemove = editorMouseMove;
+  canvas.onmouseup = editorMouseUp;
+  canvas.oncontextmenu = e => e.preventDefault();
+}
+
+function drawEditor() {
+  const canvas = document.getElementById('editorCanvas');
+  const ctx = editorCtx;
+  const img = state.mapImage;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0);
+
+  // Grid overlay
+  ctx.strokeStyle = 'rgba(200,168,75,0.12)';
+  ctx.lineWidth = 0.5;
+  for (let c = 0; c <= state.gridCols; c++) {
+    ctx.beginPath(); ctx.moveTo(c * GRID_CELL_PX, 0); ctx.lineTo(c * GRID_CELL_PX, canvas.height); ctx.stroke();
+  }
+  for (let r = 0; r <= state.gridRows; r++) {
+    ctx.beginPath(); ctx.moveTo(0, r * GRID_CELL_PX); ctx.lineTo(canvas.width, r * GRID_CELL_PX); ctx.stroke();
+  }
+
+  // Enemy zones (filled red area)
+  if (state.editorObjects.enemyZones.length > 1) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(200,42,42,0.18)';
+    ctx.strokeStyle = 'rgba(200,42,42,0.7)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    state.editorObjects.enemyZones.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.restore();
+  }
+
+  // Roads
+  state.editorObjects.roads.forEach(road => {
+    if (road.length < 2) return;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(74,158,255,0.8)';
+    ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    road.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.stroke(); ctx.restore();
   });
-  const ds = {}, prev = {}, vis = new Set();
-  cities.forEach(c => { ds[c.id]=Infinity; prev[c.id]=null; });
-  ds[fromId] = 0;
-  const pq = [{city:fromId,d:0}];
-  while (pq.length) {
-    pq.sort((a,b)=>a.d-b.d);
-    const cur = pq.shift();
-    if (vis.has(cur.city)) continue;
-    vis.add(cur.city);
-    if (cur.city === toId) break;
-    for (const nb of (graph[cur.city]||[])) {
-      if (vis.has(nb.city)) continue;
-      const nd = ds[cur.city]+nb.dist;
-      if (nd < ds[nb.city]) { ds[nb.city]=nd; prev[nb.city]=cur.city; pq.push({city:nb.city,d:nd}); }
+
+  // Front line
+  if (state.editorObjects.frontLine.length > 1) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(224,92,42,0.9)';
+    ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.setLineDash([10, 6]);
+    ctx.beginPath();
+    state.editorObjects.frontLine.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.stroke(); ctx.restore();
+  }
+
+  // Current path preview
+  if (state.editorDrawing && state.editorCurrentPath.length > 1) {
+    ctx.save();
+    const toolColors = { road: 'rgba(74,158,255,0.5)', enemy: 'rgba(200,42,42,0.5)', front: 'rgba(224,92,42,0.6)' };
+    ctx.strokeStyle = toolColors[state.editorTool] || 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 2; ctx.lineCap = 'round';
+    ctx.beginPath();
+    state.editorCurrentPath.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.stroke(); ctx.restore();
+  }
+
+  // Cities
+  state.editorObjects.cities.forEach(city => {
+    ctx.save();
+    ctx.fillStyle = 'rgba(42,200,110,0.85)';
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(city.x, city.y, 7, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 10px Share Tech Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(city.name, city.x, city.y - 12);
+    ctx.restore();
+  });
+}
+
+function setTool(tool) {
+  state.editorTool = tool;
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById('tool-' + tool);
+  if (el) el.classList.add('active');
+}
+
+function editorMouseDown(e) {
+  if (!state.editorTool) return;
+  const pos = getCanvasPos(e, document.getElementById('editorCanvas'));
+  state.editorDrawing = true;
+
+  if (state.editorTool === 'city') {
+    state.pendingCity = pos;
+    document.getElementById('city-name-input').value = '';
+    document.getElementById('city-input-popup').classList.add('show');
+    state.editorDrawing = false;
+  } else {
+    state.editorCurrentPath = [pos];
+  }
+}
+
+function editorMouseMove(e) {
+  if (!state.editorDrawing) return;
+  const pos = getCanvasPos(e, document.getElementById('editorCanvas'));
+  state.editorCurrentPath.push(pos);
+  drawEditor();
+}
+
+function editorMouseUp(e) {
+  if (!state.editorDrawing) return;
+  state.editorDrawing = false;
+  const path = [...state.editorCurrentPath];
+
+  if (state.editorTool === 'road') state.editorObjects.roads.push(path);
+  else if (state.editorTool === 'enemy') state.editorObjects.enemyZones = path;
+  else if (state.editorTool === 'front') state.editorObjects.frontLine = path;
+
+  state.editorCurrentPath = [];
+  drawEditor();
+}
+
+function confirmCity() {
+  const name = document.getElementById('city-name-input').value.trim() || 'Місто';
+  if (state.pendingCity) {
+    state.editorObjects.cities.push({ x: state.pendingCity.x, y: state.pendingCity.y, name });
+    state.pendingCity = null;
+  }
+  document.getElementById('city-input-popup').classList.remove('show');
+  drawEditor();
+}
+
+function cancelCity() {
+  state.pendingCity = null;
+  document.getElementById('city-input-popup').classList.remove('show');
+}
+
+function undoEditor() {
+  // Remove last added object
+  if (state.editorObjects.cities.length) { state.editorObjects.cities.pop(); drawEditor(); return; }
+}
+
+function clearEditor() {
+  state.editorObjects = { cities: [], roads: [], enemyZones: [], frontLine: [] };
+  drawEditor();
+}
+
+// ====================== GAME INIT ======================
+let gameCtx;
+
+function startGame() {
+  showScreen('game');
+  initGame();
+}
+
+function initGame(saveData) {
+  const canvas = document.getElementById('gameCanvas');
+  const img = state.mapImage;
+  canvas.width = img.width;
+  canvas.height = img.height;
+  gameCtx = canvas.getContext('2d');
+
+  // Init grid
+  const cols = state.gridCols;
+  const rows = state.gridRows;
+  state.grid = Array.from({ length: rows }, () => new Array(cols).fill(0));
+
+  if (saveData) {
+    // Restore from save
+    state.grid = saveData.grid;
+    state.troops = saveData.troops;
+    state.enemyTroops = saveData.enemyTroops;
+    state.cities = saveData.cities;
+    state.gameTime = saveData.gameTime;
+    state.ai = saveData.ai;
+  } else {
+    // Paint initial territories from editor
+    paintInitialTerritories();
+    // Set cities
+    state.cities = state.editorObjects.cities.map(c => ({
+      x: c.x, y: c.y, name: c.name,
+      col: Math.floor(c.x / GRID_CELL_PX),
+      row: Math.floor(c.y / GRID_CELL_PX),
+      owner: 1,
+    }));
+    state.troops = 200;
+    state.enemyTroops = 300;
+    state.gameTime = 0;
+    state.ai = { aggression: 1.2, focusAreas: [], lostRecently: {}, strategyTimer: 0 };
+  }
+
+  calcIncome();
+  updateSidebar();
+  renderCityList();
+  drawGame();
+  startGameLoop();
+}
+
+function paintInitialTerritories() {
+  const cols = state.gridCols;
+  const rows = state.gridRows;
+  const cw = state.cellW;
+  const ch = state.cellH;
+
+  // If enemy zone polygon defined, paint those cells as enemy
+  const ez = state.editorObjects.enemyZones;
+  if (ez.length > 2) {
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const cx = c * cw + cw / 2;
+        const cy = r * ch + ch / 2;
+        if (pointInPolygon(cx, cy, ez)) {
+          state.grid[r][c] = 2;
+        }
+      }
     }
   }
-  const path = [];
-  let c = toId;
-  while (c!==null) { path.unshift(c); c=prev[c]; }
-  return path[0]===fromId ? path : null;
-}
 
-/* ===== ПОГОДА ===== */
-function initWeatherParts() {
-  weatherParts = [];
-  for (let i=0;i<150;i++) weatherParts.push({x:rnd(-400,1400),y:rnd(-400,1200),sp:rnd(80,250),sz:rnd(1,3),dr:rnd(-30,30)});
-}
-function updateWeather(dt) {
-  if (!G) return;
-  G.weatherTimer -= dt;
-  if (G.weatherTimer <= 0) {
-    const types = Object.keys(WEATHER);
-    const nw = types[rndInt(0, types.length-1)];
-    if (nw !== G.weather) {
-      G.weather = nw;
-      toast('Погода: '+WEATHER[nw].name, 'warn');
-      updateHudWeather();
+  // Front line — cells near the front line that are on the player's side
+  const fl = state.editorObjects.frontLine;
+  if (fl.length > 1) {
+    // Fill player side: cells that are not enemy and within some range of front or on one side
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        if (state.grid[r][c] === 0) {
+          // Determine which side of the front line this cell is on
+          const cx = c * cw + cw / 2;
+          const cy = r * ch + ch / 2;
+          const side = sideOfPolyline(cx, cy, fl);
+          if (side < 0) state.grid[r][c] = 1;
+        }
+      }
     }
-    G.weatherTimer = WEATHER_INTERVAL + rnd(-10,10);
+  } else {
+    // No front line: player owns left third, enemy right third by default
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        if (state.grid[r][c] === 0) {
+          if (c < Math.floor(cols * 0.4)) state.grid[r][c] = 1;
+        }
+      }
+    }
   }
-  // Обновляем частицы
-  const w = G.weather;
-  weatherParts.forEach(p => {
-    if (w==='rain') { p.y+=p.sp*dt; p.x+=p.dr*dt; if(p.y>1000){p.y=-20;p.x=rnd(-400,1400);} }
-    else if (w==='snow') { p.y+=p.sp*0.3*dt; p.x+=Math.sin(p.y*0.01)*20*dt; if(p.y>1000){p.y=-20;p.x=rnd(-400,1400);} }
-    else if (w==='fog') { p.x+=Math.sin(animFrame*0.005+p.sz*10)*15*dt; }
-  });
-}
-function getSpeedMod(type) {
-  if (!G) return 1;
-  return WEATHER[G.weather].mod[type]||1;
-}
-function updateHudWeather() {
-  if (!G) return;
-  const w = WEATHER[G.weather];
-  document.getElementById('hud-weather').innerHTML = `<i class="fas ${w.icon}"></i> ${w.name}`;
 }
 
-/* ===== ДИВИЗИИ ===== */
-function createDivision(type, cityId, owner) {
-  const cost = COST;
-  const pool = owner==='blue' ? G.bluePersonnel : G.redPersonnel;
-  if (pool < cost) return false;
-  if (owner==='blue') G.bluePersonnel-=cost; else G.redPersonnel-=cost;
-  G.divisions.push({
-    id: genId(), type, owner,
-    cityId, roadFrom:null, roadTo:null,
-    progress:0, path:[], personnel:5000
-  });
-  return true;
-}
-function getDivSpeed(div) {
-  return DIV_TYPES[div.type].speed * getSpeedMod(div.type);
+function sideOfPolyline(px, py, points) {
+  // Returns which side of the polyline (as a continuous line) the point is on
+  let total = 0;
+  for (let i = 0; i < points.length - 1; i++) {
+    const ax = points[i].x, ay = points[i].y;
+    const bx = points[i + 1].x, by = points[i + 1].y;
+    total += (bx - ax) * (py - ay) - (by - ay) * (px - ax);
+  }
+  return total;
 }
 
-/* ===== ДВИЖЕНИЕ И БОЙ ===== */
-function getCity(id) { return G.cities.find(c=>c.id===id); }
-function getRoad(a,b) { return G.roads.find(r=>(r.from===a&&r.to===b)||(r.from===b&&r.to===a)); }
+function pointInPolygon(px, py, polygon) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x, yi = polygon[i].y;
+    const xj = polygon[j].x, yj = polygon[j].y;
+    const intersect = ((yi > py) !== (yj > py)) && (px < (xj - xi) * (py - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
 
-function updateMovement(dt) {
-  const spd = G.gameSpeed * dt;
-  for (const d of G.divisions) {
-    if (!d.path || d.path.length===0) continue;
-    // Начать движение по новой дороге
-    if (d.roadFrom===null && d.path.length>0) {
-      d.roadFrom = d.cityId;
-      d.roadTo = d.path[0];
-      d.progress = 0;
+// ====================== GAME LOOP ======================
+let lastTick = 0;
+let lastIncomeTick = 0;
+const INCOME_INTERVAL = 5000;
+
+function startGameLoop() {
+  stopGame();
+  state.attackCooldown = state.ATTACK_INTERVAL;
+  state.enemyAttackCooldown = state.ATTACK_INTERVAL + 500;
+
+  state.gameInterval = setInterval(() => {
+    if (state.paused) return;
+    const now = Date.now();
+
+    // Attack cooldowns
+    state.attackCooldown -= 100;
+    state.enemyAttackCooldown -= 100;
+
+    if (state.attackCooldown <= 0) state.attackCooldown = state.ATTACK_INTERVAL;
+    if (state.enemyAttackCooldown <= 0) {
+      enemyTurn();
+      state.enemyAttackCooldown = state.ATTACK_INTERVAL;
     }
-    if (d.roadFrom===null) continue;
-    const r = getRoad(d.roadFrom, d.roadTo);
-    if (!r) { d.path=[]; d.roadFrom=null; d.roadTo=null; continue; }
-    const fc = getCity(d.roadFrom), tc = getCity(d.roadTo);
-    if (!fc||!tc) continue;
-    const rLen = Math.max(1, dist(fc.x,fc.y,tc.x,tc.y));
-    const v = getDivSpeed(d);
-    d.progress += (v * spd) / rLen;
-    if (d.progress >= 1) {
-      d.progress = 0;
-      const arrivedId = d.path.shift();
-      d.cityId = arrivedId;
-      d.roadFrom = null;
-      d.roadTo = null;
-      // Проверяем бой в городе
-      checkCityBattle(d, arrivedId);
-      // Продолжаем путь если живы
-      if (d.personnel > 0 && d.path.length > 0) {
-        // авто-продолжение будет в следующем кадре
-      } else if (d.personnel > 0) {
-        // Захват города если вражеский/нейтральный и нет защитников
-        const city = getCity(arrivedId);
-        if (city && city.owner !== d.owner) {
-          const defenders = G.divisions.filter(x => x.id!==d.id && x.cityId===arrivedId && x.owner!==d.owner && x.personnel>0);
-          if (defenders.length===0) {
-            const oldOwner = city.owner;
-            city.owner = d.owner;
-            if (d.owner==='blue') toast('Город "'+city.name+'" захвачен!','success');
-            else toast('Город "'+city.name+'" потерян!','error');
-            checkWinLose();
+
+    // Income tick
+    state.gameTime += 100;
+    if (state.gameTime % INCOME_INTERVAL < 100) {
+      state.troops += state.income;
+      state.enemyTroops += state.enemyIncome;
+      calcIncome();
+    }
+
+    // AI strategy update every 10s
+    state.ai.strategyTimer += 100;
+    if (state.ai.strategyTimer >= 10000) {
+      state.ai.strategyTimer = 0;
+      aiUpdateStrategy();
+    }
+
+    document.getElementById('top-attack-cd').textContent = (state.attackCooldown / 1000).toFixed(1) + 'с';
+    const mins = Math.floor(state.gameTime / 60000);
+    const secs = Math.floor((state.gameTime % 60000) / 1000);
+    document.getElementById('top-time').textContent =
+      String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+
+    updateSidebar();
+    drawGame();
+  }, 100);
+}
+
+function stopGame() {
+  if (state.gameInterval) { clearInterval(state.gameInterval); state.gameInterval = null; }
+}
+
+// ====================== INCOME ======================
+function calcIncome() {
+  let inc = 0, enemyInc = 0;
+  let playerCities = 0, enemyCities = 0;
+  state.cities.forEach(c => {
+    if (c.owner === 1) { inc += 10; playerCities++; }
+    else { enemyInc += 10; enemyCities++; }
+  });
+  // Sector income
+  let playerSectors = 0, enemySectors = 0;
+  for (let r = 0; r < state.gridRows; r++)
+    for (let c = 0; c < state.gridCols; c++) {
+      const v = state.grid[r][c];
+      if (v === 1) playerSectors++;
+      else if (v === 2) enemySectors++;
+    }
+  inc += Math.floor(playerSectors / 10);
+  enemyInc += Math.floor(enemySectors / 10);
+
+  state.income = inc;
+  state.enemyIncome = enemyInc;
+
+  document.getElementById('stat-income').textContent = '+' + inc;
+
+  const total = playerSectors + enemySectors;
+  const ratio = total > 0 ? (playerSectors / total) : 0.5;
+  document.getElementById('front-bar').style.width = (ratio * 100).toFixed(1) + '%';
+  document.getElementById('stat-our-sectors').textContent = playerSectors;
+  document.getElementById('stat-enemy-sectors').textContent = enemySectors;
+}
+
+// ====================== ATTACK ======================
+let attackModeOn = false;
+
+function toggleAttackMode() {
+  attackModeOn = !attackModeOn;
+  const bar = document.getElementById('attack-mode-bar');
+  const btn = document.getElementById('btn-attack-mode');
+  if (attackModeOn) {
+    bar.classList.add('show');
+    btn.textContent = '✖ ВИЙТИ З РЕЖИМУ АТАКИ';
+    document.getElementById('top-status').innerHTML = 'Статус: <strong style="color:var(--accent2)">АТАКА</strong>';
+  } else {
+    bar.classList.remove('show');
+    btn.textContent = '⚔ РЕЖИМ АТАКИ';
+    document.getElementById('top-status').innerHTML = 'Статус: <strong>ОЧІКУВАННЯ</strong>';
+  }
+}
+
+function handleGameClick(e) {
+  if (!attackModeOn) return;
+  const pos = getCanvasPos(e, document.getElementById('gameCanvas'));
+  const col = Math.floor(pos.x / GRID_CELL_PX);
+  const row = Math.floor(pos.y / GRID_CELL_PX);
+  if (row < 0 || row >= state.gridRows || col < 0 || col >= state.gridCols) return;
+
+  const cell = state.grid[row][col];
+  if (cell !== 2 && cell !== 4) { toast('Оберіть ворожий сектор!'); return; }
+
+  // Check adjacency
+  if (!isAdjacentToPlayer(row, col)) { toast('Сектор не є суміжним з нашою територією!'); return; }
+
+  // Cost
+  const cost = 15 + Math.floor(Math.random() * 10);
+  const enemyLoss = 3 + Math.floor(Math.random() * 5);
+
+  if (state.troops < cost) { toast('Недостатньо військ! Потрібно: ' + cost); return; }
+
+  state.troops -= cost;
+  state.enemyTroops -= enemyLoss;
+  if (state.enemyTroops < 0) state.enemyTroops = 0;
+
+  state.grid[row][col] = 1;
+
+  // Check if this was a city
+  state.cities.forEach(c => {
+    if (c.col === col && c.row === row) {
+      c.owner = 1;
+      addLog(`🏙 Захоплено місто ${c.name}!`, 'event');
+      state.ai.lostRecently[`${row}_${col}`] = (state.ai.lostRecently[`${row}_${col}`] || 0) + 5;
+    }
+  });
+
+  addLog(`⚔ Захоплено сектор [${col},${row}] — витрата: ${cost} | втрати ворога: ${enemyLoss}`, 'player');
+  calcIncome();
+  drawGame();
+}
+
+function isAdjacentToPlayer(row, col) {
+  const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+  for (const [dr, dc] of dirs) {
+    const nr = row + dr, nc = col + dc;
+    if (nr >= 0 && nr < state.gridRows && nc >= 0 && nc < state.gridCols) {
+      const v = state.grid[nr][nc];
+      if (v === 1) return true;
+    }
+  }
+  return false;
+}
+
+function isAdjacentToEnemy(row, col) {
+  const dirs = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
+  for (const [dr, dc] of dirs) {
+    const nr = row + dr, nc = col + dc;
+    if (nr >= 0 && nr < state.gridRows && nc >= 0 && nc < state.gridCols) {
+      const v = state.grid[nr][nc];
+      if (v === 2) return true;
+    }
+  }
+  return false;
+}
+
+// ====================== AI ======================
+function enemyTurn() {
+  if (state.enemyTroops < 10) {
+    addLog('⚠ Ворог не має достатньо ресурсів для атаки!', 'enemy');
+    return;
+  }
+
+  // Find frontline enemy cells adjacent to player
+  const candidates = [];
+  for (let r = 0; r < state.gridRows; r++) {
+    for (let c = 0; c < state.gridCols; c++) {
+      const v = state.grid[r][c];
+      if (v === 1) {
+        // Check if enemy is adjacent
+        const dirs = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
+        for (const [dr, dc] of dirs) {
+          const nr = r + dr, nc = c + dc;
+          if (nr >= 0 && nr < state.gridRows && nc >= 0 && nc < state.gridCols) {
+            const nv = state.grid[nr][nc];
+            if (nv === 2) {
+              const key = `${nr}_${nc}`;
+              const score = computeAIScore(nr, nc);
+              candidates.push({ r: nr, c: nc, targetR: r, targetC: c, score });
+            }
           }
         }
       }
     }
   }
-  // Столкновения на дорогах
-  checkRoadBattles();
-  // Удаляем уничтоженные
-  G.divisions = G.divisions.filter(d => d.personnel > 0);
+
+  if (candidates.length === 0) return;
+
+  // AI strategy: weight by score + focus areas
+  candidates.sort((a, b) => b.score - a.score);
+
+  // Pick with some randomness — top candidates
+  const topN = Math.min(5, candidates.length);
+  const picked = candidates[Math.floor(Math.random() * topN)];
+
+  const cost = 10 + Math.floor(Math.random() * 8);
+  const playerLoss = 2 + Math.floor(Math.random() * 4);
+
+  state.enemyTroops -= cost;
+  state.troops -= playerLoss;
+  if (state.troops < 0) state.troops = 0;
+
+  state.grid[picked.targetR][picked.targetC] = 2;
+
+  // Track city captures by enemy
+  state.cities.forEach(c => {
+    if (c.col === picked.targetC && c.row === picked.targetR) {
+      c.owner = 2;
+      addLog(`🔴 Ворог захопив місто ${c.name}!`, 'event');
+    }
+  });
+
+  // Record enemy success
+  state.ai.lostRecently[`${picked.targetR}_${picked.targetC}`] = 0;
+  addLog(`💥 Ворог атакував [${picked.targetC},${picked.targetR}] — втрати наших: ${playerLoss}`, 'enemy');
+  calcIncome();
+  drawGame();
 }
 
-function checkCityBattle(div, cityId) {
-  const enemies = G.divisions.filter(d => d.id!==div.id && d.cityId===cityId && d.owner!==div.owner && d.personnel>0 && (d.path.length===0 || d.roadFrom===null));
-  for (const e of enemies) {
-    resolveCombat(div, e);
-    if (div.personnel <= 0) break;
+function computeAIScore(er, ec) {
+  let score = 0;
+
+  // Prefer areas where AI has been losing (high concentration lost)
+  const surroundingLoss = getAreaLoss(er, ec, 5);
+  score += surroundingLoss * 2;
+
+  // Prefer attacking cities
+  state.cities.forEach(c => {
+    const dr = Math.abs(c.row - er), dc = Math.abs(c.col - ec);
+    if (c.owner === 1 && dr < 3 && dc < 3) score += 30;
+  });
+
+  // Focus areas bonus
+  state.ai.focusAreas.forEach(fa => {
+    const dr = Math.abs(fa.r - er), dc = Math.abs(fa.c - ec);
+    if (dr < fa.radius && dc < fa.radius) score += fa.weight;
+  });
+
+  // Prefer areas where player has fewer cells (breakthroughs)
+  const playerDensity = getAreaOwnerCount(er, ec, 4, 1);
+  score += (10 - playerDensity);
+
+  // Slight aggression multiplier
+  score *= state.ai.aggression;
+
+  // Randomize
+  score += Math.random() * 5;
+
+  return score;
+}
+
+function getAreaLoss(row, col, radius) {
+  let total = 0;
+  for (let r = row - radius; r <= row + radius; r++) {
+    for (let c = col - radius; c <= col + radius; c++) {
+      const key = `${r}_${c}`;
+      total += state.ai.lostRecently[key] || 0;
+    }
   }
+  return total;
 }
 
-function checkRoadBattles() {
-  for (let i=0; i<G.divisions.length; i++) {
-    const a = G.divisions[i];
-    if (a.roadFrom===null || a.personnel<=0) continue;
-    for (let j=i+1; j<G.divisions.length; j++) {
-      const b = G.divisions[j];
-      if (b.roadFrom===null || b.personnel<=0) continue;
-      if (a.owner === b.owner) continue;
-      // На одной дороге в разных направлениях?
-      if ((a.roadFrom===b.roadTo && a.roadTo===b.roadFrom)) {
-        if (a.progress + b.progress >= 0.95) {
-          resolveCombat(a, b);
+function getAreaOwnerCount(row, col, radius, owner) {
+  let count = 0;
+  for (let r = row - radius; r <= row + radius; r++) {
+    for (let c = col - radius; c <= col + radius; c++) {
+      if (r >= 0 && r < state.gridRows && c >= 0 && c < state.gridCols) {
+        if (state.grid[r][c] === owner) count++;
+      }
+    }
+  }
+  return count;
+}
+
+function aiUpdateStrategy() {
+  // Recalculate focus areas
+  state.ai.focusAreas = [];
+
+  // Find weakest points in player territory
+  const playerCells = [];
+  for (let r = 0; r < state.gridRows; r++) {
+    for (let c = 0; c < state.gridCols; c++) {
+      if (state.grid[r][c] === 1 && isAdjacentToEnemy(r, c)) {
+        playerCells.push({ r, c });
+      }
+    }
+  }
+
+  if (playerCells.length > 0) {
+    // Cluster them — pick a few random focus areas
+    const numFocus = 2 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < numFocus; i++) {
+      const p = playerCells[Math.floor(Math.random() * playerCells.length)];
+      state.ai.focusAreas.push({ r: p.r, c: p.c, radius: 6 + Math.floor(Math.random() * 6), weight: 15 + Math.random() * 20 });
+    }
+  }
+
+  // Increase aggression if losing territory
+  let playerSectors = 0, enemySectors = 0;
+  for (let r = 0; r < state.gridRows; r++)
+    for (let c = 0; c < state.gridCols; c++) {
+      if (state.grid[r][c] === 1) playerSectors++;
+      else if (state.grid[r][c] === 2) enemySectors++;
+    }
+
+  const ratio = enemySectors / Math.max(1, playerSectors + enemySectors);
+  state.ai.aggression = ratio < 0.4 ? 2.0 : ratio < 0.5 ? 1.5 : 1.0;
+}
+
+// ====================== MOBILIZE ======================
+function mobilize() {
+  const cost = 30;
+  if (state.troops < cost) { toast('Ресурсів не вистачає (потрібно ' + cost + ')'); return; }
+  // Removed resource cost, just add troops
+  state.troops += 50;
+  addLog('👥 Проведено мобілізацію: +50 бійців', 'event');
+  updateSidebar();
+}
+
+// ====================== PAUSE ======================
+function togglePause() {
+  state.paused = !state.paused;
+  document.getElementById('btn-pause').textContent = state.paused ? '▶ ПРОДОВЖИТИ' : '⏸ ПАУЗА';
+  document.getElementById('top-status').innerHTML = state.paused
+    ? 'Статус: <strong style="color:var(--accent)">ПАУЗА</strong>'
+    : 'Статус: <strong>АКТИВНА</strong>';
+}
+
+// ====================== DRAW GAME ======================
+function drawGame() {
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = gameCtx;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Background map
+  ctx.drawImage(state.mapImage, 0, 0);
+
+  // Grid cells
+  for (let r = 0; r < state.gridRows; r++) {
+    for (let c = 0; c < state.gridCols; c++) {
+      const v = state.grid[r][c];
+      const x = c * GRID_CELL_PX, y = r * GRID_CELL_PX;
+      if (v === 1) {
+        ctx.fillStyle = 'rgba(42,111,200,0.35)';
+        ctx.fillRect(x, y, GRID_CELL_PX, GRID_CELL_PX);
+      } else if (v === 2) {
+        ctx.fillStyle = 'rgba(200,42,42,0.35)';
+        ctx.fillRect(x, y, GRID_CELL_PX, GRID_CELL_PX);
+      }
+    }
+  }
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+  ctx.lineWidth = 0.3;
+  for (let c = 0; c <= state.gridCols; c++) {
+    ctx.beginPath(); ctx.moveTo(c * GRID_CELL_PX, 0); ctx.lineTo(c * GRID_CELL_PX, canvas.height); ctx.stroke();
+  }
+  for (let r = 0; r <= state.gridRows; r++) {
+    ctx.beginPath(); ctx.moveTo(0, r * GRID_CELL_PX); ctx.lineTo(canvas.width, r * GRID_CELL_PX); ctx.stroke();
+  }
+
+  // Front line border (thick border between player & enemy)
+  drawFrontBorder(ctx);
+
+  // Roads
+  state.editorObjects.roads.forEach(road => {
+    if (road.length < 2) return;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(200,200,100,0.5)';
+    ctx.lineWidth = 2; ctx.setLineDash([5, 3]);
+    ctx.beginPath();
+    road.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.stroke(); ctx.restore();
+  });
+
+  // Cities
+  state.cities.forEach(city => {
+    const x = city.col * GRID_CELL_PX + GRID_CELL_PX / 2;
+    const y = city.row * GRID_CELL_PX + GRID_CELL_PX / 2;
+    ctx.save();
+    ctx.fillStyle = city.owner === 1 ? 'rgba(42,200,110,0.9)' : 'rgba(200,42,42,0.9)';
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(x, y, 8, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 9px Share Tech Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(city.name, x, y - 12);
+    ctx.restore();
+  });
+
+  // AI focus areas (debug visual)
+  // state.ai.focusAreas.forEach(fa => {
+  //   ctx.save(); ctx.strokeStyle = 'rgba(255,100,100,0.15)'; ctx.lineWidth = 1;
+  //   ctx.strokeRect(fa.c * GRID_CELL_PX - fa.radius * GRID_CELL_PX, fa.r * GRID_CELL_PX - fa.radius * GRID_CELL_PX,
+  //     fa.radius * 2 * GRID_CELL_PX, fa.radius * 2 * GRID_CELL_PX);
+  //   ctx.restore();
+  // });
+}
+
+function drawFrontBorder(ctx) {
+  // Draw thick line at boundaries between player and enemy cells
+  ctx.save();
+  ctx.strokeStyle = 'rgba(200,168,75,0.8)';
+  ctx.lineWidth = 1.5;
+
+  for (let r = 0; r < state.gridRows; r++) {
+    for (let c = 0; c < state.gridCols; c++) {
+      const v = state.grid[r][c];
+      const x = c * GRID_CELL_PX, y = r * GRID_CELL_PX;
+      // Right border
+      if (c + 1 < state.gridCols) {
+        const rv = state.grid[r][c + 1];
+        if ((v === 1 && rv === 2) || (v === 2 && rv === 1)) {
+          ctx.beginPath(); ctx.moveTo(x + GRID_CELL_PX, y); ctx.lineTo(x + GRID_CELL_PX, y + GRID_CELL_PX); ctx.stroke();
+        }
+      }
+      // Bottom border
+      if (r + 1 < state.gridRows) {
+        const bv = state.grid[r + 1][c];
+        if ((v === 1 && bv === 2) || (v === 2 && bv === 1)) {
+          ctx.beginPath(); ctx.moveTo(x, y + GRID_CELL_PX); ctx.lineTo(x + GRID_CELL_PX, y + GRID_CELL_PX); ctx.stroke();
         }
       }
     }
   }
+  ctx.restore();
 }
 
-function resolveCombat(a, b) {
-  const aPow = a.personnel * DIV_TYPES[a.type].combat * rnd(0.85,1.15);
-  const bPow = b.personnel * DIV_TYPES[b.type].combat * rnd(0.85,1.15);
-  const total = aPow + bPow;
-  if (total === 0) return;
-  const aRatio = bPow / total;
-  const bRatio = aPow / total;
-  a.personnel = Math.max(0, Math.floor(a.personnel - a.personnel * aRatio));
-  b.personnel = Math.max(0, Math.floor(b.personnel - b.personnel * bRatio));
-  if (a.personnel <= 0) { a.path=[]; a.roadFrom=null; a.roadTo=null; if(a.owner==='blue') toast('Дивизия уничтожена!','error'); }
-  if (b.personnel <= 0) { b.path=[]; b.roadFrom=null; b.roadTo=null; if(b.owner==='blue') toast('Вражеская дивизия уничтожена!','success'); }
+// ====================== SIDEBAR ======================
+function updateSidebar() {
+  document.getElementById('stat-troops').textContent = state.troops;
+  document.getElementById('stat-enemy-troops').textContent = state.enemyTroops;
 }
 
-function checkWinLose() {
-  const blueCities = G.cities.filter(c=>c.owner==='blue').length;
-  const redCities = G.cities.filter(c=>c.owner==='red').length;
-  if (redCities === 0) endGame('blue');
-  else if (blueCities === 0) endGame('red');
-}
-
-function endGame(winner) {
-  G.gameSpeed = 0;
-  const isWin = winner === 'blue';
-  showModal(`
-    <h3>${isWin ? 'Победа!' : 'Поражение'}</h3>
-    <p>${isWin ? 'Все вражеские города захвачены. Отличная тактика!' : 'Все ваши города потеряны. Попробуйте другую стратегию.'}</p>
-    <div class="modal-btns">
-      <button class="modal-btn primary" onclick="hideModal();showScreen('menu')">В меню</button>
-    </div>
-  `);
-}
-
-/* ===== ИИ ===== */
-let aiTimer = 0;
-function updateAI(dt) {
-  aiTimer += dt;
-  if (aiTimer < 2.5) return;
-  aiTimer = 0;
-  // Создание дивизий
-  const redCities = G.cities.filter(c=>c.owner==='red');
-  if (redCities.length > 0 && G.redPersonnel >= COST) {
-    const idleCities = redCities.filter(c => !G.divisions.some(d=>d.cityId===c.id && d.owner==='red' && d.path.length===0));
-    const c = idleCities.length>0 ? idleCities[rndInt(0,idleCities.length-1)] : redCities[rndInt(0,redCities.length-1)];
-    // Выбираем тип: чаще обычные, иногда дроны
-    const r = Math.random();
-    const type = r < 0.6 ? 'regular' : r < 0.85 ? 'drone' : 'recon';
-    createDivision(type, c.id, 'red');
-  }
-  // Отправка дивизий
-  const idleDivs = G.divisions.filter(d => d.owner==='red' && d.cityId!==null && d.path.length===0 && d.roadFrom===null);
-  for (const d of idleDivs) {
-    const blueCities = G.cities.filter(c=>c.owner!=='red');
-    if (blueCities.length === 0) break;
-    // Находим ближайшую не-красную цель
-    const from = getCity(d.cityId);
-    if (!from) continue;
-    let bestTarget = null, bestDist = Infinity;
-    for (const bc of blueCities) {
-      const dd = dist(from.x,from.y,bc.x,bc.y);
-      // Приоритет: незащищённые города
-      const defenders = G.divisions.filter(x=>x.owner==='blue'&&x.cityId===bc.id&&x.path.length===0).length;
-      const score = dd - defenders*200;
-      if (score < bestDist) { bestDist=score; bestTarget=bc; }
-    }
-    if (bestTarget) {
-      const path = findPath(G.cities, G.roads, d.cityId, bestTarget.id);
-      if (path && path.length>1) {
-        d.path = path.slice(1);
-      }
-    }
-  }
-  // Оборона: если синие дивизии рядом с красным городом, отправить защитников
-  const threatened = redCities.filter(c => {
-    return G.divisions.some(d=>d.owner==='blue'&&d.path.length>0&&d.path.includes(c.id));
+function renderCityList() {
+  const el = document.getElementById('city-list');
+  el.innerHTML = '';
+  state.cities.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'city-item';
+    div.innerHTML = `<div class="city-dot" style="background:${c.owner === 1 ? 'var(--green)' : 'var(--red)'}"></div>${c.name} <span style="margin-left:auto;font-size:10px;color:var(--text-dim)">+10</span>`;
+    el.appendChild(div);
   });
-  for (const tc of threatened) {
-    const defenders = G.divisions.filter(d=>d.owner==='red'&&d.cityId===tc.id&&d.path.length===0);
-    const attackers = G.divisions.filter(d=>d.owner==='blue'&&d.path.includes(tc.id));
-    if (attackers.length > defenders.length) {
-      // Найти ближайшую красную дивизию для отправки на защиту
-      const available = G.divisions.filter(d=>d.owner==='red'&&d.cityId!==null&&d.cityId!==tc.id&&d.path.length===0&&d.roadFrom===null);
-      if (available.length > 0) {
-        const av = available[rndInt(0,available.length-1)];
-        const path = findPath(G.cities, G.roads, av.cityId, tc.id);
-        if (path && path.length>1) av.path = path.slice(1);
-      }
-    }
-  }
 }
 
-/* ===== РЕНДЕР ИГРЫ ===== */
-function renderGame() {
-  const cv = gameCanvas(), ctx = cv.getContext('2d');
-  const W = cv.width, H = cv.height;
-  // Фон
-  ctx.fillStyle = '#0a0f06';
-  ctx.fillRect(0,0,W,H);
-  // Фоновое изображение
-  if (bgImage) {
-    ctx.globalAlpha = 0.35;
-    const ix = w2sx(0), iy = w2sy(0);
-    ctx.drawImage(bgImage, ix, iy, bgImage.width*cam.zoom, bgImage.height*cam.zoom);
-    ctx.globalAlpha = 1;
-  }
-  // Сетка
-  drawGrid(ctx, W, H);
-  // Дороги
-  for (const r of G.roads) {
-    const a = getCity(r.from), b = getCity(r.to);
-    if (!a||!b) continue;
-    drawRoad(ctx, a, b, r);
-  }
-  // Путь выбранной дивизии
-  if (G.selectedDiv) {
-    drawDivPath(ctx, G.selectedDiv);
-  }
-  // Города
-  for (const c of G.cities) drawCity(ctx, c);
-  // Дивизии
-  for (const d of G.divisions) drawDivision(ctx, d);
-  // Погода
-  drawWeatherFx(ctx, W, H);
-  // Режим выбора цели
-  if (G.targetMode) {
-    ctx.fillStyle = 'rgba(200,168,50,0.08)';
-    ctx.fillRect(0,0,W,H);
-    ctx.font = `bold ${clamp(14*cam.zoom,11,20)}px Rajdhani`;
-    ctx.fillStyle = 'rgba(200,168,50,0.7)';
-    ctx.textAlign = 'center';
-    ctx.fillText('НАЖМИТЕ НА ГОРОД-ЦЕЛЬ', W/2, 30);
-  }
+// ====================== LOG ======================
+function addLog(msg, type = '') {
+  const el = document.getElementById('game-log');
+  const div = document.createElement('div');
+  div.className = 'log-entry ' + type;
+  div.textContent = msg;
+  el.appendChild(div);
+  // Keep last 50
+  while (el.children.length > 50) el.removeChild(el.firstChild);
+  el.scrollTop = el.scrollHeight;
 }
 
-function drawGrid(ctx, W, H) {
-  const step = 80 * cam.zoom;
-  if (step < 10) return;
-  const ox = (W/2 - cam.x*cam.zoom) % step;
-  const oy = (H/2 - cam.y*cam.zoom) % step;
-  ctx.strokeStyle = 'rgba(45,58,31,0.4)';
-  ctx.lineWidth = 1;
-  for (let x = ox; x < W; x += step) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-  for (let y = oy; y < H; y += step) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
-}
-
-function drawRoad(ctx, a, b, road) {
-  const ax=w2sx(a.x), ay=w2sy(a.y), bx=w2sx(b.x), by=w2sy(b.y);
-  // Обводка
-  ctx.strokeStyle = '#222a18';
-  ctx.lineWidth = Math.max(1, 8*cam.zoom);
-  ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
-  // Поверхность
-  ctx.strokeStyle = '#3a4530';
-  ctx.lineWidth = Math.max(1, 5*cam.zoom);
-  ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
-  // Пунктир
-  ctx.strokeStyle = '#5a6550';
-  ctx.lineWidth = Math.max(0.5, 1*cam.zoom);
-  ctx.setLineDash([Math.max(2,8*cam.zoom), Math.max(2,6*cam.zoom)]);
-  ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
-  ctx.setLineDash([]);
-}
-
-function teamColor(owner, alpha) {
-  if (owner==='blue') return `rgba(48,128,192,${alpha})`;
-  if (owner==='red') return `rgba(212,64,48,${alpha})`;
-  return `rgba(120,110,90,${alpha})`;
-}
-
-function drawCity(ctx, c) {
-  const sx=w2sx(c.x), sy=w2sy(c.y), r=Math.max(4,CITY_R*cam.zoom);
-  const sel = G.selectedCity === c.id;
-  // Свечение при выделении
-  if (sel) {
-    const pulse = 4 + Math.sin(animFrame*0.06)*3;
-    ctx.shadowColor = '#c8a832';
-    ctx.shadowBlur = pulse * cam.zoom;
-  }
-  // Внешний круг
-  ctx.beginPath(); ctx.arc(sx,sy,r,0,Math.PI*2);
-  ctx.fillStyle = teamColor(c.owner, 0.25);
-  ctx.fill();
-  ctx.strokeStyle = teamColor(c.owner, 0.9);
-  ctx.lineWidth = Math.max(1, 2.5*cam.zoom);
-  ctx.stroke();
-  ctx.shadowBlur = 0;
-  // Внутренняя точка
-  ctx.beginPath(); ctx.arc(sx,sy,r*0.35,0,Math.PI*2);
-  ctx.fillStyle = teamColor(c.owner, 0.85);
-  ctx.fill();
-  // Имя
-  if (cam.zoom > 0.35) {
-    ctx.font = `600 ${clamp(Math.round(12*cam.zoom),9,18)}px Rajdhani`;
-    ctx.fillStyle = '#d4cbb8';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.fillText(c.name, sx, sy+r+4*cam.zoom);
-  }
-}
-
-function drawDivision(ctx, d) {
-  let sx, sy, angle = 0;
-  if (d.roadFrom !== null && d.roadTo !== null) {
-    const fc=getCity(d.roadFrom), tc=getCity(d.roadTo);
-    if (!fc||!tc) return;
-    sx = w2sx(lerp(fc.x,tc.x,d.progress));
-    sy = w2sy(lerp(fc.y,tc.y,d.progress));
-    angle = Math.atan2(tc.y-fc.y, tc.x-fc.x);
-  } else {
-    const c = getCity(d.cityId);
-    if (!c) return;
-    // Размещаем дивизии вокруг города
-    const sibs = G.divisions.filter(x=>x.cityId===d.cityId && x.owner===d.owner);
-    const idx = sibs.indexOf(d);
-    const off = (idx - (sibs.length-1)/2) * 14 * cam.zoom;
-    sx = w2sx(c.x) + off;
-    sy = w2sy(c.y) - (CITY_R+12)*cam.zoom;
-    angle = 0;
-  }
-  const sz = Math.max(3, DIV_R*cam.zoom);
-  const sel = G.selectedDiv && G.selectedDiv.id === d.id;
-  const col = d.owner==='blue' ? '#3080c0' : '#d44030';
-  if (sel) { ctx.shadowColor='#c8a832'; ctx.shadowBlur=8*cam.zoom; }
-  ctx.fillStyle = col;
-  ctx.strokeStyle = '#e0d8c8';
-  ctx.lineWidth = Math.max(0.5, 1.2*cam.zoom);
-  if (d.type === 'regular') {
-    ctx.fillRect(sx-sz,sy-sz*0.7,sz*2,sz*1.4);
-    ctx.strokeRect(sx-sz,sy-sz*0.7,sz*2,sz*1.4);
-  } else if (d.type === 'drone') {
-    ctx.save(); ctx.translate(sx,sy); ctx.rotate(angle);
-    ctx.beginPath(); ctx.moveTo(sz*1.2,0); ctx.lineTo(-sz*0.6,-sz*0.8); ctx.lineTo(-sz*0.6,sz*0.8); ctx.closePath();
-    ctx.fill(); ctx.stroke();
-    ctx.restore();
-  } else {
-    ctx.beginPath(); ctx.moveTo(sx,sy-sz); ctx.lineTo(sx+sz*0.7,sy); ctx.lineTo(sx,sy+sz); ctx.lineTo(sx-sz*0.7,sy); ctx.closePath();
-    ctx.fill(); ctx.stroke();
-  }
-  ctx.shadowBlur = 0;
-  // Численность
-  if (cam.zoom > 0.5) {
-    ctx.font = `${clamp(Math.round(9*cam.zoom),7,13)}px 'Share Tech Mono'`;
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(d.personnel, sx, sy - sz - 3*cam.zoom);
-  }
-}
-
-function drawDivPath(ctx, div) {
-  if (!div.path || div.path.length===0) return;
-  ctx.strokeStyle = 'rgba(200,168,50,0.5)';
-  ctx.lineWidth = Math.max(1, 2*cam.zoom);
-  ctx.setLineDash([Math.max(2,6*cam.zoom),Math.max(2,4*cam.zoom)]);
-  ctx.beginPath();
-  let startCity;
-  if (div.roadFrom && div.roadTo) {
-    // Текущая позиция на дороге
-    const fc=getCity(div.roadFrom), tc=getCity(div.roadTo);
-    if (fc&&tc) {
-      ctx.moveTo(w2sx(lerp(fc.x,tc.x,div.progress)), w2sy(lerp(fc.y,tc.y,div.progress)));
-    }
-  } else {
-    startCity = getCity(div.cityId);
-    if (startCity) ctx.moveTo(w2sx(startCity.x), w2sy(startCity.y));
-  }
-  for (const pid of div.path) {
-    const c = getCity(pid);
-    if (c) ctx.lineTo(w2sx(c.x), w2sy(c.y));
-  }
-  ctx.stroke();
-  ctx.setLineDash([]);
-}
-
-function drawWeatherFx(ctx, W, H) {
-  if (!G) return;
-  const w = G.weather;
-  if (w === 'clear') return;
-  if (w === 'rain') {
-    ctx.strokeStyle = 'rgba(150,170,200,0.3)';
-    ctx.lineWidth = 1;
-    weatherParts.forEach(p => {
-      const sx = w2sx(p.x), sy = w2sy(p.y);
-      ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(sx+2,sy+12*cam.zoom); ctx.stroke();
-    });
-  } else if (w === 'snow') {
-    ctx.fillStyle = 'rgba(220,230,240,0.5)';
-    weatherParts.forEach(p => {
-      const sx = w2sx(p.x), sy = w2sy(p.y);
-      ctx.beginPath(); ctx.arc(sx,sy,Math.max(1,p.sz*cam.zoom),0,Math.PI*2); ctx.fill();
-    });
-  } else if (w === 'fog') {
-    ctx.fillStyle = 'rgba(180,190,170,0.06)';
-    weatherParts.forEach(p => {
-      const sx = w2sx(p.x), sy = w2sy(p.y);
-      ctx.beginPath(); ctx.arc(sx,sy,Math.max(5,40*cam.zoom),0,Math.PI*2); ctx.fill();
-    });
-    ctx.fillStyle = 'rgba(180,190,170,0.04)';
-    ctx.fillRect(0,0,W,H);
-  }
-}
-
-/* ===== ВВОД ИГРЫ ===== */
-let drag = {active:false, sx:0, sy:0, cx:0, cy:0, moved:false};
-let pinch = {active:false, dist:0, zoom:1};
-let tapTimer = null;
-
-function handleGameDown(sx, sy) {
-  drag = {active:true, sx:sx, sy:sy, cx:cam.x, cy:cam.y, moved:false};
-}
-
-function handleGameMove(sx, sy) {
-  if (!drag.active) return;
-  const dx = sx - drag.sx, dy = sy - drag.sy;
-  if (Math.abs(dx)+Math.abs(dy) > 6) drag.moved = true;
-  if (drag.moved) {
-    cam.x = drag.cx - dx/cam.zoom;
-    cam.y = drag.cy - dy/cam.zoom;
-  }
-}
-
-function handleGameUp(sx, sy) {
-  if (!drag.moved && G) {
-    handleGameTap(sx, sy);
-  }
-  drag.active = false;
-}
-
-function handleGameTap(sx, sy) {
-  const wx = s2wx(sx), wy = s2wy(sy);
-  // Режим выбора цели
-  if (G.targetMode) {
-    const city = findCityAt(wx, wy);
-    if (city) {
-      const path = findPath(G.cities, G.roads, G.selectedDiv.cityId, city.id);
-      if (path && path.length > 1) {
-        G.selectedDiv.path = path.slice(1);
-        toast('Дивизия направлена в "'+city.name+'"');
-      } else {
-        toast('Нет пути к городу!', 'error');
-      }
-    }
-    G.targetMode = false;
-    updatePanel();
-    return;
-  }
-  // Проверяем клик по дивизии
-  const div = findDivAt(wx, wy);
-  if (div && div.owner === 'blue') {
-    G.selectedCity = null;
-    G.selectedDiv = div;
-    updatePanel();
-    return;
-  }
-  // Проверяем клик по городу
-  const city = findCityAt(wx, wy);
-  if (city) {
-    G.selectedDiv = null;
-    G.selectedCity = city.id;
-    updatePanel();
-    return;
-  }
-  // Пустое место — сброс
-  G.selectedCity = null;
-  G.selectedDiv = null;
-  G.targetMode = false;
-  updatePanel();
-}
-
-function findCityAt(wx, wy) {
-  const r = CITY_R + 10;
-  for (const c of G.cities) {
-    if (dist(c.x,c.y,wx,wy) < r/cam.zoom * (1/cam.zoom > 1 ? 1/cam.zoom : 1)) return c;
-  }
-  // Более точный поиск
-  for (const c of G.cities) {
-    if (dist(c.x,c.y,wx,wy) < (CITY_R+15)/cam.zoom) return c;
-  }
-  return null;
-}
-
-function findDivAt(wx, wy) {
-  const r = DIV_R + 8;
-  for (const d of G.divisions) {
-    let dx, dy;
-    if (d.roadFrom && d.roadTo) {
-      const fc=getCity(d.roadFrom), tc=getCity(d.roadTo);
-      if (!fc||!tc) continue;
-      dx = lerp(fc.x,tc.x,d.progress);
-      dy = lerp(fc.y,tc.y,d.progress);
-    } else {
-      const c = getCity(d.cityId);
-      if (!c) continue;
-      const sibs = G.divisions.filter(x=>x.cityId===d.cityId&&x.owner===d.owner);
-      const idx = sibs.indexOf(d);
-      const off = (idx-(sibs.length-1)/2)*14;
-      dx = c.x + off;
-      dy = c.y - (CITY_R+12);
-    }
-    if (dist(dx,dy,wx,wy) < (r+5)/cam.zoom) return d;
-  }
-  return null;
-}
-
-/* ===== ПАНЕЛЬ ИГРЫ ===== */
-function updatePanel() {
-  const panel = document.getElementById('game-panel');
-  if (!G) { panel.classList.remove('active'); return; }
-  // Если выбрана дивизия
-  if (G.selectedDiv) {
-    const d = G.selectedDiv;
-    const t = DIV_TYPES[d.type];
-    const canTarget = d.cityId !== null && d.roadFrom === null && d.path.length === 0;
-    panel.innerHTML = `
-      <span class="panel-label"><i class="fas ${t.icon}"></i> ${t.name} — ${d.personnel} чел. ${d.cityId ? '(' + (getCity(d.cityId)?.name||'') + ')' : '(в пути)'}</span>
-      ${canTarget ? '<button class="target-btn" onclick="startTargetMode()"><i class="fas fa-location-crosshairs"></i> Указать цель</button>' : ''}
-    `;
-    panel.classList.add('active');
-    return;
-  }
-  // Если выбран город (свой)
-  if (G.selectedCity) {
-    const c = getCity(G.selectedCity);
-    if (!c || c.owner !== 'blue') { panel.classList.remove('active'); return; }
-    const canAfford = G.bluePersonnel >= COST;
-    let btns = '';
-    for (const [key, t] of Object.entries(DIV_TYPES)) {
-      btns += `<button class="div-btn" ${!canAfford?'disabled':''} onclick="tryCreateDiv('${key}',${c.id})">
-        <span class="div-name"><i class="fas ${t.icon}"></i> ${t.name}</span>
-        <span class="div-cost">${COST} чел. | Скорость: ${t.speed}</span>
-      </button>`;
-    }
-    panel.innerHTML = `<span class="panel-label"><i class="fas fa-city"></i> ${c.name} — создать дивизию</span>${btns}`;
-    panel.classList.add('active');
-    return;
-  }
-  panel.classList.remove('active');
-}
-
-function tryCreateDiv(type, cityId) {
-  if (G.bluePersonnel < COST) { toast('Недостаточно людей!','error'); return; }
-  if (createDivision(type, cityId, 'blue')) {
-    toast(DIV_TYPES[type].name+' дивизия создана','success');
-    updatePanel();
-  }
-}
-
-function startTargetMode() {
-  if (!G.selectedDiv) return;
-  G.targetMode = true;
-  updatePanel();
-}
-
-/* ===== СОХРАНЕНИЕ / ЗАГРУЗКА ===== */
+// ====================== SAVE / LOAD ======================
 function saveGame() {
-  if (!G) return;
-  const data = {
+  const saveData = {
     version: 1,
-    cities: G.cities,
-    roads: G.roads,
-    divisions: G.divisions,
-    bluePersonnel: G.bluePersonnel,
-    redPersonnel: G.redPersonnel,
-    weather: G.weather,
-    weatherTimer: G.weatherTimer,
-    gameSpeed: G.gameSpeed,
-    hasCustomImage: !!bgImage,
-    nextId
+    grid: state.grid,
+    troops: state.troops,
+    enemyTroops: state.enemyTroops,
+    cities: state.cities,
+    gameTime: state.gameTime,
+    ai: state.ai,
+    editorObjects: state.editorObjects,
+    gridCols: state.gridCols,
+    gridRows: state.gridRows,
   };
-  downloadJSON(data, 'tactical_save.json');
-  toast('Игра сохранена','success');
-}
-
-function loadGame() {
-  document.getElementById('game-load-input').click();
-}
-
-function onGameLoadFile(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  e.target.value = '';
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    try {
-      const data = JSON.parse(ev.target.result);
-      if (data.hasCustomImage) {
-        // Нужно загрузить изображение
-        G = null;
-        showModal(`
-          <h3>Загрузите фоновое изображение</h3>
-          <p>В этом сохранении использовалось пользовательское изображение карты. Пожалуйста, загрузите его повторно.</p>
-          <div class="modal-btns">
-            <button class="modal-btn primary" onclick="hideModal();document.getElementById('game-img-input').click()">Загрузить</button>
-            <button class="modal-btn secondary" onclick="loadGameData(null)">Пропустить</button>
-          </div>
-        `);
-        window._pendingSave = data;
-      } else {
-        loadGameData(data, null);
-      }
-    } catch(err) { toast('Ошибка загрузки файла','error'); }
-  };
-  reader.readAsText(file);
-}
-
-function onGameImgLoad(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  e.target.value = '';
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    const img = new Image();
-    img.onload = () => loadGameData(window._pendingSave, img);
-    img.src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function loadGameData(data, img) {
-  hideModal();
-  if (!data) return;
-  nextId = data.nextId || 100;
-  G = {
-    cities: data.cities,
-    roads: data.roads,
-    divisions: data.divisions,
-    bluePersonnel: data.bluePersonnel,
-    redPersonnel: data.redPersonnel,
-    weather: data.weather || 'clear',
-    weatherTimer: data.weatherTimer || WEATHER_INTERVAL,
-    gameSpeed: data.gameSpeed || 1,
-    selectedCity: null,
-    selectedDiv: null,
-    targetMode: false
-  };
-  bgImage = img || null;
-  centerCamera();
-  initWeatherParts();
-  updateHudWeather();
-  showScreen('game');
-  toast('Игра загружена','success');
-}
-
-function downloadJSON(data, filename) {
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const json = JSON.stringify(saveData);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
+  a.href = url;
+  a.download = 'frontline_save.fls';
   a.click();
-  URL.revokeObjectURL(a.href);
+  URL.revokeObjectURL(url);
+  toast('Збереження завантажено!');
+  addLog('💾 Гра збережена', 'event');
 }
 
-/* ===== РЕДАКТОР КАРТ ===== */
-function initEditor() {
-  if (!E) {
-    E = { cities:[], roads:[], mode:'city', roadStart:null, img:null };
-  }
-  const cv = edCanvas();
-  cv.width = cv.parentElement.clientWidth - 0;
-  cv.height = cv.parentElement.clientHeight - 0;
-  if (E.cities.length === 0) cam = {x:500, y:350, zoom:0.8};
-  renderEditor();
-}
+let pendingSave = null;
 
-function setEdMode(mode) {
-  E.mode = mode;
-  E.roadStart = null;
-  document.querySelectorAll('.ed-btn[data-mode]').forEach(b => {
-    b.classList.toggle('active', b.dataset.mode === mode);
-  });
-  renderEditor();
-}
-
-function edUploadImg() {
-  document.getElementById('ed-img-input').click();
-}
-function edOnImgUpload(e) {
-  const file = e.target.files[0];
+function loadSave(input) {
+  const file = input.files[0];
   if (!file) return;
-  e.target.value = '';
   const reader = new FileReader();
-  reader.onload = function(ev) {
-    const img = new Image();
-    img.onload = () => { E.img = img; renderEditor(); toast('Фон загружен','success'); };
-    img.src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function edSaveMap() {
-  if (E.cities.length === 0) { toast('Добавьте хотя бы один город','error'); return; }
-  const data = { cities: E.cities.map(c=>({id:c.id,x:c.x,y:c.y,name:c.name})), roads: E.roads };
-  downloadJSON(data, 'tactical_map.json');
-  toast('Карта сохранена','success');
-}
-
-function edLoadMap() {
-  document.getElementById('ed-map-input').click();
-}
-function edOnMapLoad(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  e.target.value = '';
-  const reader = new FileReader();
-  reader.onload = function(ev) {
+  reader.onload = e => {
     try {
-      const data = JSON.parse(ev.target.result);
-      E.cities = data.cities;
-      E.roads = data.roads;
-      nextId = Math.max(...E.cities.map(c=>c.id), ...E.roads.flatMap(r=>[r.from,r.to]), 0) + 1;
-      centerCameraOnCities(E.cities);
-      renderEditor();
-      toast('Карта загружена','success');
-    } catch(err) { toast('Ошибка загрузки','error'); }
+      pendingSave = JSON.parse(e.target.result);
+      toast('Файл завантажено! Тепер завантажте фото карти.');
+      document.getElementById('save-map-input').click();
+    } catch(err) {
+      toast('Помилка файлу збереження!');
+    }
   };
   reader.readAsText(file);
 }
 
-function renderEditor() {
-  const cv = edCanvas(), ctx = cv.getContext('2d');
-  const W = cv.width, H = cv.height;
-  ctx.fillStyle = '#0a0f06';
-  ctx.fillRect(0,0,W,H);
-  if (E.img) {
-    ctx.globalAlpha = 0.4;
-    ctx.drawImage(E.img, edW2sx(0), edW2sy(0), E.img.width*cam.zoom, E.img.height*cam.zoom);
-    ctx.globalAlpha = 1;
-  }
-  drawEdGrid(ctx, W, H);
-  // Дороги
-  for (const r of E.roads) {
-    const a = E.cities.find(c=>c.id===r.from), b = E.cities.find(c=>c.id===r.to);
-    if (!a||!b) continue;
-    const ax=edW2sx(a.x),ay=edW2sy(a.y),bx=edW2sx(b.x),by=edW2sy(b.y);
-    ctx.strokeStyle = '#3a4530'; ctx.lineWidth = Math.max(1,5*cam.zoom); ctx.lineCap='round';
-    ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
-    ctx.strokeStyle = '#5a6550'; ctx.lineWidth = Math.max(0.5,1*cam.zoom);
-    ctx.setLineDash([Math.max(2,8*cam.zoom),Math.max(2,6*cam.zoom)]);
-    ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
-    ctx.setLineDash([]);
-  }
-  // Линия строящейся дороги
-  if (E.mode==='road' && E.roadStart!==null && E._mouseWorld) {
-    const a = E.cities.find(c=>c.id===E.roadStart);
-    if (a) {
-      ctx.strokeStyle = 'rgba(200,168,50,0.6)';
-      ctx.lineWidth = Math.max(1,2*cam.zoom);
-      ctx.setLineDash([6,4]);
-      ctx.beginPath(); ctx.moveTo(edW2sx(a.x),edW2sy(a.y)); ctx.lineTo(edW2sx(E._mouseWorld.x),edW2sy(E._mouseWorld.y)); ctx.stroke();
-      ctx.setLineDash([]);
-    }
-  }
-  // Города
-  for (const c of E.cities) {
-    const sx=edW2sx(c.x), sy=edW2sy(c.y), r=Math.max(4,CITY_R*cam.zoom);
-    const isStart = E.roadStart === c.id;
-    if (isStart) { ctx.shadowColor='#c8a832'; ctx.shadowBlur=10*cam.zoom; }
-    ctx.beginPath(); ctx.arc(sx,sy,r,0,Math.PI*2);
-    ctx.fillStyle = isStart ? 'rgba(200,168,50,0.3)' : 'rgba(120,110,90,0.25)';
-    ctx.fill();
-    ctx.strokeStyle = isStart ? '#c8a832' : 'rgba(120,110,90,0.8)';
-    ctx.lineWidth = Math.max(1,2.5*cam.zoom);
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-    ctx.beginPath(); ctx.arc(sx,sy,r*0.35,0,Math.PI*2);
-    ctx.fillStyle = isStart ? '#c8a832' : 'rgba(120,110,90,0.7)';
-    ctx.fill();
-    if (cam.zoom > 0.35) {
-      ctx.font = `600 ${clamp(Math.round(12*cam.zoom),9,18)}px Rajdhani`;
-      ctx.fillStyle = '#d4cbb8'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-      ctx.fillText(c.name, sx, sy+r+4*cam.zoom);
-    }
-  }
-  // Подсказка режима
-  ctx.font = `600 14px Rajdhani`;
-  ctx.fillStyle = 'rgba(200,168,50,0.6)'; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-  const hints = {city:'Нажмите для добавления города', road:'Нажмите на два города для дороги', delete:'Нажмите на объект для удаления'};
-  ctx.fillText(hints[E.mode]||'', 10, 10);
-}
-
-function drawEdGrid(ctx, W, H) {
-  const step = 80*cam.zoom;
-  if (step<10) return;
-  const ox = (W/2-cam.x*cam.zoom)%step, oy = (H/2-cam.y*cam.zoom)%step;
-  ctx.strokeStyle = 'rgba(45,58,31,0.35)'; ctx.lineWidth = 1;
-  for (let x=ox;x<W;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-  for (let y=oy;y<H;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-}
-
-// Ввод редактора
-let edDrag = {active:false, sx:0, sy:0, cx:0, cy:0, moved:false};
-let edPinch = {active:false, dist:0};
-
-function edDown(sx, sy) {
-  edDrag = {active:true, sx, sy, cx:cam.x, cy:cam.y, moved:false};
-}
-function edMove(sx, sy) {
-  const wx = edS2wx(sx), wy = edS2wy(sy);
-  E._mouseWorld = {x:wx, y:wy};
-  if (!edDrag.active) { renderEditor(); return; }
-  const dx=sx-edDrag.sx, dy=sy-edDrag.sy;
-  if (Math.abs(dx)+Math.abs(dy)>6) edDrag.moved=true;
-  if (edDrag.moved) { cam.x=edDrag.cx-dx/cam.zoom; cam.y=edDrag.cy-dy/cam.zoom; }
-  renderEditor();
-}
-function edUp(sx, sy) {
-  if (!edDrag.moved) edTap(sx, sy);
-  edDrag.active = false;
-}
-function edTap(sx, sy) {
-  const wx = edS2wx(sx), wy = edS2wy(sy);
-  if (E.mode === 'city') {
-    const name = 'Город ' + (E.cities.length+1);
-    E.cities.push({id:genId(), x:wx, y:wy, name});
-    toast(name+' добавлен');
-  } else if (E.mode === 'road') {
-    const city = findEdCityAt(wx, wy);
-    if (!city) return;
-    if (E.roadStart === null) {
-      E.roadStart = city.id;
-    } else {
-      if (E.roadStart !== city.id) {
-        const exists = E.roads.some(r=>(r.from===E.roadStart&&r.to===city.id)||(r.from===city.id&&r.to===E.roadStart));
-        if (!exists) { E.roads.push({from:E.roadStart, to:city.id}); toast('Дорога построена'); }
-        else toast('Дорога уже существует','warn');
-      }
-      E.roadStart = null;
-    }
-  } else if (E.mode === 'delete') {
-    const city = findEdCityAt(wx, wy);
-    if (city) {
-      E.roads = E.roads.filter(r=>r.from!==city.id&&r.to!==city.id);
-      E.cities = E.cities.filter(c=>c.id!==city.id);
-      toast('Город удалён');
-      return;
-    }
-    // Удаление дороги — клик рядом с дорогой
-    let bestR = null, bestD = 20/cam.zoom;
-    for (const r of E.roads) {
-      const a = E.cities.find(c=>c.id===r.from), b = E.cities.find(c=>c.id===r.to);
-      if (!a||!b) continue;
-      const d = pointToSegDist(wx,wy,a.x,a.y,b.x,b.y);
-      if (d < bestD) { bestD=d; bestR=r; }
-    }
-    if (bestR) { E.roads = E.roads.filter(r=>r!==bestR); toast('Дорога удалена'); }
-  }
-  renderEditor();
-}
-
-function findEdCityAt(wx, wy) {
-  for (const c of E.cities) {
-    if (dist(c.x,c.y,wx,wy) < (CITY_R+15)/cam.zoom) return c;
-  }
-  return null;
-}
-
-function pointToSegDist(px,py,ax,ay,bx,by) {
-  const dx=bx-ax, dy=by-ay, len2=dx*dx+dy*dy;
-  if (len2===0) return dist(px,py,ax,ay);
-  let t = ((px-ax)*dx+(py-ay)*dy)/len2;
-  t = clamp(t,0,1);
-  return dist(px,py,ax+t*dx,ay+t*dy);
-}
-
-/* ===== НОВАЯ ИГРА ===== */
-function newGameDefault() {
-  startGame(getDefaultMap(), null);
-}
-
-function newGameCustom() {
-  const inp = document.createElement('input');
-  inp.type = 'file'; inp.accept = '.json'; inp.style.display = 'none';
-  inp.onchange = function(e) {
-    const file = e.target.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      try {
-        const data = JSON.parse(ev.target.result);
-        startGame(data, null);
-      } catch(err) { toast('Ошибка загрузки карты','error'); }
+function loadSaveMap(input) {
+  const file = input.files[0];
+  if (!file || !pendingSave) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    state.mapDataURL = e.target.result;
+    const img = new Image();
+    img.onload = () => {
+      state.mapImage = img;
+      state.gridCols = pendingSave.gridCols;
+      state.gridRows = pendingSave.gridRows;
+      state.cellW = GRID_CELL_PX;
+      state.cellH = GRID_CELL_PX;
+      state.editorObjects = pendingSave.editorObjects;
+      showScreen('game');
+      initGame(pendingSave);
+      addLog('📂 Збереження завантажено!', 'event');
+      pendingSave = null;
     };
-    reader.readAsText(file);
+    img.src = e.target.result;
   };
-  document.body.appendChild(inp); inp.click(); inp.remove();
-}
-
-function startGame(mapData, img) {
-  nextId = Math.max(...mapData.cities.map(c=>c.id), ...mapData.roads.flatMap(r=>[r.from,r.to]), 0) + 1;
-  // Распределяем владельцев
-  const sorted = [...mapData.cities].sort((a,b)=>a.x-b.x);
-  const cities = sorted.map((c,i) => {
-    let owner = 'neutral';
-    const n = sorted.length;
-    if (n >= 6) {
-      if (i < Math.ceil(n*0.2)) owner = 'blue';
-      else if (i >= n - Math.ceil(n*0.2)) owner = 'red';
-    } else if (n >= 4) {
-      if (i === 0 || i === 1) owner = 'blue';
-      else if (i === n-1 || i === n-2) owner = 'red';
-    } else {
-      if (i === 0) owner = 'blue';
-      else if (i === n-1) owner = 'red';
-    }
-    return {...c, owner};
-  });
-  G = {
-    cities, roads: mapData.roads,
-    divisions: [], bluePersonnel: 0, redPersonnel: 0,
-    weather: 'clear', weatherTimer: WEATHER_INTERVAL,
-    gameSpeed: 1, selectedCity: null, selectedDiv: null, targetMode: false
-  };
-  bgImage = img;
-  centerCameraOnCities(cities);
-  initWeatherParts();
-  aiTimer = 0;
-  document.getElementById('hud-speed').textContent = 'x1';
-  updateHudWeather();
-  showScreen('game');
-  toast('Боевое задание получено. Удачи, командир!','success');
-}
-
-function centerCameraOnCities(cities) {
-  if (cities.length === 0) { cam = {x:500,y:350,zoom:0.8}; return; }
-  let mx=0,my=0;
-  cities.forEach(c=>{mx+=c.x;my+=c.y;});
-  mx/=cities.length; my/=cities.length;
-  cam.x = mx; cam.y = my;
-  let maxD = 0;
-  cities.forEach(c=>{maxD=Math.max(maxD,dist(c.x,c.y,mx,my));});
-  const cv = gameCanvas();
-  const minDim = Math.min(cv.width||800, cv.height||600);
-  cam.zoom = clamp(minDim / (maxD*2.8), 0.2, 2.5);
-}
-function centerCamera() { if(G) centerCameraOnCities(G.cities); }
-
-/* ===== СКОРОСТЬ ИГРЫ ===== */
-function cycleSpeed() {
-  if (!G) return;
-  const speeds = [0,1,2,3];
-  const labels = ['Пауза','x1','x2','x3'];
-  let idx = speeds.indexOf(G.gameSpeed);
-  idx = (idx+1) % speeds.length;
-  G.gameSpeed = speeds[idx];
-  document.getElementById('hud-speed').textContent = labels[idx];
+  reader.readAsDataURL(file);
 }
 
 function confirmQuit() {
-  showModal(`
-    <h3>Выйти в меню?</h3>
-    <p>Текущий прогресс будет потерян, если не сохраните игру.</p>
-    <div class="modal-btns">
-      <button class="modal-btn primary" onclick="hideModal();G=null;showScreen('menu')">Выйти</button>
-      <button class="modal-btn secondary" onclick="hideModal();saveGame()">Сохранить и выйти</button>
-      <button class="modal-btn secondary" onclick="hideModal()">Отмена</button>
-    </div>
-  `);
+  if (confirm('Повернутися до головного меню? Незбережений прогрес буде втрачено.')) {
+    showMenu();
+  }
 }
 
-/* ===== КАРТА ПО УМОЛЧАНИЮ ===== */
-function getDefaultMap() {
+// ====================== UTILS ======================
+function getCanvasPos(e, canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
   return {
-    cities: [
-      {id:1, x:120, y:300, name:'Синяя Ставка'},
-      {id:2, x:100, y:560, name:'Западный Пост'},
-      {id:3, x:350, y:130, name:'Северный Перевал'},
-      {id:4, x:330, y:430, name:'Центральная Деревня'},
-      {id:5, x:550, y:280, name:'Перекрёсток'},
-      {id:6, x:500, y:560, name:'Южный Мост'},
-      {id:7, x:750, y:180, name:'Восточный Форпост'},
-      {id:8, x:720, y:420, name:'Равнинный Город'},
-      {id:9, x:950, y:300, name:'Красная Ставка'},
-      {id:10, x:900, y:580, name:'Красный Аванпост'}
-    ],
-    roads: [
-      {from:1,to:3},{from:1,to:4},{from:1,to:2},
-      {from:2,to:4},{from:2,to:6},
-      {from:3,to:5},{from:3,to:7},
-      {from:4,to:5},{from:4,to:6},
-      {from:5,to:7},{from:5,to:8},
-      {from:6,to:8},{from:6,to:10},
-      {from:7,to:9},{from:8,to:9},{from:8,to:10},
-      {from:9,to:10}
-    ]
+    x: (e.clientX - rect.left) * scaleX,
+    y: (e.clientY - rect.top) * scaleY,
   };
 }
 
-/* ===== ИГРОВОЙ ЦИКЛ ===== */
-let lastTime = 0;
-function gameLoop(time) {
-  animFrame++;
-  const dt = Math.min(0.1, (time - lastTime)/1000);
-  lastTime = time;
+let toastTimeout;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => el.classList.remove('show'), 2500);
+}
 
-  if (currentScreen === 'game' && G) {
-    if (G.gameSpeed > 0) {
-      const gameDt = dt * G.gameSpeed;
-      // Начисление людей
-      const blueCities = G.cities.filter(c=>c.owner==='blue').length;
-      const redCities = G.cities.filter(c=>c.owner==='red').length;
-      G.bluePersonnel += blueCities * RATE * gameDt;
-      G.redPersonnel += redCities * RATE * gameDt;
-      // Погода
-      updateWeather(gameDt);
-      // Движение и бой
-      updateMovement(gameDt);
-      // ИИ
-      updateAI(gameDt);
-    }
-    // Обновляем HUD
-    document.getElementById('hud-personnel').textContent = Math.floor(G.bluePersonnel).toLocaleString('ru');
-    // Рендер
-    renderGame();
-    // Обновляем панель если нужно
-    if (animFrame % 30 === 0) updatePanel();
+// ====================== KEYBOARD ======================
+document.addEventListener('keydown', e => {
+  if (e.key === ' ' && state.currentScreen === 'game') { e.preventDefault(); togglePause(); }
+  if (e.key === 'Escape' && attackModeOn) toggleAttackMode();
+  if (state.currentScreen === 'editor') {
+    if (e.key === '1') setTool('city');
+    if (e.key === '2') setTool('road');
+    if (e.key === '3') setTool('enemy');
+    if (e.key === '4') setTool('front');
   }
+});
 
-  if (currentScreen === 'editor' && E) {
-    // Рендер редактора (уже в обработчиках ввода)
-  }
+// City input enter key
+document.getElementById('city-name-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmCity();
+  if (e.key === 'Escape') cancelCity();
+});
 
-  requestAnimationFrame(gameLoop);
-}
-
-/* ===== РЕСАЙЗ ===== */
-function resizeGameCanvas() {
-  const cv = gameCanvas();
-  const hud = cv.previousElementSibling;
-  const panel = cv.nextElementSibling;
-  const hudH = hud ? hud.offsetHeight : 0;
-  const panelH = panel && panel.classList.contains('active') ? panel.offsetHeight : 0;
-  cv.width = window.innerWidth;
-  cv.height = window.innerHeight - hudH;
-}
-
-function resizeEdCanvas() {
-  if (currentScreen !== 'editor') return;
-  const cv = edCanvas();
-  const tb = cv.previousElementSibling;
-  cv.width = window.innerWidth;
-  cv.height = window.innerHeight - (tb?tb.offsetHeight:0);
-  renderEditor();
-}
-
-/* ===== ТАЧ-СОБЫТИЯ ===== */
-function setupTouch(canvas, downFn, moveFn, upFn) {
-  let touches = [];
-  canvas.addEventListener('touchstart', e => {
-    e.preventDefault();
-    touches = [...e.touches];
-    if (touches.length === 1) {
-      const t = touches[0];
-      const r = canvas.getBoundingClientRect();
-      downFn(t.clientX-r.left, t.clientY-r.top);
-    }
-    if (touches.length === 2) {
-      const dx=touches[0].clientX-touches[1].clientX, dy=touches[0].clientY-touches[1].clientY;
-      if (canvas === gameCanvas()) pinch = {active:true, dist:Math.hypot(dx,dy), zoom:cam.zoom};
-      else edPinch = {active:true, dist:Math.hypot(dx,dy)};
-    }
-  }, {passive:false});
-  canvas.addEventListener('touchmove', e => {
-    e.preventDefault();
-    const newTouches = [...e.touches];
-    if (newTouches.length === 1 && touches.length === 1) {
-      const t = newTouches[0];
-      const r = canvas.getBoundingClientRect();
-      moveFn(t.clientX-r.left, t.clientY-r.top);
-    }
-    if (newTouches.length === 2) {
-      const dx=newTouches[0].clientX-newTouches[1].clientX, dy=newTouches[0].clientY-newTouches[1].clientY;
-      const d = Math.hypot(dx,dy);
-      const p = canvas===gameCanvas() ? pinch : edPinch;
-      if (p.active && p.dist > 0) {
-        const scale = d / p.dist;
-        cam.zoom = clamp(cam.zoom * scale, 0.15, 4);
-        p.dist = d;
-        if (canvas === edCanvas()) renderEditor();
-      }
-    }
-    touches = newTouches;
-  }, {passive:false});
-  canvas.addEventListener('touchend', e => {
-    e.preventDefault();
-    if (e.touches.length === 0) {
-      if (touches.length === 1) {
-        const t = touches[0];
-        const r = canvas.getBoundingClientRect();
-        upFn(t.clientX-r.left, t.clientY-r.top);
-      }
-      if (canvas===gameCanvas()) pinch.active=false;
-      else edPinch.active=false;
-    }
-    touches = [...e.touches];
-  }, {passive:false});
-
-  // Мышь
-  canvas.addEventListener('mousedown', e => {
-    const r = canvas.getBoundingClientRect();
-    downFn(e.clientX-r.left, e.clientY-r.top);
-  });
-  canvas.addEventListener('mousemove', e => {
-    const r = canvas.getBoundingClientRect();
-    moveFn(e.clientX-r.left, e.clientY-r.top);
-  });
-  canvas.addEventListener('mouseup', e => {
-    const r = canvas.getBoundingClientRect();
-    upFn(e.clientX-r.left, e.clientY-r.top);
-  });
-  canvas.addEventListener('wheel', e => {
-    e.preventDefault();
-    const scale = e.deltaY > 0 ? 0.9 : 1.1;
-    cam.zoom = clamp(cam.zoom * scale, 0.15, 4);
-    if (canvas === edCanvas()) renderEditor();
-  }, {passive:false});
-}
-
-/* ===== ИНИЦИАЛИЗАЦИЯ ===== */
-function init() {
-  // Настраиваем тач для игры
-  const gcv = gameCanvas();
-  setupTouch(gcv, handleGameDown, handleGameMove, handleGameUp);
-
-  // Настраиваем тач для редактора
-  const ecv = edCanvas();
-  setupTouch(ecv, edDown, edMove, edUp);
-
-  // Ресайз
-  window.addEventListener('resize', () => {
-    if (currentScreen === 'game') resizeGameCanvas();
-    if (currentScreen === 'editor') resizeEdCanvas();
-  });
-
-  // Запуск цикла
-  requestAnimationFrame(gameLoop);
-}
-
-window.addEventListener('load', init);
+// Activate attack mode on game start
+document.addEventListener('DOMContentLoaded', () => {
+  // Start with attack mode off but visually show the bar
+  document.getElementById('attack-mode-bar').classList.remove('show');
+});
 </script>
 </body>
 </html>
