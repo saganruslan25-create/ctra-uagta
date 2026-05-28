@@ -3,1609 +3,910 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FRONTLINE — Стратегія</title>
+<title>FRONTLINE</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
-
-  :root {
-    --bg: #0a0c0f;
-    --panel: #0f1318;
-    --border: #1e2832;
-    --accent: #c8a84b;
-    --accent2: #e05c2a;
-    --blue: #2a6fc8;
-    --red: #c82a2a;
-    --green: #2ac86e;
-    --text: #d4cfc0;
-    --text-dim: #6b7280;
-    --grid-size: 20;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Share Tech Mono', monospace;
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-  }
-
-  /* ========== SCREENS ========== */
-  .screen { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
-  .screen.active { display: flex; }
-
-  /* ========== MAIN MENU ========== */
-  #screen-menu {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(ellipse at 50% 30%, #1a1f2e 0%, #0a0c0f 70%);
-    gap: 0;
-  }
-
-  .menu-bg-lines {
-    position: absolute; inset: 0; pointer-events: none;
-    background-image: 
-      linear-gradient(rgba(200,168,75,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(200,168,75,0.04) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-
-  .menu-title {
-    font-family: 'Oswald', sans-serif;
-    font-size: 72px;
-    font-weight: 700;
-    letter-spacing: 12px;
-    color: var(--accent);
-    text-shadow: 0 0 40px rgba(200,168,75,0.3), 0 4px 0 rgba(0,0,0,0.8);
-    margin-bottom: 8px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .menu-subtitle {
-    font-size: 13px;
-    letter-spacing: 6px;
-    color: var(--text-dim);
-    margin-bottom: 60px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .menu-btn {
-    position: relative; z-index: 1;
-    width: 280px;
-    padding: 16px 0;
-    margin: 8px 0;
-    background: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    font-family: 'Oswald', sans-serif;
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
-  }
-
-  .menu-btn:hover {
-    background: var(--accent);
-    color: var(--bg);
-    box-shadow: 0 0 20px rgba(200,168,75,0.4);
-  }
-
-  .menu-btn.secondary {
-    border-color: var(--border);
-    color: var(--text-dim);
-    font-size: 15px;
-  }
-
-  .menu-btn.secondary:hover {
-    border-color: var(--text-dim);
-    background: rgba(255,255,255,0.05);
-    color: var(--text);
-  }
-
-  .menu-version {
-    position: absolute; bottom: 20px;
-    font-size: 11px; color: var(--text-dim); letter-spacing: 2px;
-    z-index: 1;
-  }
-
-  /* ========== LOAD SCREEN ========== */
-  #screen-load {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    background: var(--bg);
-  }
-
-  .load-title {
-    font-family: 'Oswald', sans-serif;
-    font-size: 28px;
-    letter-spacing: 8px;
-    color: var(--accent);
-    margin-bottom: 10px;
-  }
-
-  .upload-zone {
-    width: 500px;
-    height: 300px;
-    border: 2px dashed var(--border);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-    background: var(--panel);
-  }
-
-  .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: rgba(200,168,75,0.05); }
-
-  .upload-zone img {
-    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
-  }
-
-  .upload-zone-text { color: var(--text-dim); font-size: 13px; letter-spacing: 2px; text-align: center; line-height: 2; z-index: 1; }
-
-  .upload-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.3; }
-
-  .btn-primary {
-    padding: 14px 40px;
-    background: var(--accent);
-    color: var(--bg);
-    border: none;
-    font-family: 'Oswald', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
-    opacity: 0.4;
-    pointer-events: none;
-  }
-
-  .btn-primary.ready { opacity: 1; pointer-events: all; }
-  .btn-primary:hover { box-shadow: 0 0 20px rgba(200,168,75,0.5); }
-
-  .btn-back {
-    padding: 10px 24px;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-back:hover { border-color: var(--text-dim); color: var(--text); }
-
-  /* ========== EDITOR ========== */
-  #screen-editor {
-    flex-direction: column;
-    background: var(--bg);
-  }
-
-  .editor-top {
-    height: 50px;
-    background: var(--panel);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    gap: 12px;
-    flex-shrink: 0;
-  }
-
-  .editor-label {
-    font-family: 'Oswald', sans-serif;
-    font-size: 12px;
-    letter-spacing: 3px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-  }
-
-  .tool-btn {
-    padding: 6px 14px;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-
-  .tool-btn:hover { border-color: var(--text); color: var(--text); }
-  .tool-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(200,168,75,0.1); }
-  .tool-btn.city-tool.active { border-color: var(--green); color: var(--green); background: rgba(42,200,110,0.1); }
-  .tool-btn.enemy-tool.active { border-color: var(--red); color: var(--red); background: rgba(200,42,42,0.1); }
-  .tool-btn.road-tool.active { border-color: #4a9eff; color: #4a9eff; background: rgba(74,158,255,0.1); }
-  .tool-btn.front-tool.active { border-color: var(--accent2); color: var(--accent2); background: rgba(224,92,42,0.1); }
-
-  .tool-sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
-
-  .btn-start-game {
-    margin-left: auto;
-    padding: 8px 20px;
-    background: var(--accent);
-    color: var(--bg);
-    border: none;
-    font-family: 'Oswald', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    cursor: pointer;
-    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
-    transition: all 0.2s;
-  }
-
-  .btn-start-game:hover { box-shadow: 0 0 14px rgba(200,168,75,0.5); }
-
-  .editor-canvas-wrap {
-    flex: 1;
-    overflow: auto;
-    position: relative;
-    cursor: crosshair;
-  }
-
-  #editorCanvas {
-    display: block;
-  }
-
-  /* ========== GAME SCREEN ========== */
-  #screen-game {
-    flex-direction: row;
-    background: var(--bg);
-  }
-
-  .game-sidebar {
-    width: 220px;
-    background: var(--panel);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 16px;
-    gap: 12px;
-    overflow-y: auto;
-    flex-shrink: 0;
-  }
-
-  .sidebar-section {
-    border: 1px solid var(--border);
-    padding: 10px;
-  }
-
-  .sidebar-title {
-    font-family: 'Oswald', sans-serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--text-dim);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-  }
-
-  .stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-    font-size: 12px;
-  }
-
-  .stat-label { color: var(--text-dim); }
-  .stat-value { color: var(--accent); font-weight: bold; }
-  .stat-value.red { color: var(--red); }
-  .stat-value.green { color: var(--green); }
-
-  .city-list { max-height: 120px; overflow-y: auto; }
-
-  .city-item {
-    padding: 4px 0;
-    font-size: 11px;
-    color: var(--text-dim);
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .city-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
-
-  .game-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .game-topbar {
-    height: 40px;
-    background: var(--panel);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    padding: 0 14px;
-    gap: 10px;
-    font-size: 12px;
-    flex-shrink: 0;
-  }
-
-  .topbar-item { color: var(--text-dim); display: flex; align-items: center; gap: 6px; }
-  .topbar-item strong { color: var(--text); }
-  .topbar-sep { width: 1px; height: 16px; background: var(--border); }
-
-  .game-canvas-wrap {
-    flex: 1;
-    overflow: auto;
-    position: relative;
-  }
-
-  #gameCanvas { display: block; cursor: default; }
-
-  .game-log {
-    height: 90px;
-    background: var(--panel);
-    border-top: 1px solid var(--border);
-    overflow-y: auto;
-    padding: 6px 14px;
-    flex-shrink: 0;
-  }
-
-  .log-entry {
-    font-size: 11px;
-    color: var(--text-dim);
-    line-height: 1.6;
-    border-left: 2px solid transparent;
-    padding-left: 6px;
-    margin-bottom: 2px;
-  }
-
-  .log-entry.player { border-color: var(--blue); color: #7ab8ff; }
-  .log-entry.enemy { border-color: var(--red); color: #ff8888; }
-  .log-entry.event { border-color: var(--accent); color: var(--accent); }
-
-  .game-btns { display: flex; flex-direction: column; gap: 6px; }
-
-  .g-btn {
-    padding: 8px;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-align: center;
-  }
-
-  .g-btn:hover { border-color: var(--text); color: var(--text); }
-  .g-btn.attack { border-color: var(--accent2); color: var(--accent2); }
-  .g-btn.attack:hover { background: rgba(224,92,42,0.15); }
-  .g-btn.save { border-color: var(--accent); color: var(--accent); }
-  .g-btn.save:hover { background: rgba(200,168,75,0.1); }
-  .g-btn.pause { border-color: var(--blue); color: #7ab8ff; }
-
-  /* Progress bar */
-  .progress-bar-wrap { background: rgba(255,255,255,0.05); height: 6px; border-radius: 0; overflow: hidden; margin-top: 4px; }
-  .progress-bar-fill { height: 100%; transition: width 0.3s; }
-  .progress-bar-fill.blue { background: var(--blue); }
-  .progress-bar-fill.red { background: var(--red); }
-
-  /* Toast */
-  #toast {
-    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-    background: var(--panel);
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    padding: 10px 24px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 2px;
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-  }
-
-  #toast.show { opacity: 1; }
-
-  /* Legend */
-  .legend { display: flex; flex-wrap: wrap; gap: 6px; }
-  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--text-dim); }
-  .legend-color { width: 10px; height: 10px; border-radius: 2px; }
-
-  /* Front line indicator */
-  .front-info {
-    font-size: 11px;
-    color: var(--accent2);
-    letter-spacing: 1px;
-  }
-
-  /* Mobilize button */
-  .g-btn.mobilize { border-color: var(--green); color: var(--green); }
-  .g-btn.mobilize:hover { background: rgba(42,200,110,0.1); }
-
-  /* Hidden file inputs */
-  input[type=file] { display: none; }
-
-  /* Attack mode overlay */
-  #attack-mode-bar {
-    display: none;
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 32px;
-    background: rgba(224,92,42,0.15);
-    border-bottom: 1px solid var(--accent2);
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    color: var(--accent2);
-    letter-spacing: 2px;
-    z-index: 10;
-    pointer-events: none;
-  }
-
-  #attack-mode-bar.show { display: flex; }
-
-  /* Scrollbars */
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border); }
-
-  /* City input */
-  .city-input-wrap {
-    display: none;
-    position: fixed;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--panel);
-    border: 1px solid var(--accent);
-    padding: 20px;
-    z-index: 100;
-    flex-direction: column;
-    gap: 10px;
-    min-width: 260px;
-  }
-  .city-input-wrap.show { display: flex; }
-  .city-input-wrap h3 { font-family: 'Oswald'; letter-spacing: 3px; color: var(--accent); font-size: 14px; }
-  .city-input-wrap input {
-    background: var(--bg); border: 1px solid var(--border);
-    color: var(--text); padding: 8px 12px;
-    font-family: 'Share Tech Mono'; font-size: 13px; outline: none;
-  }
-  .city-input-wrap input:focus { border-color: var(--accent); }
-  .city-input-btns { display: flex; gap: 8px; }
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+:root {
+  --bg:#0a0c0f; --panel:#0f1318; --border:#1e2832;
+  --accent:#c8a84b; --accent2:#e05c2a;
+  --blue:#2a6fc8; --red:#c82a2a; --green:#2ac86e;
+  --text:#d4cfc0; --dim:#6b7280;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace;overflow:hidden;height:100vh;width:100vw;}
+.screen{display:none;width:100%;height:100%;position:absolute;top:0;left:0;}
+.screen.active{display:flex;}
+
+/* MENU */
+#screen-menu{flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 30%,#1a1f2e 0%,#0a0c0f 70%);}
+.menu-bg{position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(200,168,75,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(200,168,75,.04) 1px,transparent 1px);
+  background-size:40px 40px;}
+.menu-title{font-family:'Oswald',sans-serif;font-size:72px;font-weight:700;letter-spacing:12px;color:var(--accent);
+  text-shadow:0 0 40px rgba(200,168,75,.3),0 4px 0 rgba(0,0,0,.8);margin-bottom:8px;position:relative;z-index:1;}
+.menu-sub{font-size:13px;letter-spacing:6px;color:var(--dim);margin-bottom:60px;position:relative;z-index:1;}
+.menu-btn{position:relative;z-index:1;width:280px;padding:16px 0;margin:8px 0;background:transparent;
+  border:1px solid var(--accent);color:var(--accent);font-family:'Oswald',sans-serif;font-size:18px;
+  font-weight:600;letter-spacing:4px;cursor:pointer;transition:all .2s;
+  clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);}
+.menu-btn:hover{background:var(--accent);color:var(--bg);box-shadow:0 0 20px rgba(200,168,75,.4);}
+.menu-btn.sec{border-color:var(--border);color:var(--dim);font-size:15px;}
+.menu-btn.sec:hover{border-color:var(--dim);background:rgba(255,255,255,.05);color:var(--text);}
+.menu-ver{position:absolute;bottom:20px;font-size:11px;color:var(--dim);letter-spacing:2px;z-index:1;}
+
+/* LOAD */
+#screen-load{flex-direction:column;align-items:center;justify-content:center;gap:20px;background:var(--bg);}
+.load-title{font-family:'Oswald',sans-serif;font-size:28px;letter-spacing:8px;color:var(--accent);margin-bottom:10px;}
+.upload-zone{width:500px;height:300px;border:2px dashed var(--border);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;background:var(--panel);}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(200,168,75,.05);}
+.upload-zone img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}
+.upload-zone-txt{color:var(--dim);font-size:13px;letter-spacing:2px;text-align:center;line-height:2;z-index:1;}
+.upload-icon{font-size:40px;margin-bottom:12px;opacity:.3;}
+.btn-pri{padding:14px 40px;background:var(--accent);color:var(--bg);border:none;font-family:'Oswald',sans-serif;
+  font-size:16px;font-weight:700;letter-spacing:4px;cursor:pointer;transition:all .2s;
+  clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);opacity:.4;pointer-events:none;}
+.btn-pri.ready{opacity:1;pointer-events:all;}
+.btn-pri:hover{box-shadow:0 0 20px rgba(200,168,75,.5);}
+.btn-back{padding:10px 24px;background:transparent;border:1px solid var(--border);color:var(--dim);
+  font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;transition:all .2s;}
+.btn-back:hover{border-color:var(--dim);color:var(--text);}
+
+/* EDITOR */
+#screen-editor{flex-direction:column;background:var(--bg);}
+.editor-top{height:52px;background:var(--panel);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;}
+.ed-label{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:3px;color:var(--dim);}
+.tool-btn{padding:7px 14px;background:transparent;border:1px solid var(--border);color:var(--dim);
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.tool-btn:hover{border-color:var(--text);color:var(--text);}
+.tool-btn.active-city{border-color:var(--green);color:var(--green);background:rgba(42,200,110,.1);}
+.tool-btn.active-road{border-color:#4a9eff;color:#4a9eff;background:rgba(74,158,255,.1);}
+.tool-btn.active-enemy{border-color:var(--red);color:var(--red);background:rgba(200,42,42,.1);}
+.tool-btn.active-erase{border-color:var(--dim);color:var(--dim);background:rgba(255,255,255,.05);}
+.tool-sep{width:1px;height:24px;background:var(--border);margin:0 4px;}
+.btn-go{margin-left:auto;padding:9px 22px;background:var(--accent);color:var(--bg);border:none;
+  font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;cursor:pointer;
+  clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);transition:all .2s;}
+.btn-go:hover{box-shadow:0 0 14px rgba(200,168,75,.5);}
+.editor-wrap{flex:1;overflow:auto;position:relative;cursor:crosshair;background:#111;}
+#editorCanvas{display:block;}
+
+/* GAME */
+#screen-game{flex-direction:row;background:var(--bg);}
+.sidebar{width:220px;background:var(--panel);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;padding:12px;gap:10px;overflow-y:auto;flex-shrink:0;}
+.sb-sec{border:1px solid var(--border);padding:10px;}
+.sb-title{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:3px;color:var(--dim);margin-bottom:8px;}
+.stat-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:12px;}
+.stat-label{color:var(--dim);}
+.stat-val{color:var(--accent);font-weight:bold;}
+.stat-val.r{color:var(--red);}
+.stat-val.g{color:var(--green);}
+.stat-val.b{color:#7ab8ff;}
+.city-list{max-height:110px;overflow-y:auto;}
+.city-item{padding:4px 0;font-size:11px;color:var(--dim);border-bottom:1px solid rgba(255,255,255,.04);
+  display:flex;align-items:center;gap:6px;}
+.city-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.g-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.g-topbar{height:40px;background:var(--panel);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 14px;gap:10px;font-size:12px;flex-shrink:0;}
+.topbar-item{color:var(--dim);display:flex;align-items:center;gap:6px;}
+.topbar-item strong{color:var(--text);}
+.tsep{width:1px;height:16px;background:var(--border);}
+.g-canvas-wrap{flex:1;overflow:auto;position:relative;}
+#gameCanvas{display:block;cursor:default;}
+.g-log{height:88px;background:var(--panel);border-top:1px solid var(--border);
+  overflow-y:auto;padding:6px 14px;flex-shrink:0;}
+.log-e{font-size:11px;color:var(--dim);line-height:1.6;border-left:2px solid transparent;padding-left:6px;margin-bottom:2px;}
+.log-e.pl{border-color:var(--blue);color:#7ab8ff;}
+.log-e.en{border-color:var(--red);color:#ff8888;}
+.log-e.ev{border-color:var(--accent);color:var(--accent);}
+.g-btns{display:flex;flex-direction:column;gap:6px;}
+.g-btn{padding:8px;background:transparent;border:1px solid var(--border);color:var(--dim);
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .15s;text-align:center;}
+.g-btn:hover{border-color:var(--text);color:var(--text);}
+.g-btn.atk{border-color:var(--accent2);color:var(--accent2);}
+.g-btn.atk:hover{background:rgba(224,92,42,.15);}
+.g-btn.atk.on{background:rgba(224,92,42,.2);border-color:var(--accent2);}
+.g-btn.sav{border-color:var(--accent);color:var(--accent);}
+.g-btn.sav:hover{background:rgba(200,168,75,.1);}
+.g-btn.mob{border-color:var(--green);color:var(--green);}
+.g-btn.mob:hover{background:rgba(42,200,110,.1);}
+.pbar-wrap{background:rgba(255,255,255,.05);height:6px;overflow:hidden;margin-top:4px;}
+.pbar-fill{height:100%;transition:width .3s;}
+.pbar-fill.b{background:var(--blue);}
+.legend{display:flex;flex-wrap:wrap;gap:6px;}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--dim);}
+.leg-c{width:10px;height:10px;border-radius:2px;}
+
+/* City popup */
+.cpop{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:var(--panel);border:1px solid var(--accent);padding:20px;z-index:200;
+  flex-direction:column;gap:10px;min-width:260px;}
+.cpop.show{display:flex;}
+.cpop h3{font-family:'Oswald';letter-spacing:3px;color:var(--accent);font-size:14px;}
+.cpop input{background:var(--bg);border:1px solid var(--border);color:var(--text);
+  padding:8px 12px;font-family:'Share Tech Mono';font-size:13px;outline:none;}
+.cpop input:focus{border-color:var(--accent);}
+.cpop-btns{display:flex;gap:8px;}
+
+/* Attack overlay */
+#atk-bar{display:none;position:absolute;top:0;left:0;right:0;height:30px;
+  background:rgba(224,92,42,.15);border-bottom:1px solid var(--accent2);
+  align-items:center;justify-content:center;font-size:12px;color:var(--accent2);
+  letter-spacing:2px;z-index:10;pointer-events:none;}
+#atk-bar.show{display:flex;}
+
+/* CD bar */
+#cd-wrap{position:absolute;bottom:0;left:0;right:0;height:4px;background:rgba(255,255,255,.06);pointer-events:none;z-index:5;}
+#cd-fill{height:100%;background:var(--accent);transition:width .1s linear;}
+
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+  background:var(--panel);border:1px solid var(--accent);color:var(--accent);
+  padding:10px 24px;font-family:'Share Tech Mono';font-size:12px;letter-spacing:2px;
+  z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none;}
+#toast.show{opacity:1;}
+input[type=file]{display:none;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);}
 </style>
 </head>
 <body>
 
 <!-- MAIN MENU -->
 <div id="screen-menu" class="screen active">
-  <div class="menu-bg-lines"></div>
+  <div class="menu-bg"></div>
   <div class="menu-title">FRONTLINE</div>
-  <div class="menu-subtitle">ТАКТИЧНА СТРАТЕГІЯ · ЗАХИСТ РУБЕЖІВ</div>
+  <div class="menu-sub">ТАКТИЧНА СТРАТЕГІЯ · ЗАХИСТ РУБЕЖІВ</div>
   <button class="menu-btn" onclick="showLoad()">▶ ГРАТИ</button>
-  <button class="menu-btn secondary" onclick="document.getElementById('save-input').click()">⬆ ЗАВАНТАЖИТИ ЗБЕРЕЖЕННЯ</button>
-  <div class="menu-version">v1.0.0 · FRONTLINE ENGINE</div>
+  <button class="menu-btn sec" onclick="document.getElementById('save-input').click()">⬆ ЗАВАНТАЖИТИ ЗБЕРЕЖЕННЯ</button>
+  <div class="menu-ver">v2.0 · FRONTLINE ENGINE</div>
 </div>
 
-<!-- LOAD SCREEN -->
+<!-- LOAD -->
 <div id="screen-load" class="screen">
   <div class="load-title">ЗАВАНТАЖИТИ КАРТУ</div>
   <div class="upload-zone" id="upload-zone" onclick="document.getElementById('map-input').click()">
     <div class="upload-icon">🗺</div>
-    <div class="upload-zone-text">НАТИСНІТЬ АБО ПЕРЕТЯГНІТЬ ФОТО КАРТИ<br>PNG · JPG · WEBP</div>
+    <div class="upload-zone-txt">НАТИСНІТЬ АБО ПЕРЕТЯГНІТЬ ФОТО КАРТИ<br>PNG · JPG · WEBP</div>
   </div>
-  <button class="btn-primary" id="btn-proceed" onclick="goToEditor()">ДАЛІ — РЕДАКТОР →</button>
+  <button class="btn-pri" id="btn-proceed" onclick="goToEditor()">ДАЛІ — РЕДАКТОР →</button>
   <button class="btn-back" onclick="showMenu()">← НАЗАД</button>
   <input type="file" id="map-input" accept="image/*" onchange="handleMapUpload(this)">
 </div>
 
-<!-- EDITOR SCREEN -->
+<!-- EDITOR -->
 <div id="screen-editor" class="screen">
   <div class="editor-top">
-    <span class="editor-label">РЕДАКТОР</span>
+    <span class="ed-label">РЕДАКТОР</span>
     <div class="tool-sep"></div>
-    <button class="tool-btn city-tool" id="tool-city" onclick="setTool('city')" title="Позначте міста (дають мобілізаційні ресурси)">🏙 МІСТО</button>
-    <button class="tool-btn road-tool" id="tool-road" onclick="setTool('road')" title="Намалюйте дороги">🛣 ДОРОГА</button>
-    <button class="tool-btn enemy-tool" id="tool-enemy" onclick="setTool('enemy')" title="Обведіть ворожу територію">🔴 ВОРОГ</button>
-    <button class="tool-btn front-tool" id="tool-front" onclick="setTool('front')" title="Намалюйте лінію фронту">⚔ ФРОНТ</button>
+    <button class="tool-btn" id="tb-city" onclick="setTool('city')">🏙 МІСТО [1]</button>
+    <button class="tool-btn" id="tb-road" onclick="setTool('road')">🛣 ДОРОГА [2]</button>
+    <button class="tool-btn" id="tb-enemy" onclick="setTool('enemy')">🔴 ВОРОГ [3]</button>
+    <button class="tool-btn" id="tb-erase" onclick="setTool('erase')">✖ СТЕРТИ [4]</button>
     <div class="tool-sep"></div>
-    <button class="tool-btn" onclick="undoEditor()">↩ СКАСУВАТИ</button>
-    <button class="tool-btn" onclick="clearEditor()">🗑 ОЧИСТИТИ</button>
-    <button class="btn-start-game" onclick="startGame()">ПОЧАТИ БИТВУ ▶</button>
+    <button class="tool-btn" onclick="editorUndo()">↩ СКАС.</button>
+    <button class="tool-btn" onclick="editorClear()">🗑 ОЧИСТ.</button>
+    <button class="btn-go" onclick="startGame()">ПОЧАТИ БИТВУ ▶</button>
   </div>
-  <div class="editor-canvas-wrap" id="editor-canvas-wrap">
+  <div class="editor-wrap" id="editor-wrap">
     <canvas id="editorCanvas"></canvas>
   </div>
 </div>
 
-<!-- GAME SCREEN -->
+<!-- GAME -->
 <div id="screen-game" class="screen">
-  <div class="game-sidebar">
-    <div class="sidebar-section">
-      <div class="sidebar-title">⚔ РЕСУРСИ</div>
-      <div class="stat-row">
-        <span class="stat-label">Мобілізовані</span>
-        <span class="stat-value green" id="stat-troops">0</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">Прибуток/с</span>
-        <span class="stat-value" id="stat-income">+0</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">Ворог</span>
-        <span class="stat-value red" id="stat-enemy-troops">0</span>
-      </div>
+  <div class="sidebar">
+    <div class="sb-sec">
+      <div class="sb-title">⚔ РЕСУРСИ</div>
+      <div class="stat-row"><span class="stat-label">Бійці</span><span class="stat-val g" id="s-troops">0</span></div>
+      <div class="stat-row"><span class="stat-label">Прибуток/5с</span><span class="stat-val" id="s-income">+0</span></div>
+      <div class="stat-row"><span class="stat-label">Ворожі</span><span class="stat-val r" id="s-etr">0</span></div>
     </div>
-    <div class="sidebar-section">
-      <div class="sidebar-title">🏙 МІСТА</div>
+    <div class="sb-sec">
+      <div class="sb-title">🏙 МІСТА</div>
       <div class="city-list" id="city-list"></div>
     </div>
-    <div class="sidebar-section">
-      <div class="sidebar-title">📊 ФРОНТ</div>
-      <div class="stat-row">
-        <span class="stat-label">Наші сектори</span>
-        <span class="stat-value blue-text" id="stat-our-sectors" style="color:#7ab8ff">0</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">Ворожі</span>
-        <span class="stat-value red" id="stat-enemy-sectors">0</span>
-      </div>
-      <div class="progress-bar-wrap">
-        <div class="progress-bar-fill blue" id="front-bar" style="width:50%"></div>
-      </div>
+    <div class="sb-sec">
+      <div class="sb-title">📊 ФРОНТ</div>
+      <div class="stat-row"><span class="stat-label">Наші</span><span class="stat-val b" id="s-our">0</span></div>
+      <div class="stat-row"><span class="stat-label">Ворожі</span><span class="stat-val r" id="s-ene">0</span></div>
+      <div class="pbar-wrap"><div class="pbar-fill b" id="front-bar" style="width:50%"></div></div>
     </div>
-    <div class="sidebar-section">
-      <div class="sidebar-title">🗺 ЛЕГЕНДА</div>
+    <div class="sb-sec">
+      <div class="sb-title">🗺 ЛЕГЕНДА</div>
       <div class="legend">
-        <div class="legend-item"><div class="legend-color" style="background:#2a6fc8;opacity:0.5"></div>Наші</div>
-        <div class="legend-item"><div class="legend-color" style="background:#c82a2a;opacity:0.5"></div>Ворог</div>
-        <div class="legend-item"><div class="legend-color" style="background:#c8a84b;opacity:0.8"></div>Фронт</div>
-        <div class="legend-item"><div class="legend-color" style="background:#2ac86e"></div>Місто</div>
-        <div class="legend-item"><div class="legend-color" style="background:#777"></div>Нейтраль</div>
+        <div class="leg-item"><div class="leg-c" style="background:#2a6fc8;opacity:.6"></div>Наші</div>
+        <div class="leg-item"><div class="leg-c" style="background:#c82a2a;opacity:.6"></div>Ворог</div>
+        <div class="leg-item"><div class="leg-c" style="background:#2ac86e"></div>Місто</div>
+        <div class="leg-item"><div class="leg-c" style="background:#4a9eff;opacity:.7"></div>Дорога</div>
       </div>
     </div>
-    <div class="game-btns">
-      <button class="g-btn attack" id="btn-attack-mode" onclick="toggleAttackMode()">⚔ РЕЖИМ АТАКИ</button>
-      <button class="g-btn mobilize" onclick="mobilize()">👥 МОБІЛІЗАЦІЯ (+50)</button>
-      <button class="g-btn save" onclick="saveGame()">💾 ЗБЕРЕГТИ</button>
-      <button class="g-btn pause" id="btn-pause" onclick="togglePause()">⏸ ПАУЗА</button>
-      <button class="g-btn" onclick="confirmQuit()">✖ ГОЛОВНЕ МЕНЮ</button>
+    <div class="g-btns">
+      <button class="g-btn atk" id="btn-atk" onclick="toggleAttack()">⚔ РЕЖИМ АТАКИ</button>
+      <button class="g-btn mob" onclick="mobilize()">👥 МОБІЛІЗАЦІЯ (+100)</button>
+      <button class="g-btn sav" onclick="saveGame()">💾 ЗБЕРЕГТИ</button>
+      <button class="g-btn" id="btn-pause" onclick="togglePause()">⏸ ПАУЗА</button>
+      <button class="g-btn" onclick="confirmQuit()">✖ МЕНЮ</button>
     </div>
   </div>
-  <div class="game-main">
-    <div class="game-topbar">
-      <div class="topbar-item">⏱ ЧАС: <strong id="top-time">00:00</strong></div>
-      <div class="topbar-sep"></div>
-      <div class="topbar-item">⚔ ЧАС ДО АТАКИ: <strong id="top-attack-cd">2.0с</strong></div>
-      <div class="topbar-sep"></div>
+  <div class="g-main">
+    <div class="g-topbar">
+      <div class="topbar-item">⏱ <strong id="top-time">00:00</strong></div>
+      <div class="tsep"></div>
+      <div class="topbar-item">КД АТАКИ: <strong id="top-cd">2.0с</strong></div>
+      <div class="tsep"></div>
       <div class="topbar-item" id="top-status">Статус: <strong>ОЧІКУВАННЯ</strong></div>
     </div>
-    <div class="game-canvas-wrap" id="game-canvas-wrap">
-      <div id="attack-mode-bar" class="show">⚔ РЕЖИМ АТАКИ — КЛІКАЙТЕ НА ВОРОЖІ СЕКТОРИ</div>
-      <canvas id="gameCanvas" onclick="handleGameClick(event)"></canvas>
+    <div class="g-canvas-wrap" id="g-canvas-wrap">
+      <div id="atk-bar">⚔ РЕЖИМ АТАКИ — КЛІКАЙТЕ НА ВОРОЖІ СЕКТОРИ БІЛЯ НАШИХ</div>
+      <canvas id="gameCanvas" onclick="handleClick(event)"></canvas>
+      <div id="cd-wrap"><div id="cd-fill" style="width:100%"></div></div>
     </div>
-    <div class="game-log" id="game-log">
-      <div class="log-entry event">▶ Гра розпочата. Виберіть режим атаки та захоплюйте сектори!</div>
+    <div class="g-log" id="g-log">
+      <div class="log-e ev">▶ Гра розпочата. Увімкніть режим атаки та захоплюйте ворожі сектори!</div>
     </div>
   </div>
 </div>
 
-<!-- City name input popup -->
-<div class="city-input-wrap" id="city-input-popup">
+<!-- City name popup -->
+<div class="cpop" id="cpop">
   <h3>🏙 НАЗВА МІСТА</h3>
-  <input type="text" id="city-name-input" placeholder="Введіть назву..." maxlength="20">
-  <div class="city-input-btns">
+  <input type="text" id="city-name" placeholder="Введіть назву..." maxlength="20">
+  <div class="cpop-btns">
     <button class="g-btn" style="flex:1" onclick="confirmCity()">✓ ДОДАТИ</button>
     <button class="g-btn" style="flex:1" onclick="cancelCity()">✕ СКАСУВАТИ</button>
   </div>
 </div>
 
 <div id="toast"></div>
-
-<!-- Save file input -->
 <input type="file" id="save-input" accept=".fls" onchange="loadSave(this)">
 <input type="file" id="save-map-input" accept="image/*" onchange="loadSaveMap(this)">
 
 <script>
-// ====================== STATE ======================
-const state = {
-  // Global
-  currentScreen: 'menu',
-  mapImage: null,
-  mapDataURL: null,
+// ===================== CONFIG =====================
+const CELL = 8;          // px per cell — gives ~2000+ cells on typical map
+const ATTACK_MS = 2000;  // player cooldown between attacks
+const ATTACK_COST = 80;  // troops cost per cell attack (player)
+const DEFEND_LOSS = 10;  // defender loses this per attack
+const ENEMY_COST = 60;   // enemy cost per attack
+const INCOME_MS = 5000;  // income tick
 
-  // Editor
-  editorTool: null,
-  editorObjects: {
-    cities: [],     // {x, y, name, r}
-    roads: [],      // [{x,y}...]
-    enemyZones: [], // [{x,y}...]
-    frontLine: [],  // [{x,y}...]
-  },
-  editorDrawing: false,
-  editorCurrentPath: [],
-  pendingCity: null,
+// ===================== STATE =====================
+const G = {
+  screen: 'menu',
+  mapImage: null, mapDataURL: null,
+  // editor grid: 0=neutral,1=player,2=enemy,3=road,4=city
+  eGrid: null,
+  eCols: 0, eRows: 0,
+  tool: null,
+  isDrawing: false,
+  drawPaint: 0, // what value to paint while dragging
+  cities: [],        // editor city objects {col,row,name}
+  pendingCityCell: null,
+  history: [],       // undo stack snapshots
 
-  // Grid
-  gridCols: 0,
-  gridRows: 0,
-  cellW: 0,
-  cellH: 0,
-  grid: [], // 0=neutral, 1=player, 2=enemy, 3=city-player, 4=city-enemy
-
-  // Game
-  troops: 200,
-  enemyTroops: 300,
-  income: 0,
-  enemyIncome: 0,
-  cities: [],
+  // game
+  gGrid: null,       // 0=neutral,1=player,2=enemy
+  gCities: [],       // {col,row,name,owner}
+  roads: [],         // set of "col_row" strings
+  troops: 300,
+  eTroops: 500,
+  income: 0, eIncome: 0,
   attackMode: false,
   paused: false,
   gameTime: 0,
-  attackCooldown: 0,
-  enemyAttackCooldown: 0,
-  ATTACK_INTERVAL: 2000, // ms
-  gameInterval: null,
-  incomeInterval: null,
-  logEntries: [],
+  playerCd: 0,      // ms until player can attack again
+  enemyCd: 0,
+  gameIv: null,
 
-  // AI state
-  ai: {
-    aggression: 1.0,
-    focusAreas: [],
-    lostRecently: {},
-    strategyTimer: 0,
-  },
-
-  // Save context
-  pendingSaveData: null,
+  ai: { aggression:1.2, focusAreas:[], lostMap:{}, stratTimer:0 },
 };
 
-// ====================== SCREEN NAV ======================
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + id).classList.add('active');
-  state.currentScreen = id;
+// ===================== SCREEN =====================
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  G.screen=id;
 }
+function showMenu(){ stopGame(); showScreen('menu'); }
+function showLoad(){ showScreen('load'); }
 
-function showMenu() { stopGame(); showScreen('menu'); }
-function showLoad() { showScreen('load'); }
-
-// ====================== MAP UPLOAD ======================
-function handleMapUpload(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    state.mapDataURL = e.target.result;
-    const img = new Image();
-    img.onload = () => {
-      state.mapImage = img;
-      const zone = document.getElementById('upload-zone');
-      zone.innerHTML = `<img src="${e.target.result}">`;
+// ===================== MAP UPLOAD =====================
+function handleMapUpload(inp){
+  const file=inp.files[0]; if(!file) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    G.mapDataURL=e.target.result;
+    const img=new Image();
+    img.onload=()=>{
+      G.mapImage=img;
+      const zone=document.getElementById('upload-zone');
+      zone.innerHTML=`<img src="${e.target.result}">`;
       document.getElementById('btn-proceed').classList.add('ready');
     };
-    img.src = e.target.result;
+    img.src=e.target.result;
   };
-  reader.readAsDataURL(file);
+  r.readAsDataURL(file);
 }
-
-// Drag & drop
-const uploadZone = document.getElementById('upload-zone');
-uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
-uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
-uploadZone.addEventListener('drop', e => {
-  e.preventDefault();
-  uploadZone.classList.remove('drag');
-  const file = e.dataTransfer.files[0];
-  if (file && file.type.startsWith('image/')) {
-    const dt = new DataTransfer(); dt.items.add(file);
-    const input = document.getElementById('map-input');
-    input.files = dt.files;
-    handleMapUpload(input);
+const uz=document.getElementById('upload-zone');
+uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('drag');});
+uz.addEventListener('dragleave',()=>uz.classList.remove('drag'));
+uz.addEventListener('drop',e=>{
+  e.preventDefault(); uz.classList.remove('drag');
+  const f=e.dataTransfer.files[0];
+  if(f&&f.type.startsWith('image/')){
+    const dt=new DataTransfer(); dt.items.add(f);
+    const inp=document.getElementById('map-input'); inp.files=dt.files;
+    handleMapUpload(inp);
   }
 });
 
-// ====================== EDITOR ======================
-let editorCtx;
-const GRID_CELL_PX = 20;
+// ===================== EDITOR =====================
+let eCtx;
 
-function goToEditor() {
-  if (!state.mapImage) return;
+function goToEditor(){
+  if(!G.mapImage) return;
   showScreen('editor');
-  setupEditorCanvas();
+  initEditorGrid();
 }
 
-function setupEditorCanvas() {
-  const canvas = document.getElementById('editorCanvas');
-  const img = state.mapImage;
-  canvas.width = img.width;
-  canvas.height = img.height;
-  editorCtx = canvas.getContext('2d');
+function initEditorGrid(){
+  const img=G.mapImage;
+  G.eCols=Math.floor(img.width/CELL);
+  G.eRows=Math.floor(img.height/CELL);
+  G.eGrid=new Uint8Array(G.eCols*G.eRows); // all 0
+  G.cities=[];
+  G.history=[];
+  G.roads=new Set();
 
-  // Grid dims
-  state.gridCols = Math.floor(img.width / GRID_CELL_PX);
-  state.gridRows = Math.floor(img.height / GRID_CELL_PX);
-  state.cellW = GRID_CELL_PX;
-  state.cellH = GRID_CELL_PX;
+  const canvas=document.getElementById('editorCanvas');
+  canvas.width=G.eCols*CELL;
+  canvas.height=G.eRows*CELL;
+  eCtx=canvas.getContext('2d');
 
-  drawEditor();
+  canvas.onmousedown=edMouseDown;
+  canvas.onmousemove=edMouseMove;
+  canvas.onmouseup=()=>{ G.isDrawing=false; };
+  canvas.onmouseleave=()=>{ G.isDrawing=false; };
+  canvas.oncontextmenu=e=>e.preventDefault();
 
-  canvas.onmousedown = editorMouseDown;
-  canvas.onmousemove = editorMouseMove;
-  canvas.onmouseup = editorMouseUp;
-  canvas.oncontextmenu = e => e.preventDefault();
-}
-
-function drawEditor() {
-  const canvas = document.getElementById('editorCanvas');
-  const ctx = editorCtx;
-  const img = state.mapImage;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(img, 0, 0);
-
-  // Grid overlay
-  ctx.strokeStyle = 'rgba(200,168,75,0.12)';
-  ctx.lineWidth = 0.5;
-  for (let c = 0; c <= state.gridCols; c++) {
-    ctx.beginPath(); ctx.moveTo(c * GRID_CELL_PX, 0); ctx.lineTo(c * GRID_CELL_PX, canvas.height); ctx.stroke();
-  }
-  for (let r = 0; r <= state.gridRows; r++) {
-    ctx.beginPath(); ctx.moveTo(0, r * GRID_CELL_PX); ctx.lineTo(canvas.width, r * GRID_CELL_PX); ctx.stroke();
-  }
-
-  // Enemy zones (filled red area)
-  if (state.editorObjects.enemyZones.length > 1) {
-    ctx.save();
-    ctx.fillStyle = 'rgba(200,42,42,0.18)';
-    ctx.strokeStyle = 'rgba(200,42,42,0.7)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    state.editorObjects.enemyZones.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-    ctx.closePath(); ctx.fill(); ctx.stroke();
-    ctx.restore();
-  }
-
-  // Roads
-  state.editorObjects.roads.forEach(road => {
-    if (road.length < 2) return;
-    ctx.save();
-    ctx.strokeStyle = 'rgba(74,158,255,0.8)';
-    ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.setLineDash([6, 4]);
-    ctx.beginPath();
-    road.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-    ctx.stroke(); ctx.restore();
-  });
-
-  // Front line
-  if (state.editorObjects.frontLine.length > 1) {
-    ctx.save();
-    ctx.strokeStyle = 'rgba(224,92,42,0.9)';
-    ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.setLineDash([10, 6]);
-    ctx.beginPath();
-    state.editorObjects.frontLine.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-    ctx.stroke(); ctx.restore();
-  }
-
-  // Current path preview
-  if (state.editorDrawing && state.editorCurrentPath.length > 1) {
-    ctx.save();
-    const toolColors = { road: 'rgba(74,158,255,0.5)', enemy: 'rgba(200,42,42,0.5)', front: 'rgba(224,92,42,0.6)' };
-    ctx.strokeStyle = toolColors[state.editorTool] || 'rgba(255,255,255,0.4)';
-    ctx.lineWidth = 2; ctx.lineCap = 'round';
-    ctx.beginPath();
-    state.editorCurrentPath.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-    ctx.stroke(); ctx.restore();
-  }
-
-  // Cities
-  state.editorObjects.cities.forEach(city => {
-    ctx.save();
-    ctx.fillStyle = 'rgba(42,200,110,0.85)';
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.arc(city.x, city.y, 7, 0, Math.PI * 2);
-    ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 10px Share Tech Mono';
-    ctx.textAlign = 'center';
-    ctx.fillText(city.name, city.x, city.y - 12);
-    ctx.restore();
-  });
-}
-
-function setTool(tool) {
-  state.editorTool = tool;
-  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-  const el = document.getElementById('tool-' + tool);
-  if (el) el.classList.add('active');
-}
-
-function editorMouseDown(e) {
-  if (!state.editorTool) return;
-  const pos = getCanvasPos(e, document.getElementById('editorCanvas'));
-  state.editorDrawing = true;
-
-  if (state.editorTool === 'city') {
-    state.pendingCity = pos;
-    document.getElementById('city-name-input').value = '';
-    document.getElementById('city-input-popup').classList.add('show');
-    state.editorDrawing = false;
-  } else {
-    state.editorCurrentPath = [pos];
-  }
-}
-
-function editorMouseMove(e) {
-  if (!state.editorDrawing) return;
-  const pos = getCanvasPos(e, document.getElementById('editorCanvas'));
-  state.editorCurrentPath.push(pos);
   drawEditor();
 }
 
-function editorMouseUp(e) {
-  if (!state.editorDrawing) return;
-  state.editorDrawing = false;
-  const path = [...state.editorCurrentPath];
+function edMouseDown(e){
+  if(!G.tool) return;
+  const {c,r}=canvasToCell(e, document.getElementById('editorCanvas'));
+  if(c<0||r<0||c>=G.eCols||r>=G.eRows) return;
 
-  if (state.editorTool === 'road') state.editorObjects.roads.push(path);
-  else if (state.editorTool === 'enemy') state.editorObjects.enemyZones = path;
-  else if (state.editorTool === 'front') state.editorObjects.frontLine = path;
-
-  state.editorCurrentPath = [];
-  drawEditor();
-}
-
-function confirmCity() {
-  const name = document.getElementById('city-name-input').value.trim() || 'Місто';
-  if (state.pendingCity) {
-    state.editorObjects.cities.push({ x: state.pendingCity.x, y: state.pendingCity.y, name });
-    state.pendingCity = null;
-  }
-  document.getElementById('city-input-popup').classList.remove('show');
-  drawEditor();
-}
-
-function cancelCity() {
-  state.pendingCity = null;
-  document.getElementById('city-input-popup').classList.remove('show');
-}
-
-function undoEditor() {
-  // Remove last added object
-  if (state.editorObjects.cities.length) { state.editorObjects.cities.pop(); drawEditor(); return; }
-}
-
-function clearEditor() {
-  state.editorObjects = { cities: [], roads: [], enemyZones: [], frontLine: [] };
-  drawEditor();
-}
-
-// ====================== GAME INIT ======================
-let gameCtx;
-
-function startGame() {
-  showScreen('game');
-  initGame();
-}
-
-function initGame(saveData) {
-  const canvas = document.getElementById('gameCanvas');
-  const img = state.mapImage;
-  canvas.width = img.width;
-  canvas.height = img.height;
-  gameCtx = canvas.getContext('2d');
-
-  // Init grid
-  const cols = state.gridCols;
-  const rows = state.gridRows;
-  state.grid = Array.from({ length: rows }, () => new Array(cols).fill(0));
-
-  if (saveData) {
-    // Restore from save
-    state.grid = saveData.grid;
-    state.troops = saveData.troops;
-    state.enemyTroops = saveData.enemyTroops;
-    state.cities = saveData.cities;
-    state.gameTime = saveData.gameTime;
-    state.ai = saveData.ai;
-  } else {
-    // Paint initial territories from editor
-    paintInitialTerritories();
-    // Set cities
-    state.cities = state.editorObjects.cities.map(c => ({
-      x: c.x, y: c.y, name: c.name,
-      col: Math.floor(c.x / GRID_CELL_PX),
-      row: Math.floor(c.y / GRID_CELL_PX),
-      owner: 1,
-    }));
-    state.troops = 200;
-    state.enemyTroops = 300;
-    state.gameTime = 0;
-    state.ai = { aggression: 1.2, focusAreas: [], lostRecently: {}, strategyTimer: 0 };
-  }
-
-  calcIncome();
-  updateSidebar();
-  renderCityList();
-  drawGame();
-  startGameLoop();
-}
-
-function paintInitialTerritories() {
-  const cols = state.gridCols;
-  const rows = state.gridRows;
-  const cw = state.cellW;
-  const ch = state.cellH;
-
-  // If enemy zone polygon defined, paint those cells as enemy
-  const ez = state.editorObjects.enemyZones;
-  if (ez.length > 2) {
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        const cx = c * cw + cw / 2;
-        const cy = r * ch + ch / 2;
-        if (pointInPolygon(cx, cy, ez)) {
-          state.grid[r][c] = 2;
-        }
-      }
-    }
-  }
-
-  // Front line — cells near the front line that are on the player's side
-  const fl = state.editorObjects.frontLine;
-  if (fl.length > 1) {
-    // Fill player side: cells that are not enemy and within some range of front or on one side
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        if (state.grid[r][c] === 0) {
-          // Determine which side of the front line this cell is on
-          const cx = c * cw + cw / 2;
-          const cy = r * ch + ch / 2;
-          const side = sideOfPolyline(cx, cy, fl);
-          if (side < 0) state.grid[r][c] = 1;
-        }
-      }
-    }
-  } else {
-    // No front line: player owns left third, enemy right third by default
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        if (state.grid[r][c] === 0) {
-          if (c < Math.floor(cols * 0.4)) state.grid[r][c] = 1;
-        }
-      }
-    }
-  }
-}
-
-function sideOfPolyline(px, py, points) {
-  // Returns which side of the polyline (as a continuous line) the point is on
-  let total = 0;
-  for (let i = 0; i < points.length - 1; i++) {
-    const ax = points[i].x, ay = points[i].y;
-    const bx = points[i + 1].x, by = points[i + 1].y;
-    total += (bx - ax) * (py - ay) - (by - ay) * (px - ax);
-  }
-  return total;
-}
-
-function pointInPolygon(px, py, polygon) {
-  let inside = false;
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].x, yi = polygon[i].y;
-    const xj = polygon[j].x, yj = polygon[j].y;
-    const intersect = ((yi > py) !== (yj > py)) && (px < (xj - xi) * (py - yi) / (yj - yi) + xi);
-    if (intersect) inside = !inside;
-  }
-  return inside;
-}
-
-// ====================== GAME LOOP ======================
-let lastTick = 0;
-let lastIncomeTick = 0;
-const INCOME_INTERVAL = 5000;
-
-function startGameLoop() {
-  stopGame();
-  state.attackCooldown = state.ATTACK_INTERVAL;
-  state.enemyAttackCooldown = state.ATTACK_INTERVAL + 500;
-
-  state.gameInterval = setInterval(() => {
-    if (state.paused) return;
-    const now = Date.now();
-
-    // Attack cooldowns
-    state.attackCooldown -= 100;
-    state.enemyAttackCooldown -= 100;
-
-    if (state.attackCooldown <= 0) state.attackCooldown = state.ATTACK_INTERVAL;
-    if (state.enemyAttackCooldown <= 0) {
-      enemyTurn();
-      state.enemyAttackCooldown = state.ATTACK_INTERVAL;
-    }
-
-    // Income tick
-    state.gameTime += 100;
-    if (state.gameTime % INCOME_INTERVAL < 100) {
-      state.troops += state.income;
-      state.enemyTroops += state.enemyIncome;
-      calcIncome();
-    }
-
-    // AI strategy update every 10s
-    state.ai.strategyTimer += 100;
-    if (state.ai.strategyTimer >= 10000) {
-      state.ai.strategyTimer = 0;
-      aiUpdateStrategy();
-    }
-
-    document.getElementById('top-attack-cd').textContent = (state.attackCooldown / 1000).toFixed(1) + 'с';
-    const mins = Math.floor(state.gameTime / 60000);
-    const secs = Math.floor((state.gameTime % 60000) / 1000);
-    document.getElementById('top-time').textContent =
-      String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
-
-    updateSidebar();
-    drawGame();
-  }, 100);
-}
-
-function stopGame() {
-  if (state.gameInterval) { clearInterval(state.gameInterval); state.gameInterval = null; }
-}
-
-// ====================== INCOME ======================
-function calcIncome() {
-  let inc = 0, enemyInc = 0;
-  let playerCities = 0, enemyCities = 0;
-  state.cities.forEach(c => {
-    if (c.owner === 1) { inc += 10; playerCities++; }
-    else { enemyInc += 10; enemyCities++; }
-  });
-  // Sector income
-  let playerSectors = 0, enemySectors = 0;
-  for (let r = 0; r < state.gridRows; r++)
-    for (let c = 0; c < state.gridCols; c++) {
-      const v = state.grid[r][c];
-      if (v === 1) playerSectors++;
-      else if (v === 2) enemySectors++;
-    }
-  inc += Math.floor(playerSectors / 10);
-  enemyInc += Math.floor(enemySectors / 10);
-
-  state.income = inc;
-  state.enemyIncome = enemyInc;
-
-  document.getElementById('stat-income').textContent = '+' + inc;
-
-  const total = playerSectors + enemySectors;
-  const ratio = total > 0 ? (playerSectors / total) : 0.5;
-  document.getElementById('front-bar').style.width = (ratio * 100).toFixed(1) + '%';
-  document.getElementById('stat-our-sectors').textContent = playerSectors;
-  document.getElementById('stat-enemy-sectors').textContent = enemySectors;
-}
-
-// ====================== ATTACK ======================
-let attackModeOn = false;
-
-function toggleAttackMode() {
-  attackModeOn = !attackModeOn;
-  const bar = document.getElementById('attack-mode-bar');
-  const btn = document.getElementById('btn-attack-mode');
-  if (attackModeOn) {
-    bar.classList.add('show');
-    btn.textContent = '✖ ВИЙТИ З РЕЖИМУ АТАКИ';
-    document.getElementById('top-status').innerHTML = 'Статус: <strong style="color:var(--accent2)">АТАКА</strong>';
-  } else {
-    bar.classList.remove('show');
-    btn.textContent = '⚔ РЕЖИМ АТАКИ';
-    document.getElementById('top-status').innerHTML = 'Статус: <strong>ОЧІКУВАННЯ</strong>';
-  }
-}
-
-function handleGameClick(e) {
-  if (!attackModeOn) return;
-  const pos = getCanvasPos(e, document.getElementById('gameCanvas'));
-  const col = Math.floor(pos.x / GRID_CELL_PX);
-  const row = Math.floor(pos.y / GRID_CELL_PX);
-  if (row < 0 || row >= state.gridRows || col < 0 || col >= state.gridCols) return;
-
-  const cell = state.grid[row][col];
-  if (cell !== 2 && cell !== 4) { toast('Оберіть ворожий сектор!'); return; }
-
-  // Check adjacency
-  if (!isAdjacentToPlayer(row, col)) { toast('Сектор не є суміжним з нашою територією!'); return; }
-
-  // Cost
-  const cost = 15 + Math.floor(Math.random() * 10);
-  const enemyLoss = 3 + Math.floor(Math.random() * 5);
-
-  if (state.troops < cost) { toast('Недостатньо військ! Потрібно: ' + cost); return; }
-
-  state.troops -= cost;
-  state.enemyTroops -= enemyLoss;
-  if (state.enemyTroops < 0) state.enemyTroops = 0;
-
-  state.grid[row][col] = 1;
-
-  // Check if this was a city
-  state.cities.forEach(c => {
-    if (c.col === col && c.row === row) {
-      c.owner = 1;
-      addLog(`🏙 Захоплено місто ${c.name}!`, 'event');
-      state.ai.lostRecently[`${row}_${col}`] = (state.ai.lostRecently[`${row}_${col}`] || 0) + 5;
-    }
-  });
-
-  addLog(`⚔ Захоплено сектор [${col},${row}] — витрата: ${cost} | втрати ворога: ${enemyLoss}`, 'player');
-  calcIncome();
-  drawGame();
-}
-
-function isAdjacentToPlayer(row, col) {
-  const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
-  for (const [dr, dc] of dirs) {
-    const nr = row + dr, nc = col + dc;
-    if (nr >= 0 && nr < state.gridRows && nc >= 0 && nc < state.gridCols) {
-      const v = state.grid[nr][nc];
-      if (v === 1) return true;
-    }
-  }
-  return false;
-}
-
-function isAdjacentToEnemy(row, col) {
-  const dirs = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
-  for (const [dr, dc] of dirs) {
-    const nr = row + dr, nc = col + dc;
-    if (nr >= 0 && nr < state.gridRows && nc >= 0 && nc < state.gridCols) {
-      const v = state.grid[nr][nc];
-      if (v === 2) return true;
-    }
-  }
-  return false;
-}
-
-// ====================== AI ======================
-function enemyTurn() {
-  if (state.enemyTroops < 10) {
-    addLog('⚠ Ворог не має достатньо ресурсів для атаки!', 'enemy');
+  if(G.tool==='city'){
+    G.pendingCityCell={c,r};
+    document.getElementById('city-name').value='';
+    document.getElementById('cpop').classList.add('show');
     return;
   }
+  pushHistory();
+  G.isDrawing=true;
+  G.drawPaint = G.tool==='erase' ? 0 : (G.tool==='enemy'?2 : (G.tool==='road'?3 : 0));
+  paintCell(c,r);
+  drawEditor();
+}
 
-  // Find frontline enemy cells adjacent to player
-  const candidates = [];
-  for (let r = 0; r < state.gridRows; r++) {
-    for (let c = 0; c < state.gridCols; c++) {
-      const v = state.grid[r][c];
-      if (v === 1) {
-        // Check if enemy is adjacent
-        const dirs = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
-        for (const [dr, dc] of dirs) {
-          const nr = r + dr, nc = c + dc;
-          if (nr >= 0 && nr < state.gridRows && nc >= 0 && nc < state.gridCols) {
-            const nv = state.grid[nr][nc];
-            if (nv === 2) {
-              const key = `${nr}_${nc}`;
-              const score = computeAIScore(nr, nc);
-              candidates.push({ r: nr, c: nc, targetR: r, targetC: c, score });
-            }
-          }
-        }
-      }
+function edMouseMove(e){
+  if(!G.isDrawing) return;
+  const {c,r}=canvasToCell(e, document.getElementById('editorCanvas'));
+  if(c<0||r<0||c>=G.eCols||r>=G.eRows) return;
+  paintCell(c,r);
+  drawEditor();
+}
+
+function paintCell(c,r){
+  const idx=r*G.eCols+c;
+  if(G.tool==='road'){
+    if(G.eGrid[idx]===0||G.eGrid[idx]===3) G.eGrid[idx]=3;
+  } else {
+    G.eGrid[idx]=G.drawPaint;
+    // If painting enemy over a city, remove city
+    if(G.drawPaint===0||G.drawPaint===2){
+      G.cities=G.cities.filter(ct=>!(ct.col===c&&ct.row===r));
     }
   }
-
-  if (candidates.length === 0) return;
-
-  // AI strategy: weight by score + focus areas
-  candidates.sort((a, b) => b.score - a.score);
-
-  // Pick with some randomness — top candidates
-  const topN = Math.min(5, candidates.length);
-  const picked = candidates[Math.floor(Math.random() * topN)];
-
-  const cost = 10 + Math.floor(Math.random() * 8);
-  const playerLoss = 2 + Math.floor(Math.random() * 4);
-
-  state.enemyTroops -= cost;
-  state.troops -= playerLoss;
-  if (state.troops < 0) state.troops = 0;
-
-  state.grid[picked.targetR][picked.targetC] = 2;
-
-  // Track city captures by enemy
-  state.cities.forEach(c => {
-    if (c.col === picked.targetC && c.row === picked.targetR) {
-      c.owner = 2;
-      addLog(`🔴 Ворог захопив місто ${c.name}!`, 'event');
-    }
-  });
-
-  // Record enemy success
-  state.ai.lostRecently[`${picked.targetR}_${picked.targetC}`] = 0;
-  addLog(`💥 Ворог атакував [${picked.targetC},${picked.targetR}] — втрати наших: ${playerLoss}`, 'enemy');
-  calcIncome();
-  drawGame();
 }
 
-function computeAIScore(er, ec) {
-  let score = 0;
+function drawEditor(){
+  const canvas=document.getElementById('editorCanvas');
+  const ctx=eCtx;
+  const img=G.mapImage;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(img,0,0,canvas.width,canvas.height);
 
-  // Prefer areas where AI has been losing (high concentration lost)
-  const surroundingLoss = getAreaLoss(er, ec, 5);
-  score += surroundingLoss * 2;
-
-  // Prefer attacking cities
-  state.cities.forEach(c => {
-    const dr = Math.abs(c.row - er), dc = Math.abs(c.col - ec);
-    if (c.owner === 1 && dr < 3 && dc < 3) score += 30;
-  });
-
-  // Focus areas bonus
-  state.ai.focusAreas.forEach(fa => {
-    const dr = Math.abs(fa.r - er), dc = Math.abs(fa.c - ec);
-    if (dr < fa.radius && dc < fa.radius) score += fa.weight;
-  });
-
-  // Prefer areas where player has fewer cells (breakthroughs)
-  const playerDensity = getAreaOwnerCount(er, ec, 4, 1);
-  score += (10 - playerDensity);
-
-  // Slight aggression multiplier
-  score *= state.ai.aggression;
-
-  // Randomize
-  score += Math.random() * 5;
-
-  return score;
-}
-
-function getAreaLoss(row, col, radius) {
-  let total = 0;
-  for (let r = row - radius; r <= row + radius; r++) {
-    for (let c = col - radius; c <= col + radius; c++) {
-      const key = `${r}_${c}`;
-      total += state.ai.lostRecently[key] || 0;
-    }
-  }
-  return total;
-}
-
-function getAreaOwnerCount(row, col, radius, owner) {
-  let count = 0;
-  for (let r = row - radius; r <= row + radius; r++) {
-    for (let c = col - radius; c <= col + radius; c++) {
-      if (r >= 0 && r < state.gridRows && c >= 0 && c < state.gridCols) {
-        if (state.grid[r][c] === owner) count++;
-      }
-    }
-  }
-  return count;
-}
-
-function aiUpdateStrategy() {
-  // Recalculate focus areas
-  state.ai.focusAreas = [];
-
-  // Find weakest points in player territory
-  const playerCells = [];
-  for (let r = 0; r < state.gridRows; r++) {
-    for (let c = 0; c < state.gridCols; c++) {
-      if (state.grid[r][c] === 1 && isAdjacentToEnemy(r, c)) {
-        playerCells.push({ r, c });
-      }
-    }
-  }
-
-  if (playerCells.length > 0) {
-    // Cluster them — pick a few random focus areas
-    const numFocus = 2 + Math.floor(Math.random() * 3);
-    for (let i = 0; i < numFocus; i++) {
-      const p = playerCells[Math.floor(Math.random() * playerCells.length)];
-      state.ai.focusAreas.push({ r: p.r, c: p.c, radius: 6 + Math.floor(Math.random() * 6), weight: 15 + Math.random() * 20 });
-    }
-  }
-
-  // Increase aggression if losing territory
-  let playerSectors = 0, enemySectors = 0;
-  for (let r = 0; r < state.gridRows; r++)
-    for (let c = 0; c < state.gridCols; c++) {
-      if (state.grid[r][c] === 1) playerSectors++;
-      else if (state.grid[r][c] === 2) enemySectors++;
-    }
-
-  const ratio = enemySectors / Math.max(1, playerSectors + enemySectors);
-  state.ai.aggression = ratio < 0.4 ? 2.0 : ratio < 0.5 ? 1.5 : 1.0;
-}
-
-// ====================== MOBILIZE ======================
-function mobilize() {
-  const cost = 30;
-  if (state.troops < cost) { toast('Ресурсів не вистачає (потрібно ' + cost + ')'); return; }
-  // Removed resource cost, just add troops
-  state.troops += 50;
-  addLog('👥 Проведено мобілізацію: +50 бійців', 'event');
-  updateSidebar();
-}
-
-// ====================== PAUSE ======================
-function togglePause() {
-  state.paused = !state.paused;
-  document.getElementById('btn-pause').textContent = state.paused ? '▶ ПРОДОВЖИТИ' : '⏸ ПАУЗА';
-  document.getElementById('top-status').innerHTML = state.paused
-    ? 'Статус: <strong style="color:var(--accent)">ПАУЗА</strong>'
-    : 'Статус: <strong>АКТИВНА</strong>';
-}
-
-// ====================== DRAW GAME ======================
-function drawGame() {
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = gameCtx;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Background map
-  ctx.drawImage(state.mapImage, 0, 0);
-
-  // Grid cells
-  for (let r = 0; r < state.gridRows; r++) {
-    for (let c = 0; c < state.gridCols; c++) {
-      const v = state.grid[r][c];
-      const x = c * GRID_CELL_PX, y = r * GRID_CELL_PX;
-      if (v === 1) {
-        ctx.fillStyle = 'rgba(42,111,200,0.35)';
-        ctx.fillRect(x, y, GRID_CELL_PX, GRID_CELL_PX);
-      } else if (v === 2) {
-        ctx.fillStyle = 'rgba(200,42,42,0.35)';
-        ctx.fillRect(x, y, GRID_CELL_PX, GRID_CELL_PX);
-      }
+  // Cells
+  for(let r=0;r<G.eRows;r++){
+    for(let c=0;c<G.eCols;c++){
+      const v=G.eGrid[r*G.eCols+c];
+      const x=c*CELL, y=r*CELL;
+      if(v===2){ ctx.fillStyle='rgba(200,42,42,.45)'; ctx.fillRect(x,y,CELL,CELL); }
+      else if(v===3){ ctx.fillStyle='rgba(74,158,255,.35)'; ctx.fillRect(x,y,CELL,CELL); }
     }
   }
 
   // Grid lines
-  ctx.strokeStyle = 'rgba(0,0,0,0.12)';
-  ctx.lineWidth = 0.3;
-  for (let c = 0; c <= state.gridCols; c++) {
-    ctx.beginPath(); ctx.moveTo(c * GRID_CELL_PX, 0); ctx.lineTo(c * GRID_CELL_PX, canvas.height); ctx.stroke();
-  }
-  for (let r = 0; r <= state.gridRows; r++) {
-    ctx.beginPath(); ctx.moveTo(0, r * GRID_CELL_PX); ctx.lineTo(canvas.width, r * GRID_CELL_PX); ctx.stroke();
-  }
-
-  // Front line border (thick border between player & enemy)
-  drawFrontBorder(ctx);
-
-  // Roads
-  state.editorObjects.roads.forEach(road => {
-    if (road.length < 2) return;
-    ctx.save();
-    ctx.strokeStyle = 'rgba(200,200,100,0.5)';
-    ctx.lineWidth = 2; ctx.setLineDash([5, 3]);
-    ctx.beginPath();
-    road.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-    ctx.stroke(); ctx.restore();
-  });
+  ctx.strokeStyle='rgba(0,0,0,.18)'; ctx.lineWidth=0.3;
+  for(let c=0;c<=G.eCols;c++){ ctx.beginPath();ctx.moveTo(c*CELL,0);ctx.lineTo(c*CELL,canvas.height);ctx.stroke(); }
+  for(let r=0;r<=G.eRows;r++){ ctx.beginPath();ctx.moveTo(0,r*CELL);ctx.lineTo(canvas.width,r*CELL);ctx.stroke(); }
 
   // Cities
-  state.cities.forEach(city => {
-    const x = city.col * GRID_CELL_PX + GRID_CELL_PX / 2;
-    const y = city.row * GRID_CELL_PX + GRID_CELL_PX / 2;
+  G.cities.forEach(ct=>{
+    const x=ct.col*CELL+CELL/2, y=ct.row*CELL+CELL/2;
     ctx.save();
-    ctx.fillStyle = city.owner === 1 ? 'rgba(42,200,110,0.9)' : 'rgba(200,42,42,0.9)';
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.arc(x, y, 8, 0, Math.PI * 2);
-    ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 9px Share Tech Mono';
-    ctx.textAlign = 'center';
-    ctx.fillText(city.name, x, y - 12);
+    ctx.fillStyle='rgba(42,200,110,.9)';ctx.strokeStyle='#fff';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(x,y,CELL*.8,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font=`bold ${CELL*1.1}px Share Tech Mono`;ctx.textAlign='center';
+    ctx.fillText(ct.name,x,y-CELL*1.2);
     ctx.restore();
   });
-
-  // AI focus areas (debug visual)
-  // state.ai.focusAreas.forEach(fa => {
-  //   ctx.save(); ctx.strokeStyle = 'rgba(255,100,100,0.15)'; ctx.lineWidth = 1;
-  //   ctx.strokeRect(fa.c * GRID_CELL_PX - fa.radius * GRID_CELL_PX, fa.r * GRID_CELL_PX - fa.radius * GRID_CELL_PX,
-  //     fa.radius * 2 * GRID_CELL_PX, fa.radius * 2 * GRID_CELL_PX);
-  //   ctx.restore();
-  // });
 }
 
-function drawFrontBorder(ctx) {
-  // Draw thick line at boundaries between player and enemy cells
-  ctx.save();
-  ctx.strokeStyle = 'rgba(200,168,75,0.8)';
-  ctx.lineWidth = 1.5;
-
-  for (let r = 0; r < state.gridRows; r++) {
-    for (let c = 0; c < state.gridCols; c++) {
-      const v = state.grid[r][c];
-      const x = c * GRID_CELL_PX, y = r * GRID_CELL_PX;
-      // Right border
-      if (c + 1 < state.gridCols) {
-        const rv = state.grid[r][c + 1];
-        if ((v === 1 && rv === 2) || (v === 2 && rv === 1)) {
-          ctx.beginPath(); ctx.moveTo(x + GRID_CELL_PX, y); ctx.lineTo(x + GRID_CELL_PX, y + GRID_CELL_PX); ctx.stroke();
-        }
-      }
-      // Bottom border
-      if (r + 1 < state.gridRows) {
-        const bv = state.grid[r + 1][c];
-        if ((v === 1 && bv === 2) || (v === 2 && bv === 1)) {
-          ctx.beginPath(); ctx.moveTo(x, y + GRID_CELL_PX); ctx.lineTo(x + GRID_CELL_PX, y + GRID_CELL_PX); ctx.stroke();
-        }
-      }
-    }
-  }
-  ctx.restore();
-}
-
-// ====================== SIDEBAR ======================
-function updateSidebar() {
-  document.getElementById('stat-troops').textContent = state.troops;
-  document.getElementById('stat-enemy-troops').textContent = state.enemyTroops;
-}
-
-function renderCityList() {
-  const el = document.getElementById('city-list');
-  el.innerHTML = '';
-  state.cities.forEach(c => {
-    const div = document.createElement('div');
-    div.className = 'city-item';
-    div.innerHTML = `<div class="city-dot" style="background:${c.owner === 1 ? 'var(--green)' : 'var(--red)'}"></div>${c.name} <span style="margin-left:auto;font-size:10px;color:var(--text-dim)">+10</span>`;
-    el.appendChild(div);
+function setTool(t){
+  G.tool=t;
+  ['city','road','enemy','erase'].forEach(k=>{
+    const el=document.getElementById('tb-'+k);
+    if(el) el.className='tool-btn'+(t===k?' active-'+k:'');
   });
 }
 
-// ====================== LOG ======================
-function addLog(msg, type = '') {
-  const el = document.getElementById('game-log');
-  const div = document.createElement('div');
-  div.className = 'log-entry ' + type;
-  div.textContent = msg;
-  el.appendChild(div);
-  // Keep last 50
-  while (el.children.length > 50) el.removeChild(el.firstChild);
-  el.scrollTop = el.scrollHeight;
+function pushHistory(){
+  G.history.push(new Uint8Array(G.eGrid));
+  if(G.history.length>50) G.history.shift();
 }
 
-// ====================== SAVE / LOAD ======================
-function saveGame() {
-  const saveData = {
-    version: 1,
-    grid: state.grid,
-    troops: state.troops,
-    enemyTroops: state.enemyTroops,
-    cities: state.cities,
-    gameTime: state.gameTime,
-    ai: state.ai,
-    editorObjects: state.editorObjects,
-    gridCols: state.gridCols,
-    gridRows: state.gridRows,
+function editorUndo(){
+  if(!G.history.length) return;
+  G.eGrid=G.history.pop();
+  drawEditor();
+}
+
+function editorClear(){
+  pushHistory();
+  G.eGrid=new Uint8Array(G.eCols*G.eRows);
+  G.cities=[];
+  drawEditor();
+}
+
+function confirmCity(){
+  const name=document.getElementById('city-name').value.trim()||'Місто';
+  if(G.pendingCityCell){
+    const {c,r}=G.pendingCityCell;
+    // Remove duplicate
+    G.cities=G.cities.filter(ct=>!(ct.col===c&&ct.row===r));
+    G.cities.push({col:c,row:r,name});
+    G.eGrid[r*G.eCols+c]=0; // city cell stays neutral visually but marked
+  }
+  G.pendingCityCell=null;
+  document.getElementById('cpop').classList.remove('show');
+  drawEditor();
+}
+
+function cancelCity(){
+  G.pendingCityCell=null;
+  document.getElementById('cpop').classList.remove('show');
+}
+
+function canvasToCell(e,canvas){
+  const rect=canvas.getBoundingClientRect();
+  const sx=canvas.width/rect.width, sy=canvas.height/rect.height;
+  const px=(e.clientX-rect.left)*sx, py=(e.clientY-rect.top)*sy;
+  return {c:Math.floor(px/CELL), r:Math.floor(py/CELL)};
+}
+
+// ===================== GAME INIT =====================
+let gCtx;
+
+function startGame(saveData){
+  showScreen('game');
+  const canvas=document.getElementById('gameCanvas');
+  const img=G.mapImage;
+  canvas.width=G.eCols*CELL;
+  canvas.height=G.eRows*CELL;
+  gCtx=canvas.getContext('2d');
+
+  if(saveData){
+    G.gGrid=new Uint8Array(saveData.grid);
+    G.gCities=saveData.cities;
+    G.roads=new Set(saveData.roads);
+    G.troops=saveData.troops;
+    G.eTroops=saveData.eTroops;
+    G.gameTime=saveData.gameTime;
+    G.ai=saveData.ai;
+  } else {
+    // Build game grid from editor
+    G.gGrid=new Uint8Array(G.eCols*G.eRows);
+    G.roads=new Set();
+
+    // Everything that's NOT enemy → player
+    for(let i=0;i<G.eGrid.length;i++){
+      const v=G.eGrid[i];
+      if(v===2) G.gGrid[i]=2;
+      else if(v===3) { G.gGrid[i]=1; G.roads.add(i+''); }
+      else G.gGrid[i]=1; // neutral & city cells → player
+    }
+
+    // Cities
+    G.gCities=G.cities.map(ct=>({col:ct.col,row:ct.row,name:ct.name,owner:1}));
+    G.troops=300; G.eTroops=500; G.gameTime=0;
+    G.ai={aggression:1.2,focusAreas:[],lostMap:{},stratTimer:0};
+  }
+
+  G.playerCd=0; G.enemyCd=ATTACK_MS;
+  calcIncome();
+  renderSidebar();
+  renderCityList();
+  drawGame();
+  startLoop();
+}
+
+// ===================== GAME LOOP =====================
+function startLoop(){
+  stopGame();
+  const TICK=100;
+  G.gameIv=setInterval(()=>{
+    if(G.paused) return;
+    G.gameTime+=TICK;
+
+    // Player cooldown
+    if(G.playerCd>0){ G.playerCd-=TICK; if(G.playerCd<0) G.playerCd=0; }
+
+    // Enemy turn
+    G.enemyCd-=TICK;
+    if(G.enemyCd<=0){ enemyTurn(); G.enemyCd=ATTACK_MS; }
+
+    // Income
+    if(G.gameTime%INCOME_MS<TICK){
+      G.troops+=G.income; G.eTroops+=G.eIncome;
+      calcIncome();
+    }
+
+    // AI strategy refresh 10s
+    G.ai.stratTimer+=TICK;
+    if(G.ai.stratTimer>=10000){ G.ai.stratTimer=0; aiStrategy(); }
+
+    // UI update
+    const cdFrac=G.playerCd>0? G.playerCd/ATTACK_MS :0;
+    document.getElementById('cd-fill').style.width=((1-cdFrac)*100).toFixed(1)+'%';
+    document.getElementById('top-cd').textContent=(G.playerCd/1000).toFixed(1)+'с';
+    const m=Math.floor(G.gameTime/60000), s=Math.floor((G.gameTime%60000)/1000);
+    document.getElementById('top-time').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    renderSidebar();
+    drawGame();
+  },TICK);
+}
+
+function stopGame(){ if(G.gameIv){clearInterval(G.gameIv);G.gameIv=null;} }
+
+// ===================== INCOME =====================
+function calcIncome(){
+  let pi=0,ei=0,ps=0,es=0;
+  G.gCities.forEach(c=>{ if(c.owner===1) pi+=15; else ei+=15; });
+  for(let i=0;i<G.gGrid.length;i++){
+    if(G.gGrid[i]===1){ps++;pi+=G.roads.has(i+'')?0.05:0.02;}
+    else if(G.gGrid[i]===2){es++;ei+=0.02;}
+  }
+  G.income=Math.floor(pi); G.eIncome=Math.floor(ei);
+  document.getElementById('s-income').textContent='+'+G.income;
+  const total=ps+es;
+  document.getElementById('front-bar').style.width=(total>0?(ps/total*100).toFixed(1):50)+'%';
+  document.getElementById('s-our').textContent=ps;
+  document.getElementById('s-ene').textContent=es;
+}
+
+// ===================== PLAYER ATTACK =====================
+function toggleAttack(){
+  G.attackMode=!G.attackMode;
+  const btn=document.getElementById('btn-atk');
+  const bar=document.getElementById('atk-bar');
+  btn.textContent=G.attackMode?'✖ ВИЙТИ З АТАКИ':'⚔ РЕЖИМ АТАКИ';
+  btn.classList.toggle('on',G.attackMode);
+  bar.classList.toggle('show',G.attackMode);
+  document.getElementById('top-status').innerHTML='Статус: <strong style="color:'+(G.attackMode?'var(--accent2)':'var(--text)')+'">'+
+    (G.attackMode?'АТАКА':'ОЧІКУВАННЯ')+'</strong>';
+}
+
+function handleClick(e){
+  if(!G.attackMode) return;
+  if(G.playerCd>0){ toast(`КД: ${(G.playerCd/1000).toFixed(1)}с`); return; }
+
+  const {c,r}=canvasToCell(e,document.getElementById('gameCanvas'));
+  if(c<0||r<0||c>=G.eCols||r>=G.eRows) return;
+  const idx=r*G.eCols+c;
+  if(G.gGrid[idx]!==2){ toast('Оберіть ворожий сектор!'); return; }
+  if(!adjToPlayer(r,c)){ toast('Не суміжний з нашою зоною!'); return; }
+  if(G.troops<ATTACK_COST){ toast('Недостатньо бійців! Потрібно: '+ATTACK_COST); return; }
+
+  const eLoss=DEFEND_LOSS+Math.floor(Math.random()*15);
+  G.troops-=ATTACK_COST;
+  G.eTroops=Math.max(0,G.eTroops-eLoss);
+  G.gGrid[idx]=1;
+  G.playerCd=ATTACK_MS;
+
+  // City capture?
+  G.gCities.forEach(ct=>{ if(ct.col===c&&ct.row===r){ct.owner=1;addLog(`🏙 Захоплено місто ${ct.name}!`,'ev');} });
+  G.ai.lostMap[idx]=(G.ai.lostMap[idx]||0)+8;
+
+  addLog(`⚔ Захоплено [${c},${r}] — витрачено ${ATTACK_COST} бійців | ворог втратив ${eLoss}`,'pl');
+  renderCityList(); calcIncome(); drawGame();
+}
+
+function adjToPlayer(r,c){
+  const d=[[-1,0],[1,0],[0,-1],[0,1]];
+  for(const[dr,dc]of d){
+    const nr=r+dr,nc=c+dc;
+    if(nr>=0&&nr<G.eRows&&nc>=0&&nc<G.eCols&&G.gGrid[nr*G.eCols+nc]===1) return true;
+  }
+  return false;
+}
+
+function adjToEnemy(r,c){
+  const d=[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
+  for(const[dr,dc]of d){
+    const nr=r+dr,nc=c+dc;
+    if(nr>=0&&nr<G.eRows&&nc>=0&&nc<G.eCols&&G.gGrid[nr*G.eCols+nc]===2) return true;
+  }
+  return false;
+}
+
+// ===================== AI =====================
+function enemyTurn(){
+  if(G.eTroops<ENEMY_COST){ addLog('⚠ Ворог економить сили','en'); return; }
+
+  // Gather player cells adjacent to enemy
+  const cands=[];
+  for(let r=0;r<G.eRows;r++){
+    for(let c=0;c<G.eCols;c++){
+      if(G.gGrid[r*G.eCols+c]===1&&adjToEnemy(r,c)){
+        cands.push({r,c,score:aiScore(r,c)});
+      }
+    }
+  }
+  if(!cands.length) return;
+  cands.sort((a,b)=>b.score-a.score);
+  const topN=Math.min(8,cands.length);
+  const pick=cands[Math.floor(Math.random()*topN)];
+  const idx=pick.r*G.eCols+pick.c;
+  const pLoss=DEFEND_LOSS+Math.floor(Math.random()*10);
+  G.eTroops-=ENEMY_COST;
+  G.troops=Math.max(0,G.troops-pLoss);
+  G.gGrid[idx]=2;
+  G.gCities.forEach(ct=>{ if(ct.col===pick.c&&ct.row===pick.r){ct.owner=2;addLog(`🔴 Ворог захопив місто ${ct.name}!`,'ev');} });
+  G.ai.lostMap[idx]=0;
+  addLog(`💥 Ворог атакує [${pick.c},${pick.r}] — наші втрати: ${pLoss}`,'en');
+  renderCityList(); calcIncome();
+}
+
+function aiScore(r,c){
+  let s=0;
+  // Reclaim lost areas
+  const vicinity=5;
+  for(let dr=-vicinity;dr<=vicinity;dr++) for(let dc=-vicinity;dc<=vicinity;dc++){
+    const nr=r+dr,nc=c+dc;
+    if(nr>=0&&nr<G.eRows&&nc>=0&&nc<G.eCols) s+=(G.ai.lostMap[nr*G.eCols+nc]||0)*1.5;
+  }
+  // Target cities
+  G.gCities.forEach(ct=>{
+    if(ct.owner===1){
+      const dist=Math.max(Math.abs(ct.row-r),Math.abs(ct.col-c));
+      if(dist<5) s+=40-dist*6;
+    }
+  });
+  // Focus areas
+  G.ai.focusAreas.forEach(fa=>{
+    const d=Math.max(Math.abs(fa.r-r),Math.abs(fa.c-c));
+    if(d<fa.rad) s+=fa.w*(1-d/fa.rad);
+  });
+  // Road bonus
+  const idx=r*G.eCols+c;
+  if(G.roads.has(idx+'')) s+=20;
+  // Aggression
+  s*=G.ai.aggression;
+  s+=Math.random()*6;
+  return s;
+}
+
+function aiStrategy(){
+  G.ai.focusAreas=[];
+  // Find exposed player frontline cells
+  const front=[];
+  for(let r=0;r<G.eRows;r++)
+    for(let c=0;c<G.eCols;c++)
+      if(G.gGrid[r*G.eCols+c]===1&&adjToEnemy(r,c)) front.push({r,c});
+
+  const n=2+Math.floor(Math.random()*4);
+  for(let i=0;i<n;i++){
+    const p=front[Math.floor(Math.random()*front.length)];
+    if(p) G.ai.focusAreas.push({r:p.r,c:p.c,rad:8+Math.floor(Math.random()*8),w:20+Math.random()*25});
+  }
+  // Adjust aggression by territory ratio
+  let ps=0,es=0;
+  for(let i=0;i<G.gGrid.length;i++){ if(G.gGrid[i]===1)ps++; else if(G.gGrid[i]===2)es++; }
+  const ratio=es/Math.max(1,ps+es);
+  G.ai.aggression=ratio<0.35?2.2:ratio<0.45?1.6:ratio<0.55?1.2:0.9;
+}
+
+// ===================== MOBILIZE =====================
+function mobilize(){
+  G.troops+=100;
+  addLog('👥 Мобілізація: +100 бійців','ev');
+  renderSidebar();
+}
+
+// ===================== PAUSE =====================
+function togglePause(){
+  G.paused=!G.paused;
+  document.getElementById('btn-pause').textContent=G.paused?'▶ ПРОДОВЖИТИ':'⏸ ПАУЗА';
+}
+
+// ===================== DRAW GAME =====================
+function drawGame(){
+  const canvas=document.getElementById('gameCanvas');
+  const ctx=gCtx;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(G.mapImage,0,0,canvas.width,canvas.height);
+
+  // Cells overlay
+  for(let r=0;r<G.eRows;r++){
+    for(let c=0;c<G.eCols;c++){
+      const v=G.gGrid[r*G.eCols+c];
+      const x=c*CELL,y=r*CELL;
+      if(v===1){
+        ctx.fillStyle=G.roads.has((r*G.eCols+c)+'')
+          ?'rgba(74,158,255,.28)':'rgba(42,111,200,.32)';
+        ctx.fillRect(x,y,CELL,CELL);
+      } else if(v===2){
+        ctx.fillStyle='rgba(200,42,42,.35)';
+        ctx.fillRect(x,y,CELL,CELL);
+      }
+    }
+  }
+
+  // Grid
+  ctx.strokeStyle='rgba(0,0,0,.08)'; ctx.lineWidth=0.3;
+  for(let c=0;c<=G.eCols;c++){ctx.beginPath();ctx.moveTo(c*CELL,0);ctx.lineTo(c*CELL,canvas.height);ctx.stroke();}
+  for(let r=0;r<=G.eRows;r++){ctx.beginPath();ctx.moveTo(0,r*CELL);ctx.lineTo(canvas.width,r*CELL);ctx.stroke();}
+
+  // Front border
+  ctx.strokeStyle='rgba(200,168,75,.7)'; ctx.lineWidth=1;
+  for(let r=0;r<G.eRows;r++) for(let c=0;c<G.eCols;c++){
+    const v=G.gGrid[r*G.eCols+c];
+    const x=c*CELL,y=r*CELL;
+    if(c+1<G.eCols){const rv=G.gGrid[r*G.eCols+c+1];if((v===1&&rv===2)||(v===2&&rv===1)){ctx.beginPath();ctx.moveTo(x+CELL,y);ctx.lineTo(x+CELL,y+CELL);ctx.stroke();}}
+    if(r+1<G.eRows){const bv=G.gGrid[(r+1)*G.eCols+c];if((v===1&&bv===2)||(v===2&&bv===1)){ctx.beginPath();ctx.moveTo(x,y+CELL);ctx.lineTo(x+CELL,y+CELL);ctx.stroke();}}
+  }
+
+  // Cities
+  G.gCities.forEach(ct=>{
+    const x=ct.col*CELL+CELL/2, y=ct.row*CELL+CELL/2;
+    ctx.save();
+    ctx.fillStyle=ct.owner===1?'rgba(42,200,110,.95)':'rgba(200,42,42,.95)';
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.arc(x,y,CELL*.9,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font=`bold ${CELL*1.05}px Share Tech Mono`; ctx.textAlign='center';
+    ctx.fillText(ct.name,x,y-CELL*1.1);
+    ctx.restore();
+  });
+}
+
+// ===================== SIDEBAR =====================
+function renderSidebar(){
+  document.getElementById('s-troops').textContent=G.troops;
+  document.getElementById('s-etr').textContent=G.eTroops;
+}
+
+function renderCityList(){
+  const el=document.getElementById('city-list');
+  el.innerHTML='';
+  G.gCities.forEach(c=>{
+    const d=document.createElement('div'); d.className='city-item';
+    d.innerHTML=`<div class="city-dot" style="background:${c.owner===1?'var(--green)':'var(--red)'}"></div>${c.name}<span style="margin-left:auto;font-size:10px;color:var(--dim)">+15</span>`;
+    el.appendChild(d);
+  });
+}
+
+// ===================== LOG =====================
+function addLog(msg,cls=''){
+  const el=document.getElementById('g-log');
+  const d=document.createElement('div'); d.className='log-e '+cls; d.textContent=msg;
+  el.appendChild(d);
+  while(el.children.length>60) el.removeChild(el.firstChild);
+  el.scrollTop=el.scrollHeight;
+}
+
+// ===================== SAVE / LOAD =====================
+function saveGame(){
+  const data={
+    version:2,
+    grid:Array.from(G.gGrid),
+    cities:G.gCities,
+    roads:Array.from(G.roads),
+    troops:G.troops, eTroops:G.eTroops,
+    gameTime:G.gameTime, ai:G.ai,
+    eCols:G.eCols, eRows:G.eRows,
+    eGrid:Array.from(G.eGrid),
+    edCities:G.cities,
   };
-  const json = JSON.stringify(saveData);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'frontline_save.fls';
-  a.click();
+  const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='frontline_save.fls'; a.click();
   URL.revokeObjectURL(url);
-  toast('Збереження завантажено!');
-  addLog('💾 Гра збережена', 'event');
+  toast('Збережено!'); addLog('💾 Гра збережена','ev');
 }
 
-let pendingSave = null;
-
-function loadSave(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      pendingSave = JSON.parse(e.target.result);
+let _pendingSave=null;
+function loadSave(inp){
+  const f=inp.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      _pendingSave=JSON.parse(e.target.result);
       toast('Файл завантажено! Тепер завантажте фото карти.');
       document.getElementById('save-map-input').click();
-    } catch(err) {
-      toast('Помилка файлу збереження!');
-    }
+    }catch{ toast('Помилка файлу!'); }
   };
-  reader.readAsText(file);
+  r.readAsText(f);
 }
 
-function loadSaveMap(input) {
-  const file = input.files[0];
-  if (!file || !pendingSave) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    state.mapDataURL = e.target.result;
-    const img = new Image();
-    img.onload = () => {
-      state.mapImage = img;
-      state.gridCols = pendingSave.gridCols;
-      state.gridRows = pendingSave.gridRows;
-      state.cellW = GRID_CELL_PX;
-      state.cellH = GRID_CELL_PX;
-      state.editorObjects = pendingSave.editorObjects;
+function loadSaveMap(inp){
+  const f=inp.files[0]; if(!f||!_pendingSave) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    G.mapDataURL=e.target.result;
+    const img=new Image();
+    img.onload=()=>{
+      G.mapImage=img;
+      const sv=_pendingSave;
+      G.eCols=sv.eCols; G.eRows=sv.eRows;
+      G.eGrid=new Uint8Array(sv.eGrid);
+      G.cities=sv.edCities||[];
       showScreen('game');
-      initGame(pendingSave);
-      addLog('📂 Збереження завантажено!', 'event');
-      pendingSave = null;
+      startGame(sv);
+      addLog('📂 Збереження завантажено!','ev');
+      _pendingSave=null;
     };
-    img.src = e.target.result;
+    img.src=e.target.result;
   };
-  reader.readAsDataURL(file);
+  r.readAsDataURL(f);
 }
 
-function confirmQuit() {
-  if (confirm('Повернутися до головного меню? Незбережений прогрес буде втрачено.')) {
-    showMenu();
+function confirmQuit(){
+  if(confirm('Повернутися до меню?')){ showMenu(); }
+}
+
+// ===================== UTILS =====================
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t=setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+  if(G.screen==='editor'){
+    if(e.key==='1') setTool('city');
+    if(e.key==='2') setTool('road');
+    if(e.key==='3') setTool('enemy');
+    if(e.key==='4') setTool('erase');
+    if(e.ctrlKey&&e.key==='z'){e.preventDefault();editorUndo();}
   }
-}
-
-// ====================== UTILS ======================
-function getCanvasPos(e, canvas) {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-  return {
-    x: (e.clientX - rect.left) * scaleX,
-    y: (e.clientY - rect.top) * scaleY,
-  };
-}
-
-let toastTimeout;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => el.classList.remove('show'), 2500);
-}
-
-// ====================== KEYBOARD ======================
-document.addEventListener('keydown', e => {
-  if (e.key === ' ' && state.currentScreen === 'game') { e.preventDefault(); togglePause(); }
-  if (e.key === 'Escape' && attackModeOn) toggleAttackMode();
-  if (state.currentScreen === 'editor') {
-    if (e.key === '1') setTool('city');
-    if (e.key === '2') setTool('road');
-    if (e.key === '3') setTool('enemy');
-    if (e.key === '4') setTool('front');
+  if(G.screen==='game'){
+    if(e.key===' '){e.preventDefault();togglePause();}
+    if(e.key==='Escape'&&G.attackMode) toggleAttack();
   }
 });
-
-// City input enter key
-document.getElementById('city-name-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') confirmCity();
-  if (e.key === 'Escape') cancelCity();
-});
-
-// Activate attack mode on game start
-document.addEventListener('DOMContentLoaded', () => {
-  // Start with attack mode off but visually show the bar
-  document.getElementById('attack-mode-bar').classList.remove('show');
+document.getElementById('city-name').addEventListener('keydown',e=>{
+  if(e.key==='Enter') confirmCity();
+  if(e.key==='Escape') cancelCity();
 });
 </script>
 </body>
