@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конвертер Піксель-Артів</title>
+    <title>Конвертер Піксель-Артів (Точна палітра)</title>
     <style>
         body {
             background-color: #1e1e1e;
@@ -150,7 +150,7 @@
                     paletteCanvas.height = img.height;
                     paletteCtx.drawImage(img, 0, 0);
                     autoExtractBtn.disabled = false;
-                    paletteStatus.innerText = "Палітру завантажено! Натисніть 'Авто-збір' або клікайте по картинці, щоб додати кольори піпеткою.";
+                    paletteStatus.innerText = "Палітру завантажено! Натисніть 'Авто-збір' або клікайте по картинці піпеткою.";
                 }
                 img.src = event.target.result;
             }
@@ -203,7 +203,6 @@
                 div.className = 'swatch';
                 div.style.backgroundColor = color;
                 div.setAttribute('data-color', color);
-                // Видаляємо колір по кліку на ньому
                 div.addEventListener('click', () => {
                     palette = palette.filter(c => c !== color);
                     renderPalette();
@@ -241,37 +240,40 @@
         processBtn.addEventListener('click', () => {
             if (!originalImageData || palette.length === 0) return;
             
-            artStatus.innerText = "Обробка... Зачекайте.";
+            artStatus.innerText = "Обробка... Шукаємо найближчі кольори.";
             
-            // Використовуємо setTimeout, щоб інтерфейс не завис і текст оновився
             setTimeout(() => {
                 const newImageData = originalCtx.createImageData(originalImageData.width, originalImageData.height);
                 const data = originalImageData.data;
                 const newData = newImageData.data;
 
-                // Конвертуємо палітру в RGB для швидкості
                 const paletteRGB = palette.map(hex => hexToRgb(hex));
 
                 for (let i = 0; i < data.length; i += 4) {
-                    const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+                    const r1 = data[i], g1 = data[i+1], b1 = data[i+2], a = data[i+3];
 
-                    // Якщо піксель прозорий, залишаємо його прозорим
                     if (a < 125) {
                         newData[i] = 0; newData[i+1] = 0; newData[i+2] = 0; newData[i+3] = 0;
                         continue;
                     }
 
-                    // Шукаємо найближчий колір
                     let minDistance = Infinity;
                     let closestColor = paletteRGB[0];
 
                     for (let j = 0; j < paletteRGB.length; j++) {
                         const pColor = paletteRGB[j];
-                        // Формула евклідової відстані в RGB
+                        const r2 = pColor.r, g2 = pColor.g, b2 = pColor.b;
+                        
+                        // ПОКРАЩЕНА ФОРМУЛА (Redmean) - візуально найточніший збір
+                        const rmean = (r1 + r2) / 2;
+                        const r = r1 - r2;
+                        const g = g1 - g2;
+                        const b = b1 - b2;
+                        
                         const distance = Math.sqrt(
-                            Math.pow(r - pColor.r, 2) +
-                            Math.pow(g - pColor.g, 2) +
-                            Math.pow(b - pColor.b, 2)
+                            (((512 + rmean) * r * r) >> 8) +
+                            4 * g * g +
+                            (((767 - rmean) * b * b) >> 8)
                         );
 
                         if (distance < minDistance) {
@@ -280,16 +282,15 @@
                         }
                     }
 
-                    // Замінюємо піксель
                     newData[i] = closestColor.r;
                     newData[i+1] = closestColor.g;
                     newData[i+2] = closestColor.b;
-                    newData[i+3] = 255; // Робимо непрозорим
+                    newData[i+3] = 255;
                 }
 
                 resultCtx.putImageData(newImageData, 0, 0);
                 downloadBtn.disabled = false;
-                artStatus.innerText = "Готово! Можеш завантажувати результат.";
+                artStatus.innerText = "Готово! Кольори підібрано максимально наближено до оригіналу.";
             }, 50);
         });
 
