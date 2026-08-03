@@ -1,1 +1,1327 @@
-<a href="https://rt.pornhub.com/view_video.php?viewkey=6a04c434876e2">Нажми сюда</a>
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PixelWar Map — аналог DeepState</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel2: #1c2330;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --accent2: #2563eb;
+    --danger: #f85149;
+    --success: #3fb950;
+    --warn: #d29922;
+  }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+    font-size: 14px;
+    overflow: hidden;
+  }
+  .app {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    grid-template-rows: 48px 1fr;
+    height: 100vh;
+  }
+  /* Topbar */
+  .topbar {
+    grid-column: 1 / -1;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    z-index: 10;
+  }
+  .brand {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+    letter-spacing: .5px;
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+  .topbar button, .topbar .btn {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: .15s;
+    white-space: nowrap;
+  }
+  .topbar button:hover, .topbar .btn:hover { border-color: var(--accent); background: #232c3d; }
+  .topbar button.primary { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+  .topbar button.primary:hover { background: #2f75e8; }
+  .topbar .sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+  .topbar .spacer { flex: 1; }
+  .topbar input[type=text] {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    width: 260px;
+  }
+  .topbar select {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  /* Map area */
+  .map-area {
+    position: relative;
+    background:
+      linear-gradient(45deg, #0a0e14 25%, transparent 25%),
+      linear-gradient(-45deg, #0a0e14 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #0a0e14 75%),
+      linear-gradient(-45deg, transparent 75%, #0a0e14 75%);
+    background-size: 24px 24px;
+    background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+    background-color: #0d1117;
+    overflow: hidden;
+  }
+  #mapCanvas, #overlayCanvas {
+    position: absolute;
+    top: 0; left: 0;
+    image-rendering: pixelated;
+  }
+  #overlayCanvas { pointer-events: none; }
+  .map-hint {
+    position: absolute;
+    bottom: 12px; left: 12px;
+    background: rgba(13,17,23,.85);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    pointer-events: none;
+    max-width: 360px;
+    line-height: 1.5;
+    backdrop-filter: blur(4px);
+  }
+  .map-hint kbd {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-size: 11px;
+    color: var(--text);
+  }
+  .zoom-badge {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: rgba(13,17,23,.85);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+  .drop-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(88,166,255,.15);
+    border: 3px dashed var(--accent);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--accent);
+    pointer-events: none;
+    z-index: 50;
+  }
+  .drop-overlay.show { display: flex; }
+  /* Sidebar */
+  .sidebar {
+    background: var(--panel);
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .sb-section {
+    border-bottom: 1px solid var(--border);
+    padding: 12px;
+  }
+  .sb-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sb-title .count {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0 8px;
+    color: var(--text);
+    font-size: 11px;
+  }
+  .zone-list {
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  .zone-item {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: .15s;
+    position: relative;
+  }
+  .zone-item:hover { border-color: var(--accent); }
+  .zone-item.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .zone-item .zi-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .zone-item .zi-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .zone-item .zi-name {
+    font-weight: 600;
+    flex: 1;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .zone-item .zi-tag {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .zone-item .zi-del {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 2px;
+    line-height: 1;
+  }
+  .zone-item .zi-del:hover { color: var(--danger); }
+  .zone-item .zi-meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 20px 8px;
+    font-style: italic;
+  }
+  /* Form */
+  .form-group { margin-bottom: 10px; }
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .form-group input[type=text],
+  .form-group textarea,
+  .form-group select,
+  .form-group input[type=date] {
+    width: 100%;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .form-group textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tag-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    margin: 2px;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .tag-pill:hover { opacity: .85; }
+  .tag-editor {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+  .btn-row { display: flex; gap: 6px; margin-top: 8px; }
+  .btn-row button {
+    flex: 1;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: .15s;
+  }
+  .btn-row button:hover { border-color: var(--accent); }
+  .btn-row button.danger:hover { border-color: var(--danger); color: var(--danger); }
+  .btn-row button.primary { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #2d333b; border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3d434d; }
+  /* Tooltip */
+  .zone-tooltip {
+    position: fixed;
+    background: rgba(13,17,23,.95);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+    max-width: 280px;
+    display: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,.5);
+    backdrop-filter: blur(6px);
+  }
+  .zone-tooltip .tt-name {
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+  .zone-tooltip .tt-tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 4px;
+  }
+  .zone-tooltip .tt-desc {
+    color: var(--text);
+    line-height: 1.4;
+    margin-top: 4px;
+  }
+  .zone-tooltip .tt-extra {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 4px;
+    border-top: 1px solid var(--border);
+    padding-top: 4px;
+  }
+  /* Loading */
+  .loading {
+    position: absolute;
+    inset: 0;
+    background: rgba(13,17,23,.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 100;
+  }
+  .loading.show { display: flex; }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 20px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    z-index: 2000;
+    transition: .3s;
+    box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--success); }
+  .toast.error { border-color: var(--danger); }
+  /* Responsive */
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; grid-template-rows: 48px 1fr 320px; }
+    .sidebar { border-left: none; border-top: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">⚔️ PixelWar Map</div>
+
+    <button id="btnLoadPixelya" class="primary" title="Завантажити карту з pixelya.fun">⬇ З Pixelya</button>
+    <input type="text" id="pixelyaUrl" placeholder="#d,0,0,16 або повний URL" value="#d,0,0,16">
+    <button id="btnLoadUrl">Завантажити</button>
+
+    <div class="sep"></div>
+    <button id="btnUpload" title="Завантажити файл зображення">📁 Файл</button>
+    <button id="btnPaste" title="Вставити з буфера (Ctrl+V)">📋 Вставити</button>
+
+    <div class="sep"></div>
+    <select id="modeSelect">
+      <option value="select">🖱 Вибір / перегляд</option>
+      <option value="draw">✏️ Малювання зони</option>
+      <option value="edit">⚙️ Редагування точок</option>
+    </select>
+
+    <div class="spacer"></div>
+
+    <button id="btnExport" title="Експорт даних">💾 Експорт JSON</button>
+    <button id="btnImport" title="Імпорт даних">📂 Імпорт</button>
+    <button id="btnPng" title="Зберегти PNG">🖼 PNG</button>
+    <button id="btnClear" title="Очистити всі зони" style="color:var(--danger)">🗑 Очистити</button>
+  </div>
+
+  <!-- MAP -->
+  <div class="map-area" id="mapArea">
+    <canvas id="mapCanvas"></canvas>
+    <canvas id="overlayCanvas"></canvas>
+    <div class="drop-overlay" id="dropOverlay">Перетягніть зображення карти сюди</div>
+    <div class="loading" id="loading"><div class="spinner"></div><div id="loadingText">Завантаження...</div></div>
+    <div class="zoom-badge" id="zoomBadge">100%</div>
+    <div class="map-hint">
+      <b>ЛКМ</b> — додати точку (режим малювання) · <b>Подвійний клік</b> — завершити зону · <b>ПКМ / Space+ЛКМ</b> — перетягувати карту · <b>Колесо</b> — зум · <b>Del</b> — видалити вибрану зону
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-section">
+      <div class="sb-title">
+        <span>Список зон</span>
+        <span class="count" id="zoneCount">0</span>
+      </div>
+      <input type="text" id="searchZones" placeholder="🔍 Пошук за назвою..." style="width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:13px;margin-bottom:8px;">
+      <div class="zone-list" id="zoneList">
+        <div class="empty">Поки що жодної зони. Оберіть режим «Малювання зони» та клікайте по карті.</div>
+      </div>
+    </div>
+
+    <div class="sb-section" id="editPanel" style="display:none;">
+      <div class="sb-title"><span>Редагування зони</span></div>
+      <div class="form-group">
+        <label>Назва</label>
+        <input type="text" id="fName" placeholder="Напр. Регіон Північ">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Тег</label>
+          <select id="fTag"></select>
+        </div>
+        <div class="form-group">
+          <label>Дата</label>
+          <input type="date" id="fDate">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Опис</label>
+        <textarea id="fDesc" placeholder="Короткий опис події..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Додатковий опис</label>
+        <textarea id="fExtra" placeholder="Деталі, джерела, примітки..."></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="primary" id="btnApply">Застосувати</button>
+        <button id="btnCenter">Центрувати</button>
+        <button class="danger" id="btnDeleteZone">Видалити</button>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title"><span>Теги</span></div>
+      <div class="tag-editor" id="tagEditor"></div>
+      <div class="form-row" style="margin-top:8px;">
+        <input type="text" id="newTagName" placeholder="Назва тегу" style="background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:12px;">
+        <input type="color" id="newTagColor" value="#9333ea" style="background:var(--panel2);border:1px solid var(--border);border-radius:6px;height:32px;">
+      </div>
+      <button id="btnAddTag" style="width:100%;margin-top:6px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px;border-radius:6px;cursor:pointer;font-size:12px;">+ Додати тег</button>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title"><span>Статистика</span></div>
+      <div id="stats" style="font-size:12px;color:var(--muted);line-height:1.7;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="zone-tooltip" id="tooltip"></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="fileInput" accept="image/*" style="display:none;">
+<input type="file" id="importInput" accept="application/json" style="display:none;">
+
+<script>
+// ============================================================
+//  PixelWar Map — повний клієнтський редактор зон
+// ============================================================
+
+const $ = (id) => document.getElementById(id);
+
+// ---------- Стан ----------
+const state = {
+  mapImage: null,         // HTMLImageElement
+  zones: [],              // [{id, name, tag, desc, extra, date, points:[{x,y}], closed}]
+  tags: [
+    { id: 'liberated', name: 'Звільнено',      color: '#3fb950' },
+    { id: 'fact',      name: 'Контроль де-факто', color: '#2563eb' },
+    { id: 'lost',      name: 'Втрачено',        color: '#dc2626' },
+    { id: 'gray',      name: 'Сіра зона',       color: '#d29922' },
+    { id: 'disputed',  name: 'Спірно',          color: '#9333ea' },
+    { id: 'battles',   name: 'Бої',             color: '#f85149' },
+    { id: 'neutral',   name: 'Нейтрально',      color: '#6b7280' },
+  ],
+  selectedZoneId: null,
+  mode: 'select',         // select | draw | edit
+  drawingPoints: [],      // поточний малюнок
+  view: { x: 0, y: 0, zoom: 1 },
+  isPanning: false,
+  panStart: null,
+  hoverZoneId: null,
+  dragPoint: null,        // {zoneId, idx}
+};
+
+// ---------- Canvas ----------
+const mapCanvas = $('mapCanvas');
+const overlayCanvas = $('overlayCanvas');
+const mapCtx = mapCanvas.getContext('2d');
+const overlayCtx = overlayCanvas.getContext('2d');
+const mapArea = $('mapArea');
+
+function resizeCanvas() {
+  const r = mapArea.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  [mapCanvas, overlayCanvas].forEach(c => {
+    c.width = r.width * dpr;
+    c.height = r.height * dpr;
+    c.style.width = r.width + 'px';
+    c.style.height = r.height + 'px';
+    c.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+  });
+  render();
+}
+window.addEventListener('resize', resizeCanvas);
+
+// ---------- Координати ----------
+function screenToMap(sx, sy) {
+  return {
+    x: (sx - state.view.x) / state.view.zoom,
+    y: (sy - state.view.y) / state.view.zoom,
+  };
+}
+function mapToScreen(mx, my) {
+  return {
+    x: mx * state.view.zoom + state.view.x,
+    y: my * state.view.zoom + state.view.y,
+  };
+}
+
+// ---------- Завантаження карти ----------
+function showLoading(text = 'Завантаження...') {
+  $('loadingText').textContent = text;
+  $('loading').classList.add('show');
+}
+function hideLoading() { $('loading').classList.remove('show'); }
+
+function loadMapFromUrl(url) {
+  showLoading('Завантаження карти...');
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    state.mapImage = img;
+    fitMap();
+    hideLoading();
+    toast('Карту завантажено', 'success');
+    render();
+  };
+  img.onerror = () => {
+    hideLoading();
+    toast('Не вдалося завантажити (CORS). Спробуйте вставити скріншот (Ctrl+V) або файл.', 'error');
+  };
+  img.src = url;
+}
+
+// Намагаємося витягти тайл/зображення з pixelya.fun через проксі
+function loadFromPixelya(hashOrUrl) {
+  let hash = hashOrUrl.trim();
+  if (hash.startsWith('http')) {
+    try { hash = new URL(hash).hash; } catch(e) {}
+  }
+  if (!hash.startsWith('#')) hash = '#' + hash;
+
+  // Варіант 1: спробуємо HEAD-запит через проксі, щоб отримати скріншот.
+  // Pixelya — це canvas-гра, прямого статичного зображення немає.
+  // Тому використовуємо проксі + base64 скріншоту, якщо користувач має розширення.
+  // На жаль, без API ми не можемо отримати «живу» карту напряму.
+  // → даємо інструкцію й відкриваємо сайт у новій вкладці для скріншоту.
+  const fullUrl = 'https://pixelya.fun/' + hash;
+  window.open(fullUrl, '_blank');
+  toast('Відкрийте pixelya.fun, зробіть скріншот (Win+Shift+S або PrtSc) і вставте сюди (Ctrl+V)', 'success');
+
+  // Також спробуємо через проксі allorigins — іноді можна дістати og:image
+  showLoading('Спроба прямого завантаження...');
+  fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(fullUrl))
+    .then(r => r.text())
+    .then(html => {
+      const m = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i)
+             || html.match(/<meta[^>]+name="twitter:image"[^>]+content="([^"]+)"/i);
+      if (m && m[1]) {
+        loadMapFromUrl('https://api.allorigins.win/raw?url=' + encodeURIComponent(m[1]));
+      } else {
+        hideLoading();
+        toast('Пряме завантаження неможливе (сайт динамічний). Вставте скріншот через Ctrl+V.', 'error');
+      }
+    })
+    .catch(() => {
+      hideLoading();
+      toast('Прокні не відповідає. Вставте скріншот через Ctrl+V або завантажте файл.', 'error');
+    });
+}
+
+function fitMap() {
+  if (!state.mapImage) return;
+  const r = mapArea.getBoundingClientRect();
+  const zx = r.width / state.mapImage.naturalWidth;
+  const zy = r.height / state.mapImage.naturalHeight;
+  state.view.zoom = Math.min(zx, zy) * 0.95;
+  state.view.x = (r.width - state.mapImage.naturalWidth * state.view.zoom) / 2;
+  state.view.y = (r.height - state.mapImage.naturalHeight * state.view.zoom) / 2;
+  $('zoomBadge').textContent = Math.round(state.view.zoom * 100) + '%';
+}
+
+// ---------- Рендер ----------
+function render() {
+  const r = mapArea.getBoundingClientRect();
+  mapCtx.clearRect(0, 0, r.width, r.height);
+  overlayCtx.clearRect(0, 0, r.width, r.height);
+
+  // Карта
+  if (state.mapImage) {
+    mapCtx.imageSmoothingEnabled = false;
+    mapCtx.drawImage(
+      state.mapImage,
+      state.view.x, state.view.y,
+      state.mapImage.naturalWidth * state.view.zoom,
+      state.mapImage.naturalHeight * state.view.zoom
+    );
+  } else {
+    // підказка
+    mapCtx.fillStyle = '#8b949e';
+    mapCtx.font = '16px Segoe UI';
+    mapCtx.textAlign = 'center';
+    mapCtx.fillText('Завантажте карту: кнопка «З Pixelya», файл або Ctrl+V', r.width/2, r.height/2);
+  }
+
+  // Зони
+  state.zones.forEach(zone => drawZone(overlayCtx, zone, r));
+  // Поточний малюнок
+  if (state.drawingPoints.length > 0) {
+    drawPolyline(overlayCtx, state.drawingPoints, '#58a6ff', true);
+  }
+}
+
+function drawZone(ctx, zone, rect) {
+  if (!zone.points || zone.points.length < 2) return;
+  const tag = state.tags.find(t => t.id === zone.tag) || { color: '#888', name: '?' };
+  const isSel = zone.id === state.selectedZoneId;
+  const isHover = zone.id === state.hoverZoneId;
+  const pts = zone.points.map(p => mapToScreen(p.x, p.y));
+
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+  if (zone.closed !== false) ctx.closePath();
+
+  // Заливка
+  ctx.fillStyle = hexToRgba(tag.color, isSel ? 0.45 : (isHover ? 0.35 : 0.22));
+  ctx.fill();
+
+  // Обводка
+  ctx.strokeStyle = tag.color;
+  ctx.lineWidth = isSel ? 3 : 2;
+  ctx.setLineDash(isSel ? [] : []);
+  ctx.stroke();
+
+  // Точки (якщо вибрано або режим edit)
+  if (isSel || state.mode === 'edit') {
+    pts.forEach((p, i) => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, isSel && state.mode==='edit' ? 5 : 3, 0, Math.PI*2);
+      ctx.fillStyle = isSel ? '#fff' : tag.color;
+      ctx.fill();
+      ctx.strokeStyle = tag.color;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    });
+  }
+
+  // Підпис назви
+  if (zone.name && zone.closed !== false) {
+    const c = centroid(pts);
+    ctx.font = 'bold 12px Segoe UI';
+    const w = ctx.measureText(zone.name).width;
+    ctx.fillStyle = 'rgba(13,17,23,.85)';
+    ctx.fillRect(c.x - w/2 - 4, c.y - 9, w + 8, 18);
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(zone.name, c.x, c.y);
+    ctx.textBaseline = 'alphabetic';
+  }
+}
+
+function drawPolyline(ctx, points, color, withDots) {
+  if (points.length === 0) return;
+  const pts = points.map(p => mapToScreen(p.x, p.y));
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  if (withDots) {
+    pts.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    });
+    // лінія до курсора буде малюватись окремо
+  }
+}
+
+function centroid(pts) {
+  let x = 0, y = 0;
+  pts.forEach(p => { x += p.x; y += p.y; });
+  return { x: x/pts.length, y: y/pts.length };
+}
+
+function hexToRgba(hex, a) {
+  const h = hex.replace('#','');
+  const r = parseInt(h.substring(0,2),16);
+  const g = parseInt(h.substring(2,4),16);
+  const b = parseInt(h.substring(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+// ---------- Події миші ----------
+let cursorScreenPos = null;
+
+overlayCanvas.style.pointerEvents = 'auto'; // щоб отримувати події на верхньому canvas
+mapArea.addEventListener('mousedown', onMouseDown);
+mapArea.addEventListener('mousemove', onMouseMove);
+mapArea.addEventListener('mouseup', onMouseUp);
+mapArea.addEventListener('dblclick', onDoubleClick);
+mapArea.addEventListener('wheel', onWheel, { passive: false });
+mapArea.addEventListener('contextmenu', e => e.preventDefault());
+mapArea.addEventListener('dragover', e => { e.preventDefault(); $('dropOverlay').classList.add('show'); });
+mapArea.addEventListener('dragleave', () => $('dropOverlay').classList.remove('show'));
+mapArea.addEventListener('drop', onDrop);
+
+function getMousePos(e) {
+  const r = mapArea.getBoundingClientRect();
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+
+function onMouseDown(e) {
+  const pos = getMousePos(e);
+  const mp = screenToMap(pos.x, pos.y);
+
+  // ПКМ або Space+ЛКМ → pan
+  if (e.button === 2 || (e.button === 0 && (e.spaceKey || spaceDown))) {
+    state.isPanning = true;
+    state.panStart = { x: e.clientX, y: e.clientY, vx: state.view.x, vy: state.view.y };
+    return;
+  }
+  if (e.button !== 0) return;
+
+  if (state.mode === 'draw') {
+    state.drawingPoints.push(mp);
+    render();
+    return;
+  }
+
+  if (state.mode === 'edit') {
+    // перевірити чи клікнули на точку вибраної зони
+    if (state.selectedZoneId) {
+      const zone = state.zones.find(z => z.id === state.selectedZoneId);
+      if (zone) {
+        for (let i = 0; i < zone.points.length; i++) {
+          const sp = mapToScreen(zone.points[i].x, zone.points[i].y);
+          if (Math.hypot(sp.x - pos.x, sp.y - pos.y) < 8) {
+            state.dragPoint = { zoneId: zone.id, idx: i };
+            return;
+          }
+        }
+      }
+    }
+  }
+
+  // select mode: вибір зони під курсором
+  const hit = hitTestZone(pos);
+  selectZone(hit ? hit.id : null);
+}
+
+function onMouseMove(e) {
+  const pos = getMousePos(e);
+  cursorScreenPos = pos;
+
+  if (state.isPanning) {
+    state.view.x = state.panStart.vx + (e.clientX - state.panStart.x);
+    state.view.y = state.panStart.vy + (e.clientY - state.panStart.y);
+    render();
+    return;
+  }
+
+  if (state.dragPoint) {
+    const mp = screenToMap(pos.x, pos.y);
+    const zone = state.zones.find(z => z.id === state.dragPoint.zoneId);
+    if (zone) {
+      zone.points[state.dragPoint.idx] = mp;
+      render();
+    }
+    return;
+  }
+
+  // hover
+  if (state.mode === 'select') {
+    const hit = hitTestZone(pos);
+    if ((hit?.id || null) !== state.hoverZoneId) {
+      state.hoverZoneId = hit?.id || null;
+      render();
+    }
+    updateTooltip(e, hit);
+  } else {
+    hideTooltip();
+  }
+
+  // лінія до курсора при малюванні
+  if (state.mode === 'draw' && state.drawingPoints.length > 0) {
+    render();
+    const last = mapToScreen(state.drawingPoints[state.drawingPoints.length-1].x, state.drawingPoints[state.drawingPoints.length-1].y);
+    overlayCtx.beginPath();
+    overlayCtx.moveTo(last.x, last.y);
+    overlayCtx.lineTo(pos.x, pos.y);
+    overlayCtx.strokeStyle = 'rgba(88,166,255,.6)';
+    overlayCtx.setLineDash([4,4]);
+    overlayCtx.lineWidth = 1.5;
+    overlayCtx.stroke();
+    overlayCtx.setLineDash([]);
+  }
+}
+
+function onMouseUp(e) {
+  state.isPanning = false;
+  state.dragPoint = null;
+  save();
+}
+
+function onDoubleClick(e) {
+  if (state.mode === 'draw' && state.drawingPoints.length >= 3) {
+    const zone = {
+      id: uid(),
+      name: 'Нова зона ' + (state.zones.length + 1),
+      tag: 'gray',
+      desc: '',
+      extra: '',
+      date: new Date().toISOString().slice(0,10),
+      points: [...state.drawingPoints],
+      closed: true,
+    };
+    state.zones.push(zone);
+    state.drawingPoints = [];
+    state.mode = 'select';
+    $('modeSelect').value = 'select';
+    selectZone(zone.id);
+    renderList();
+    render();
+    save();
+    toast('Зону створено', 'success');
+  }
+}
+
+function onWheel(e) {
+  e.preventDefault();
+  const pos = getMousePos(e);
+  const before = screenToMap(pos.x, pos.y);
+  const factor = e.deltaY < 0 ? 1.15 : 1/1.15;
+  state.view.zoom = Math.max(0.05, Math.min(20, state.view.zoom * factor));
+  const after = screenToMap(pos.x, pos.y);
+  state.view.x += (after.x - before.x) * state.view.zoom;
+  state.view.y += (after.y - before.y) * state.view.zoom;
+  $('zoomBadge').textContent = Math.round(state.view.zoom * 100) + '%';
+  render();
+}
+
+function onDrop(e) {
+  e.preventDefault();
+  $('dropOverlay').classList.remove('show');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) loadFile(f);
+}
+
+// ---------- Hit test ----------
+function hitTestZone(pos) {
+  // з кінця щоб верхні були поверх
+  for (let i = state.zones.length - 1; i >= 0; i--) {
+    const z = state.zones[i];
+    if (!z.points || z.points.length < 3) continue;
+    const pts = z.points.map(p => mapToScreen(p.x, p.y));
+    if (pointInPolygon(pos, pts)) return z;
+  }
+  return null;
+}
+function pointInPolygon(p, pts) {
+  let inside = false;
+  for (let i = 0, j = pts.length-1; i < pts.length; j = i++) {
+    const xi = pts[i].x, yi = pts[i].y, xj = pts[j].x, yj = pts[j].y;
+    if (((yi > p.y) !== (yj > p.y)) && (p.x < (xj-xi)*(p.y-yi)/(yj-yi+1e-9) + xi)) inside = !inside;
+  }
+  return inside;
+}
+
+// ---------- Tooltip ----------
+function updateTooltip(e, zone) {
+  const tt = $('tooltip');
+  if (!zone) { hideTooltip(); return; }
+  const tag = state.tags.find(t => t.id === zone.tag) || { color: '#888', name: '?' };
+  tt.innerHTML = `
+    <div class="tt-name">${esc(zone.name || 'Без назви')}</div>
+    <div class="tt-tag" style="background:${tag.color};color:#fff;">${esc(tag.name)}</div>
+    ${zone.date ? `<div style="color:var(--muted);font-size:11px;">📅 ${zone.date}</div>` : ''}
+    ${zone.desc ? `<div class="tt-desc">${esc(zone.desc)}</div>` : ''}
+    ${zone.extra ? `<div class="tt-extra">${esc(zone.extra)}</div>` : ''}
+  `;
+  tt.style.display = 'block';
+  const r = tt.getBoundingClientRect();
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + r.width > window.innerWidth) x = e.clientX - r.width - 14;
+  if (y + r.height > window.innerHeight) y = e.clientY - r.height - 14;
+  tt.style.left = x + 'px';
+  tt.style.top = y + 'px';
+}
+function hideTooltip() { $('tooltip').style.display = 'none'; }
+
+// ---------- Вибір зони ----------
+function selectZone(id) {
+  state.selectedZoneId = id;
+  if (id) {
+    const z = state.zones.find(z => z.id === id);
+    if (z) {
+      $('editPanel').style.display = 'block';
+      $('fName').value = z.name || '';
+      $('fTag').value = z.tag || 'gray';
+      $('fDate').value = z.date || '';
+      $('fDesc').value = z.desc || '';
+      $('fExtra').value = z.extra || '';
+    }
+  } else {
+    $('editPanel').style.display = 'none';
+  }
+  renderList();
+  render();
+}
+
+// ---------- Список ----------
+function renderList() {
+  const list = $('zoneList');
+  const q = $('searchZones').value.toLowerCase().trim();
+  const filtered = state.zones.filter(z => !q || (z.name||'').toLowerCase().includes(q));
+  $('zoneCount').textContent = state.zones.length;
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty">${q ? 'Нічого не знайдено' : 'Поки що жодної зони. Оберіть режим «Малювання зони» та клікайте по карті.'}</div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(z => {
+    const tag = state.tags.find(t => t.id === z.tag) || { color: '#888', name: '?' };
+    return `
+      <div class="zone-item ${z.id===state.selectedZoneId?'selected':''}" data-id="${z.id}">
+        <div class="zi-head">
+          <span class="zi-dot" style="background:${tag.color}"></span>
+          <span class="zi-name">${esc(z.name || 'Без назви')}</span>
+          <span class="zi-tag" style="background:${tag.color};color:#fff;">${esc(tag.name)}</span>
+          <button class="zi-del" data-del="${z.id}" title="Видалити">×</button>
+        </div>
+        ${z.date ? `<div class="zi-meta">📅 ${z.date} · ${z.points.length} точок</div>` : `<div class="zi-meta">${z.points.length} точок</div>`}
+      </div>
+    `;
+  }).join('');
+
+  list.querySelectorAll('.zone-item').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target.dataset.del) return;
+      selectZone(el.dataset.id);
+      centerZone(el.dataset.id);
+    });
+  });
+  list.querySelectorAll('[data-del]').forEach(b => {
+    b.addEventListener('click', e => {
+      e.stopPropagation();
+      deleteZone(b.dataset.del);
+    });
+  });
+}
+
+function centerZone(id) {
+  const z = state.zones.find(z => z.id === id);
+  if (!z || !z.points.length) return;
+  const c = centroid(z.points);
+  const r = mapArea.getBoundingClientRect();
+  const sc = mapToScreen(c.x, c.y);
+  state.view.x += r.width/2 - sc.x;
+  state.view.y += r.height/2 - sc.y;
+  render();
+}
+
+function deleteZone(id) {
+  if (!confirm('Видалити зону?')) return;
+  state.zones = state.zones.filter(z => z.id !== id);
+  if (state.selectedZoneId === id) selectZone(null);
+  renderList();
+  render();
+  save();
+  toast('Зону видалено');
+}
+
+// ---------- Форма ----------
+ $('fName').addEventListener('input', e => { const z = cur(); if(z){z.name=e.target.value; renderList(); render();} });
+ $('fTag').addEventListener('change', e => { const z = cur(); if(z){z.tag=e.target.value; renderList(); render();} save(); });
+ $('fDate').addEventListener('change', e => { const z = cur(); if(z){z.date=e.target.value; renderList();} save(); });
+ $('fDesc').addEventListener('input', e => { const z = cur(); if(z){z.desc=e.target.value;} save(); });
+ $('fExtra').addEventListener('input', e => { const z = cur(); if(z){z.extra=e.target.value;} save(); });
+ $('btnApply').addEventListener('click', () => { save(); toast('Збережено','success'); });
+ $('btnCenter').addEventListener('click', () => { if(state.selectedZoneId) centerZone(state.selectedZoneId); });
+ $('btnDeleteZone').addEventListener('click', () => { if(state.selectedZoneId) deleteZone(state.selectedZoneId); });
+
+function cur() { return state.zones.find(z => z.id === state.selectedZoneId); }
+
+// ---------- Теги ----------
+function renderTagOptions() {
+  $('fTag').innerHTML = state.tags.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('');
+}
+function renderTagEditor() {
+  $('tagEditor').innerHTML = state.tags.map(t => `
+    <span class="tag-pill" style="background:${hexToRgba(t.color,.2)};color:${t.color};border-color:${t.color}">
+      ${esc(t.name)}
+      <span data-tagdel="${t.id}" style="cursor:pointer;margin-left:4px;">×</span>
+    </span>
+  `).join('');
+  $('tagEditor').querySelectorAll('[data-tagdel]').forEach(el => {
+    el.addEventListener('click', () => {
+      state.tags = state.tags.filter(t => t.id !== el.dataset.tagdel);
+      state.zones.forEach(z => { if (z.tag === el.dataset.tagdel) z.tag = 'gray'; });
+      renderTagOptions(); renderTagEditor(); renderList(); render(); save();
+    });
+  });
+}
+ $('btnAddTag').addEventListener('click', () => {
+  const name = $('newTagName').value.trim();
+  const color = $('newTagColor').value;
+  if (!name) return toast('Введіть назву тегу','error');
+  const id = 't_' + Date.now();
+  state.tags.push({ id, name, color });
+  $('newTagName').value = '';
+  renderTagOptions(); renderTagEditor(); save();
+  toast('Тег додано','success');
+});
+
+// ---------- Пошук ----------
+ $('searchZones').addEventListener('input', renderList);
+
+// ---------- Режим ----------
+ $('modeSelect').addEventListener('change', e => {
+  state.mode = e.target.value;
+  state.drawingPoints = [];
+  hideTooltip();
+  render();
+});
+
+// ---------- Кнопки topbar ----------
+ $('btnLoadPixelya').addEventListener('click', () => loadFromPixelya($('pixelyaUrl').value));
+ $('btnLoadUrl').addEventListener('click', () => {
+  let v = $('pixelyaUrl').value.trim();
+  if (v.startsWith('#') || (!v.startsWith('http') && !v.startsWith('data:'))) {
+    loadFromPixelya(v);
+  } else {
+    loadMapFromUrl(v);
+  }
+});
+ $('btnUpload').addEventListener('click', () => $('fileInput').click());
+ $('fileInput').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (f) loadFile(f);
+  e.target.value = '';
+});
+ $('btnPaste').addEventListener('click', async () => {
+  try {
+    const items = await navigator.clipboard.read();
+    for (const item of items) {
+      for (const type of item.types) {
+        if (type.startsWith('image/')) {
+          const blob = await item.getType(type);
+          loadFile(blob);
+          return;
+        }
+      }
+    }
+    toast('У буфері немає зображення','error');
+  } catch(err) {
+    toast('Натисніть Ctrl+V прямо на карті','error');
+  }
+});
+document.addEventListener('paste', e => {
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (const it of items) {
+    if (it.type.startsWith('image/')) {
+      loadFile(it.getAsFile());
+      return;
+    }
+  }
+});
+
+function loadFile(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      state.mapImage = img;
+      fitMap();
+      render();
+      toast('Карту завантажено','success');
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ---------- Експорт / Імпорт / PNG ----------
+ $('btnExport').addEventListener('click', () => {
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    tags: state.tags,
+    zones: state.zones,
+    view: state.view,
+    mapImage: state.mapImage ? (state.mapImage.src.length < 5_000_000 ? state.mapImage.src : null) : null,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  downloadBlob(blob, 'pixelwar-map-' + Date.now() + '.json');
+  toast('Експортовано','success');
+});
+
+ $('btnImport').addEventListener('click', () => $('importInput').click());
+ $('importInput').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.tags) state.tags = data.tags;
+      if (data.zones) state.zones = data.zones;
+      if (data.view) state.view = data.view;
+      if (data.mapImage) {
+        const img = new Image();
+        img.onload = () => { state.mapImage = img; renderTagOptions(); renderTagEditor(); renderList(); render(); save(); };
+        img.src = data.mapImage;
+      } else {
+        renderTagOptions(); renderTagEditor(); renderList(); render(); save();
+      }
+      toast('Імпортовано','success');
+    } catch(err) {
+      toast('Помилка імпорту: ' + err.message,'error');
+    }
+  };
+  reader.readAsText(f);
+  e.target.value = '';
+});
+
+ $('btnPng').addEventListener('click', () => {
+  if (!state.mapImage) return toast('Спочатку завантажте карту','error');
+  const c = document.createElement('canvas');
+  c.width = state.mapImage.naturalWidth;
+  c.height = state.mapImage.naturalHeight;
+  const ctx = c.getContext('2d');
+  ctx.drawImage(state.mapImage, 0, 0);
+  // масштабуємо зони до 1:1
+  const oldView = { ...state.view };
+  state.view = { x: 0, y: 0, zoom: 1 };
+  state.zones.forEach(z => drawZone(ctx, z, { width: c.width, height: c.height }));
+  state.view = oldView;
+  c.toBlob(b => downloadBlob(b, 'pixelwar-map.png'), 'image/png');
+});
+
+ $('btnClear').addEventListener('click', () => {
+  if (!confirm('Видалити всі зони?')) return;
+  state.zones = [];
+  state.selectedZoneId = null;
+  renderList(); render(); save();
+  toast('Очищено');
+});
+
+function downloadBlob(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+// ---------- Збереження ----------
+function save() {
+  try {
+    const data = {
+      tags: state.tags,
+      zones: state.zones,
+      view: state.view,
+      mapImage: state.mapImage ? (state.mapImage.src.length < 2_000_000 ? state.mapImage.src : null) : null,
+    };
+    localStorage.setItem('pixelwar_map', JSON.stringify(data));
+    renderStats();
+  } catch(e) { console.warn('save error', e); }
+}
+function load() {
+  try {
+    const raw = localStorage.getItem('pixelwar_map');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data.tags) state.tags = data.tags;
+    if (data.zones) state.zones = data.zones;
+    if (data.view) state.view = data.view;
+    if (data.mapImage) {
+      const img = new Image();
+      img.onload = () => { state.mapImage = img; render(); };
+      img.src = data.mapImage;
+    }
+  } catch(e) { console.warn('load error', e); }
+}
+
+function renderStats() {
+  const stats = $('stats');
+  const byTag = {};
+  state.zones.forEach(z => { byTag[z.tag] = (byTag[z.tag]||0) + 1; });
+  let html = `<div>Всього зон: <b style="color:var(--text)">${state.zones.length}</b></div>`;
+  state.tags.forEach(t => {
+    if (byTag[t.id]) {
+      html += `<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${t.color};margin-right:6px;"></span>${esc(t.name)}: <b style="color:var(--text)">${byTag[t.id]}</b></div>`;
+    }
+  });
+  stats.innerHTML = html;
+}
+
+// ---------- Утиліти ----------
+function uid() { return 'z_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7); }
+function esc(s) { const d = document.createElement('div'); d.textContent = s==null?'':String(s); return d.innerHTML; }
+function toast(msg, type='') {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.className = 'toast', 2800);
+}
+
+// ---------- Гарякі клавіші ----------
+let spaceDown = false;
+window.addEventListener('keydown', e => {
+  if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+    spaceDown = true; e.preventDefault();
+  }
+  if (e.key === 'Escape' && state.mode === 'draw') {
+    state.drawingPoints = [];
+    render();
+  }
+  if (e.key === 'Delete' && state.selectedZoneId && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+    deleteZone(state.selectedZoneId);
+  }
+  if (e.key === 'Enter' && state.mode === 'draw' && state.drawingPoints.length >= 3) {
+    onDoubleClick({});
+  }
+});
+window.addEventListener('keyup', e => { if (e.code === 'Space') spaceDown = false; });
+
+// ---------- Старт ----------
+function init() {
+  renderTagOptions();
+  renderTagEditor();
+  load();
+  resizeCanvas();
+  renderList();
+  renderStats();
+  render();
+}
+init();
+</script>
+</body>
+</html>
