@@ -351,11 +351,23 @@
       </div>
       <div class="row">
         <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; cursor:pointer;">
+          <input type="checkbox" id="geojsonAutoResize" checked style="width:auto;">
+          Авто-розмір полотна (якщо карта більша за 4096)
+        </label>
+      </div>
+      <div class="row">
+        <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; cursor:pointer;">
+          <input type="checkbox" id="geojsonSubdivide" checked style="width:auto;">
+          Розбити імпортовані області на дрібні провінції
+        </label>
+      </div>
+      <div class="row">
+        <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; cursor:pointer;">
           <input type="checkbox" id="geojsonClear" style="width:auto;">
           Очистити полотно й провінції перед імпортом
         </label>
       </div>
-      <div class="hint">Кожен Polygon/MultiPolygon стає окремою провінцією. Якщо в полі "Назва для наступної провінції" ви ввели текст, всі нові провінції отримають назву з цим префіском (наприклад, Київська 1, Київська 2). Власник береться з поля «Власник для нових провінцій». Після імпорту одразу можна натиснути «Завантажити province_map.png».</div>
+      <div class="hint">Якщо увімкнено «Розбити...», кожен Polygon/MultiPolygon буде автоматично розбитий на дрібні провінції (згідно з повзунками «Розміру» та «Хаотичності»). Якщо вимкнено — кожна область стане однією великою провінцією. Після імпорту одразу можна натиснути «Завантажити province_map.png».</div>
       <div class="hint" id="geojsonStatus"></div>
     </div>
 
@@ -796,6 +808,82 @@
     return seedIdx;
   }
 
+  // Reusable Voronoi processing function for both manual click and GeoJSON import
+  function processMaskVoronoi(mask, bx0, by0, bw, bh, namePrefix, owner) {
+    const WORK_MAX = 1500;
+    const scale = Math.min(1, WORK_MAX / Math.max(bw, bh));
+    const ww = Math.max(2, Math.round(bw*scale));
+    const wh = Math.max(2, Math.round(bh*scale));
+
+    const avgSize = Math.max(8, parseInt(document.getElementById('provSize').value, 10));
+    const irregularity = parseInt(document.getElementById('provIrregularity').value, 10) / 100;
+
+    const spacingGlobal = avgSize;
+    const seeds = [];
+    for (let gy = spacingGlobal/2; gy < bh; gy += spacingGlobal){
+      for (let gx = spacingGlobal/2; gx < bw; gx += spacingGlobal){
+        const jitterMag = spacingGlobal * irregularity * 0.8;
+        const jx = (Math.random()-0.5) * jitterMag;
+        const jy = (Math.random()-0.5) * jitterMag;
+        const sx = Math.round(gx + jx), sy = Math.round(gy + jy);
+        if (sx < 0 || sx >= bw || sy < 0 || sy >= bh) continue;
+        if (!mask[sy*bw + sx]) continue;
+        const lx = Math.min(ww-1, Math.round(sx*scale));
+        const ly = Math.min(wh-1, Math.round(sy*scale));
+        seeds.push({x: lx, y: ly});
+      }
+    }
+    if (seeds.length === 0) {
+        seeds.push({x: Math.floor(ww/2), y: Math.floor(wh/2)});
+    }
+
+    const clusterGrid = runJFA(ww, wh, seeds);
+
+    const counts = new Array(seeds.length).fill(0);
+    for (let y=0; y<bh; y++){
+      const wy = Math.min(wh-1, Math.round(y*scale));
+      for (let x=0; x<bw; x++){
+        if (!mask[y*bw + x]) continue;
+        const wx = Math.min(ww-1, Math.round(x*scale));
+        const c = clusterGrid[wy*ww + wx];
+        if (c >= 0) counts[c]++;
+      }
+    }
+
+    const clusterToId = new Array(seeds.length).fill(-1);
+    let counter = 1;
+    for (let c=0; c<seeds.length; c++){
+      if (counts[c] < 4) continue;
+      const id = nextId;
+      const color = idToColor(id);
+      const name = namePrefix ? (namePrefix + ' ' + counter) : ('province_' + id);
+      provinces[id] = { name, owner, color };
+      clusterToId[c] = id;
+      nextId++;
+      counter++;
+    }
+
+    const region = drawCtx.createImageData(bw, bh);
+    const rdata = region.data;
+    for (let y=0; y<bh; y++){
+      const wy = Math.min(wh-1, Math.round(y*scale));
+      for (let x=0; x<bw; x++){
+        if (!mask[y*bw + x]) continue;
+        const wx = Math.min(ww-1, Math.round(x*scale));
+        const c = clusterGrid[wy*ww + wx];
+        const pid = c>=0 ? clusterToId[c] : -1;
+        if (pid === -1) continue;
+
+        const ri = (y*bw + x) * 4;
+        const col = provinces[pid].color;
+        rdata[ri]=col[0]; rdata[ri+1]=col[1]; rdata[ri+2]=col[2]; rdata[ri+3]=255;
+      }
+    }
+    drawCtx.putImageData(region, bx0, by0);
+    
+    return counter - 1;
+  }
+
   function generateSubProvinces(startX, startY){
     const status = document.getElementById('autogenStatus');
     const maskResult = computeFloodMask(startX, startY);
@@ -817,94 +905,23 @@
     status.textContent = 'Генерація…';
 
     setTimeout(() => {
-      pushHistory(); // Save state before async generation completes
-      const avgSize = Math.max(8, parseInt(document.getElementById('provSize').value, 10));
-      const irregularity = parseInt(document.getElementById('provIrregularity').value, 10) / 100;
-
-      const WORK_MAX = 1500;
-      const scale = Math.min(1, WORK_MAX / Math.max(bw, bh));
-      const ww = Math.max(2, Math.round(bw*scale));
-      const wh = Math.max(2, Math.round(bh*scale));
-
-      const spacingGlobal = avgSize;
-      const seeds = [];
-      for (let gy = minY + spacingGlobal/2; gy < maxY; gy += spacingGlobal){
-        for (let gx = minX + spacingGlobal/2; gx < maxX; gx += spacingGlobal){
-          const jitterMag = spacingGlobal * irregularity * 0.8;
-          const jx = (Math.random()-0.5) * jitterMag;
-          const jy = (Math.random()-0.5) * jitterMag;
-          const sx = Math.round(gx + jx), sy = Math.round(gy + jy);
-          if (sx < minX || sx > maxX || sy < minY || sy > maxY) continue;
-          if (!visited[sy*SIZE + sx]) continue;
-          const lx = Math.min(ww-1, Math.round((sx-minX)*scale));
-          const ly = Math.min(wh-1, Math.round((sy-minY)*scale));
-          seeds.push({x: lx, y: ly});
-        }
-      }
-      if (seeds.length === 0){
-        const cx = Math.min(ww-1, Math.round((startX-minX)*scale));
-        const cy = Math.min(wh-1, Math.round((startY-minY)*scale));
-        seeds.push({x: cx, y: cy});
-      }
-
-      const clusterGrid = runJFA(ww, wh, seeds);
-
-      const counts = new Array(seeds.length).fill(0);
-      for (let y=0; y<bh; y++){
-        const gy = minY + y;
-        const wy = Math.min(wh-1, Math.round(y*scale));
-        for (let x=0; x<bw; x++){
-          const gx = minX + x;
-          if (!visited[gy*SIZE + gx]) continue;
-          const wx = Math.min(ww-1, Math.round(x*scale));
-          const c = clusterGrid[wy*ww + wx];
-          if (c >= 0) counts[c]++;
-        }
-      }
-
+      pushHistory();
       const owner = document.getElementById('ownerSelect').value;
       const baseName = document.getElementById('nextNameInput').value.trim();
-      const clusterToId = new Array(seeds.length).fill(-1);
-      const batch = [];
-      let counter = 1;
-      for (let c=0; c<seeds.length; c++){
-        if (counts[c] < 4) continue;
-        const id = nextId;
-        const color = idToColor(id);
-        const name = baseName ? (baseName + ' ' + counter) : ('province_' + id);
-        provinces[id] = { name, owner, color };
-        clusterToId[c] = id;
-        batch.push(id);
-        nextId++;
-        counter++;
+      
+      const mask = visited.slice(minY*SIZE + minX, (minY+bh)*SIZE + minX); // extract local mask
+      const localMask = new Uint8Array(bw*bh);
+      for(let y=0; y<bh; y++) {
+          for(let x=0; x<bw; x++) {
+              localMask[y*bw + x] = visited[(minY+y)*SIZE + (minX+x)] ? 1 : 0;
+          }
       }
-
-      const region = drawCtx.getImageData(minX, minY, bw, bh);
-      const rdata = region.data;
-      const clusterAt = (x, y) => {
-        const wx = Math.min(ww-1, Math.round(x*scale));
-        const wy = Math.min(wh-1, Math.round(y*scale));
-        return clusterGrid[wy*ww + wx];
-      };
-      for (let y=0; y<bh; y++){
-        const gy = minY + y;
-        for (let x=0; x<bw; x++){
-          const gx = minX + x;
-          if (!visited[gy*SIZE + gx]) continue;
-          const c = clusterAt(x, y);
-          const pid = c>=0 ? clusterToId[c] : -1;
-          if (pid === -1) continue;
-
-          const ri = (y*bw + x) * 4;
-          const col = provinces[pid].color;
-          rdata[ri]=col[0]; rdata[ri+1]=col[1]; rdata[ri+2]=col[2]; rdata[ri+3]=255;
-        }
-      }
-      drawCtx.putImageData(region, minX, minY);
-
-      lastAutogenBatch = batch;
-      document.getElementById('btnUndoAutogen').disabled = batch.length === 0;
-      status.textContent = `Створено провінцій: ${batch.length}`;
+      
+      const createdCount = processMaskVoronoi(localMask, minX, minY, bw, bh, baseName, owner);
+      
+      lastAutogenBatch = Object.keys(provinces).map(Number).filter(id => id >= nextId - createdCount);
+      document.getElementById('btnUndoAutogen').disabled = createdCount === 0;
+      status.textContent = `Створено провінцій: ${createdCount}`;
       updateNextIdPreview();
       refreshProvinceList();
     }, 10);
@@ -957,7 +974,6 @@
 
   // ---------------- MOUSE & PAN EVENTS ----------------
   viewport.addEventListener('mousedown', (e) => {
-    // Middle mouse OR Space + Left mouse to pan
     if (e.button === 1 || (e.button === 0 && spacePressed)) {
       isPanning = true;
       panStart = { x: e.clientX, y: e.clientY, panX, panY };
@@ -966,10 +982,9 @@
       return;
     }
     
-    // Drawing clicks
     const {x,y} = getCanvasCoords(e);
     if (currentTool === 'pen' || currentTool === 'eraser'){
-      pushHistory(); // Save state before drawing
+      pushHistory();
       isDrawing = true;
       lastPos = null;
       strokeAt(x, y, currentTool === 'eraser');
@@ -1026,7 +1041,6 @@
     const delta = e.deltaY < 0 ? 1.1 : 0.9;
     zoom = Math.max(0.05, Math.min(10, zoom * delta));
 
-    // Adjust pan to keep mouse point stationary during zoom
     panX = mouseX - (mouseX - panX) * (zoom / oldZoom);
     panY = mouseY - (mouseY - panY) * (zoom / oldZoom);
 
@@ -1036,7 +1050,6 @@
   document.getElementById('zoomIn').addEventListener('click', () => {
     const oldZoom = zoom;
     zoom = Math.max(0.05, Math.min(10, zoom + 0.1));
-    // Zoom towards center
     const cx = viewport.clientWidth / 2;
     const cy = viewport.clientHeight / 2;
     panX = cx - (cx - panX) * (zoom / oldZoom);
@@ -1311,6 +1324,22 @@
       const centerLat = (minLat + maxLat) / 2;
       const lonCorrection = keepAspect ? Math.cos(centerLat * Math.PI / 180) : 1;
 
+      // Dynamic size calculation
+      if (document.getElementById('geojsonAutoResize').checked) {
+          const lonSpan = Math.max(1e-9, (maxLon - minLon) * lonCorrection);
+          const latSpan = Math.max(1e-9, (maxLat - minLat));
+          const maxSpan = Math.max(lonSpan, latSpan);
+          
+          // Heuristic: ~200px per degree. If > 4096, round to next 1024.
+          let targetSize = Math.ceil(maxSpan * 200);
+          targetSize = Math.ceil(targetSize / 1024) * 1024;
+          
+          if (targetSize > 8192) targetSize = 8192; // Browser cap
+          if (targetSize > SIZE) {
+              setCanvasSize(targetSize);
+          }
+      }
+
       let project;
       if (keepAspect){
         const lonSpan = Math.max(1e-9, (maxLon - minLon) * lonCorrection);
@@ -1336,9 +1365,11 @@
 
       setTimeout(() => {
         const owner = document.getElementById('ownerSelect').value;
-        const baseName = document.getElementById('nextNameInput').value.trim(); // Get predefined prefix
+        const baseName = document.getElementById('nextNameInput').value.trim();
         const manualField = document.getElementById('geojsonNameField').value.trim();
-        let created = 0;
+        const subdivide = document.getElementById('geojsonSubdivide').checked;
+        let provincesCreated = 0;
+        let featuresProcessed = 0;
 
         features.forEach((f) => {
           const rast = buildFeaturePath(f.geometry, project);
@@ -1352,40 +1383,66 @@
           const bw = bx1 - bx0 + 1, bh = by1 - by0 + 1;
           if (bw <= 0 || bh <= 0) return;
 
-          const id = nextId;
-          const color = idToColor(id);
-
-          drawCtx.fillStyle = rgbCss(color);
-          drawCtx.fill(path, 'evenodd');
-
-          const region = drawCtx.getImageData(bx0, by0, bw, bh);
-          const rd = region.data;
-          for (let k=0; k<rd.length; k+=4){
-            if (rd[k+3] > 0){
-              rd[k]=color[0]; rd[k+1]=color[1]; rd[k+2]=color[2]; rd[k+3]=255;
-            }
-          }
-          drawCtx.putImageData(region, bx0, by0);
-
-          // If baseName is provided, use it as prefix, otherwise try to guess from GeoJSON, otherwise default
-          let name;
-          if (baseName) {
-            name = baseName + ' ' + (created + 1);
+          if (subdivide) {
+              // Draw temp mask, read it, and process with Voronoi
+              drawCtx.fillStyle = 'rgba(255,255,255,1)';
+              drawCtx.fill(path, 'evenodd');
+              
+              const region = drawCtx.getImageData(bx0, by0, bw, bh);
+              const mask = new Uint8Array(bw * bh);
+              for(let y=0; y<bh; y++) {
+                  for(let x=0; x<bw; x++) {
+                      const i = (y*bw + x)*4;
+                      if(region.data[i+3] > 0) mask[y*bw+x] = 1;
+                  }
+              }
+              
+              drawCtx.clearRect(bx0, by0, bw, bh); // clear temp mask
+              
+              let namePrefix = baseName;
+              if (!namePrefix) {
+                  namePrefix = guessFeatureName(f.properties, manualField) || '';
+              }
+              
+              const createdCount = processMaskVoronoi(mask, bx0, by0, bw, bh, namePrefix, owner);
+              provincesCreated += createdCount;
+              featuresProcessed++;
           } else {
-            const geoName = guessFeatureName(f.properties, manualField);
-            name = geoName || ('province_' + id);
-          }
+              // Single province fill
+              const id = nextId;
+              const color = idToColor(id);
 
-          provinces[id] = { name, owner, color };
-          nextId++;
-          created++;
+              drawCtx.fillStyle = rgbCss(color);
+              drawCtx.fill(path, 'evenodd');
+
+              const region = drawCtx.getImageData(bx0, by0, bw, bh);
+              const rd = region.data;
+              for (let k=0; k<rd.length; k+=4){
+                  if (rd[k+3] > 0){
+                      rd[k]=color[0]; rd[k+1]=color[1]; rd[k+2]=color[2]; rd[k+3]=255;
+                  }
+              }
+              drawCtx.putImageData(region, bx0, by0);
+
+              let name;
+              if (baseName) {
+                  name = baseName + ' ' + (featuresProcessed + 1);
+              } else {
+                  const geoName = guessFeatureName(f.properties, manualField);
+                  name = geoName || ('province_' + id);
+              }
+
+              provinces[id] = { name, owner, color };
+              nextId++;
+              provincesCreated++;
+              featuresProcessed++;
+          }
         });
 
         updateNextIdPreview();
         refreshProvinceList();
-        statusEl.textContent = `Готово: створено ${created} провінцій із ${features.length} геометрій. Можна експортувати PNG.`;
+        statusEl.textContent = `Готово: оброблено ${featuresProcessed} областей, створено ${provincesCreated} провінцій.`;
         
-        // Fix issue #2: Auto zoom fit after import to prevent shrinking/stuck view
         document.getElementById('zoomFit').click(); 
         
         e.target.value = '';
