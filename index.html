@@ -813,20 +813,9 @@
           const pid = c>=0 ? clusterToId[c] : -1;
           if (pid === -1) continue;
 
-          // border check against 4-neighbors (only within mask)
-          let isBorder = false;
-          if (x>0 && visited[gy*SIZE+(gx-1)]){ const c2=clusterAt(x-1,y); if (c2>=0 && clusterToId[c2]!==pid) isBorder=true; }
-          if (!isBorder && x<bw-1 && visited[gy*SIZE+(gx+1)]){ const c2=clusterAt(x+1,y); if (c2>=0 && clusterToId[c2]!==pid) isBorder=true; }
-          if (!isBorder && y>0 && visited[(gy-1)*SIZE+gx]){ const c2=clusterAt(x,y-1); if (c2>=0 && clusterToId[c2]!==pid) isBorder=true; }
-          if (!isBorder && y<bh-1 && visited[(gy+1)*SIZE+gx]){ const c2=clusterAt(x,y+1); if (c2>=0 && clusterToId[c2]!==pid) isBorder=true; }
-
           const ri = (y*bw + x) * 4;
-          if (isBorder){
-            rdata[ri]=0; rdata[ri+1]=0; rdata[ri+2]=0; rdata[ri+3]=255;
-          } else {
-            const col = provinces[pid].color;
-            rdata[ri]=col[0]; rdata[ri+1]=col[1]; rdata[ri+2]=col[2]; rdata[ri+3]=255;
-          }
+          const col = provinces[pid].color;
+          rdata[ri]=col[0]; rdata[ri+1]=col[1]; rdata[ri+2]=col[2]; rdata[ri+3]=255;
         }
       }
       drawCtx.putImageData(region, minX, minY);
