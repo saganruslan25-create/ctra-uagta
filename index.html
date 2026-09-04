@@ -148,19 +148,21 @@
 
   .canvas-viewport {
     flex:1;
-    overflow: auto;
+    overflow: hidden; /* Changed from auto to hidden for custom pan/zoom */
     background:
       repeating-conic-gradient(#191d23 0% 25%, #14171c 0% 50%) 50% / 24px 24px;
     position: relative;
-    display:flex;
-    align-items:flex-start;
-    justify-content:flex-start;
+    cursor: default;
   }
+  .canvas-viewport.pannable { cursor: grab; }
+  .canvas-viewport.panning { cursor: grabbing; }
+  
   .canvas-stack {
-    position: relative;
-    margin: 40px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
     box-shadow: 0 0 0 1px var(--line), 0 20px 60px rgba(0,0,0,.5);
-    flex-shrink:0;
   }
   .canvas-stack canvas {
     position:absolute;
@@ -321,7 +323,7 @@
           <input type="text" id="nextNameInput" placeholder="напр. Волинська область">
         </div>
       </div>
-      <div class="hint">Клік інструментом «Заливка» всередині замкненої області створить нову провінцію з ID <b id="nextIdPreview">1</b>, кольором <span id="nextColorPreview" style="font-family:var(--mono)">(1,0,0)</span> і власником, обраним вище.</div>
+      <div class="hint">Клік інструментом «Заливка» всередині замкненої області створить нову провінцію з ID <b id="nextIdPreview">1</b>, кольором <span id="nextColorPreview" style="font-family:var(--mono)">(1,0,0)</span> і власником, обраним вище. Ці параметри також застосовуються до імпорту GeoJSON та авто-розбиття.</div>
     </div>
 
     <!-- PROVINCE LIST -->
@@ -353,7 +355,7 @@
           Очистити полотно й провінції перед імпортом
         </label>
       </div>
-      <div class="hint">Кожен Polygon/MultiPolygon стає окремою провінцією з унікальним ID-кольором — заповнюється напряму, без потреби малювати чорні кордони вручну. Власник береться з поля «Власник для нових провінцій» вище. Після імпорту одразу можна натиснути «Завантажити province_map.png».</div>
+      <div class="hint">Кожен Polygon/MultiPolygon стає окремою провінцією. Якщо в полі "Назва для наступної провінції" ви ввели текст, всі нові провінції отримають назву з цим префіском (наприклад, Київська 1, Київська 2). Власник береться з поля «Власник для нових провінцій». Після імпорту одразу можна натиснути «Завантажити province_map.png».</div>
       <div class="hint" id="geojsonStatus"></div>
     </div>
 
@@ -391,6 +393,10 @@
         <button class="small" id="zoomIn">+</button>
         <button class="small" id="zoomFit">За розміром</button>
         <button class="small" id="zoom100">100%</button>
+      </div>
+      <div class="sep"></div>
+      <div class="group">
+        <button class="small" id="btnUndo" title="Скасувати (Ctrl+Z)">↶ Скасувати</button>
       </div>
       <div class="sep"></div>
       <div class="group">
@@ -441,7 +447,18 @@
   let provinces = {}; // id -> {name, owner, color:[r,g,b]}
   let currentTool = "pen";
   let selectedProvinceId = null;
-  let zoomPct = 25;
+
+  // Zoom & Pan State
+  let zoom = 0.25; // 25%
+  let panX = 0;
+  let panY = 0;
+  let isPanning = false;
+  let spacePressed = false;
+  let panStart = {x:0, y:0, panX:0, panY:0};
+
+  // Undo State
+  let undoStack = [];
+  const MAX_UNDO = 10;
 
   const refCanvas = document.getElementById('refCanvas');
   const drawCanvas = document.getElementById('drawCanvas');
@@ -465,20 +482,17 @@
 
   function setCanvasSize(size){
     SIZE = size;
+    undoStack = []; // Clear undo stack on size change to prevent memory crash
     [refCanvas, drawCanvas].forEach(c => { c.width = size; c.height = size; });
-    canvasStack.style.width = size + 'px';
-    canvasStack.style.height = size + 'px';
     drawCtx.clearRect(0,0,size,size);
     refCtx.clearRect(0,0,size,size);
     document.getElementById('statSize').textContent = size + '×' + size;
-    applyZoom();
+    document.getElementById('zoomFit').click(); // Auto fit to screen
   }
 
-  function applyZoom(){
-    const px = Math.round(SIZE * zoomPct / 100);
-    canvasStack.style.width = px + 'px';
-    canvasStack.style.height = px + 'px';
-    document.getElementById('zoomLabel').textContent = zoomPct + '%';
+  function applyTransform(){
+    canvasStack.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+    document.getElementById('zoomLabel').textContent = Math.round(zoom * 100) + '%';
   }
 
   function updateNextIdPreview(){
@@ -522,6 +536,51 @@
       list.appendChild(item);
     });
   }
+
+  // ---------------- UNDO SYSTEM ----------------
+  function pushHistory() {
+    if (undoStack.length >= MAX_UNDO) undoStack.shift();
+    const snapshot = {
+      data: drawCtx.getImageData(0, 0, SIZE, SIZE),
+      provinces: JSON.parse(JSON.stringify(provinces)),
+      nextId: nextId
+    };
+    undoStack.push(snapshot);
+  }
+
+  function undo() {
+    if (undoStack.length === 0) {
+      alert("Історія порожня");
+      return;
+    }
+    const snapshot = undoStack.pop();
+    drawCtx.putImageData(snapshot.data, 0, 0);
+    provinces = snapshot.provinces;
+    nextId = snapshot.nextId;
+    updateNextIdPreview();
+    refreshProvinceList();
+    document.getElementById('infoCard').classList.remove('show');
+    selectedProvinceId = null;
+  }
+
+  document.getElementById('btnUndo').addEventListener('click', undo);
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'z') {
+      e.preventDefault();
+      undo();
+    }
+    if (e.code === 'Space' && !e.target.matches('input, select, textarea')) {
+      spacePressed = true;
+      viewport.classList.add('pannable');
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('keyup', (e) => {
+    if (e.code === 'Space') {
+      spacePressed = false;
+      viewport.classList.remove('pannable');
+    }
+  });
 
   // ---------------- TOOLS ----------------
   const toolButtons = {
@@ -600,23 +659,21 @@
 
   // ---------------- FLOOD FILL ----------------
   function floodFillAt(startX, startY){
+    pushHistory();
     const imgData = drawCtx.getImageData(0, 0, SIZE, SIZE);
     const data = imgData.data;
     const idx = (x,y) => (y*SIZE + x) * 4;
     const startIndex = idx(startX, startY);
 
     if (data[startIndex+3] !== 0){
-      // not empty: either a border (opaque black) or an existing province
       if (data[startIndex+3] === 255){
         const r=data[startIndex], g=data[startIndex+1], b=data[startIndex+2];
         if (!(r===0 && g===0 && b===0)){
-          // clicked an existing province -> just select it
           const clickedId = colorToId(r,g,b);
           if (provinces[clickedId]) showInfoCard(clickedId);
-          return;
         }
       }
-      return; // clicked a border pixel, do nothing
+      return;
     }
 
     const fillColor = idToColor(nextId);
@@ -652,10 +709,11 @@
     refreshProvinceList();
   }
 
-  // ---------------- DELETE PROVINCE (revert to transparent) ----------------
+  // ---------------- DELETE PROVINCE ----------------
   function deleteProvince(id){
     const p = provinces[id];
     if (!p) return;
+    pushHistory();
     const imgData = drawCtx.getImageData(0, 0, SIZE, SIZE);
     const data = imgData.data;
     const [cr,cg,cb] = p.color;
@@ -669,7 +727,7 @@
     refreshProvinceList();
   }
 
-  // ---------------- AUTO-GENERATE SUB-PROVINCES (Voronoi via Jump Flooding) ----------------
+  // ---------------- AUTO-GENERATE SUB-PROVINCES ----------------
   let lastAutogenBatch = [];
 
   function computeFloodMask(startX, startY){
@@ -759,16 +817,15 @@
     status.textContent = 'Генерація…';
 
     setTimeout(() => {
+      pushHistory(); // Save state before async generation completes
       const avgSize = Math.max(8, parseInt(document.getElementById('provSize').value, 10));
       const irregularity = parseInt(document.getElementById('provIrregularity').value, 10) / 100;
 
-      // work-resolution cap for performance on huge areas
       const WORK_MAX = 1500;
       const scale = Math.min(1, WORK_MAX / Math.max(bw, bh));
       const ww = Math.max(2, Math.round(bw*scale));
       const wh = Math.max(2, Math.round(bh*scale));
 
-      // seed generation: jittered grid, restricted to points actually inside the mask
       const spacingGlobal = avgSize;
       const seeds = [];
       for (let gy = minY + spacingGlobal/2; gy < maxY; gy += spacingGlobal){
@@ -792,7 +849,6 @@
 
       const clusterGrid = runJFA(ww, wh, seeds);
 
-      // count masked pixels per cluster, to skip empty/unused seeds
       const counts = new Array(seeds.length).fill(0);
       for (let y=0; y<bh; y++){
         const gy = minY + y;
@@ -812,7 +868,7 @@
       const batch = [];
       let counter = 1;
       for (let c=0; c<seeds.length; c++){
-        if (counts[c] < 4) continue; // skip negligible slivers
+        if (counts[c] < 4) continue;
         const id = nextId;
         const color = idToColor(id);
         const name = baseName ? (baseName + ' ' + counter) : ('province_' + id);
@@ -823,7 +879,6 @@
         counter++;
       }
 
-      // write pixel data for the bbox region
       const region = drawCtx.getImageData(minX, minY, bw, bh);
       const rdata = region.data;
       const clusterAt = (x, y) => {
@@ -885,6 +940,7 @@
   });
   document.getElementById('infoSave').addEventListener('click', () => {
     if (selectedProvinceId == null) return;
+    pushHistory();
     const p = provinces[selectedProvinceId];
     p.name = document.getElementById('infoName').value.trim() || p.name;
     p.owner = document.getElementById('infoOwner').value;
@@ -899,10 +955,21 @@
     }
   });
 
-  // ---------------- MOUSE EVENTS ----------------
-  drawCanvas.addEventListener('mousedown', (e) => {
+  // ---------------- MOUSE & PAN EVENTS ----------------
+  viewport.addEventListener('mousedown', (e) => {
+    // Middle mouse OR Space + Left mouse to pan
+    if (e.button === 1 || (e.button === 0 && spacePressed)) {
+      isPanning = true;
+      panStart = { x: e.clientX, y: e.clientY, panX, panY };
+      viewport.classList.add('panning');
+      e.preventDefault();
+      return;
+    }
+    
+    // Drawing clicks
     const {x,y} = getCanvasCoords(e);
     if (currentTool === 'pen' || currentTool === 'eraser'){
+      pushHistory(); // Save state before drawing
       isDrawing = true;
       lastPos = null;
       strokeAt(x, y, currentTool === 'eraser');
@@ -918,7 +985,15 @@
       }
     }
   });
+  
   window.addEventListener('mousemove', (e) => {
+    if (isPanning) {
+      panX = panStart.panX + (e.clientX - panStart.x);
+      panY = panStart.panY + (e.clientY - panStart.y);
+      applyTransform();
+      return;
+    }
+    
     const {x,y} = getCanvasCoords(e);
     document.getElementById('coordX').textContent = x;
     document.getElementById('coordY').textContent = y;
@@ -930,16 +1005,65 @@
       strokeAt(x, y, currentTool === 'eraser');
     }
   });
-  window.addEventListener('mouseup', () => { isDrawing = false; lastPos = null; });
+  
+  window.addEventListener('mouseup', () => { 
+    isDrawing = false; 
+    lastPos = null;
+    if (isPanning) {
+      isPanning = false;
+      viewport.classList.remove('panning');
+    }
+  });
 
   // ---------------- ZOOM ----------------
-  function setZoom(pct){ zoomPct = Math.max(5, Math.min(400, pct)); applyZoom(); }
-  document.getElementById('zoomIn').addEventListener('click', () => setZoom(zoomPct + 15));
-  document.getElementById('zoomOut').addEventListener('click', () => setZoom(zoomPct - 15));
-  document.getElementById('zoom100').addEventListener('click', () => setZoom(100));
+  viewport.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const rect = viewport.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const oldZoom = zoom;
+    const delta = e.deltaY < 0 ? 1.1 : 0.9;
+    zoom = Math.max(0.05, Math.min(10, zoom * delta));
+
+    // Adjust pan to keep mouse point stationary during zoom
+    panX = mouseX - (mouseX - panX) * (zoom / oldZoom);
+    panY = mouseY - (mouseY - panY) * (zoom / oldZoom);
+
+    applyTransform();
+  });
+
+  document.getElementById('zoomIn').addEventListener('click', () => {
+    const oldZoom = zoom;
+    zoom = Math.max(0.05, Math.min(10, zoom + 0.1));
+    // Zoom towards center
+    const cx = viewport.clientWidth / 2;
+    const cy = viewport.clientHeight / 2;
+    panX = cx - (cx - panX) * (zoom / oldZoom);
+    panY = cy - (cy - panY) * (zoom / oldZoom);
+    applyTransform();
+  });
+  document.getElementById('zoomOut').addEventListener('click', () => {
+    const oldZoom = zoom;
+    zoom = Math.max(0.05, Math.min(10, zoom - 0.1));
+    const cx = viewport.clientWidth / 2;
+    const cy = viewport.clientHeight / 2;
+    panX = cx - (cx - panX) * (zoom / oldZoom);
+    panY = cy - (cy - panY) * (zoom / oldZoom);
+    applyTransform();
+  });
+  document.getElementById('zoom100').addEventListener('click', () => { 
+    zoom = 1.0; 
+    panX = 0; 
+    panY = 0; 
+    applyTransform(); 
+  });
   document.getElementById('zoomFit').addEventListener('click', () => {
     const vw = viewport.clientWidth - 80, vh = viewport.clientHeight - 80;
-    setZoom(Math.floor(Math.min(vw, vh) / SIZE * 100));
+    zoom = Math.min(vw, vh) / SIZE;
+    panX = (viewport.clientWidth - SIZE * zoom) / 2;
+    panY = (viewport.clientHeight - SIZE * zoom) / 2;
+    applyTransform();
   });
 
   // ---------------- OWNERS ----------------
@@ -971,6 +1095,7 @@
     setCanvasSize(size);
     provinces = {};
     nextId = 1;
+    undoStack = [];
     updateNextIdPreview();
     refreshProvinceList();
   });
@@ -982,7 +1107,6 @@
     const img = new Image();
     img.onload = () => {
       refCtx.clearRect(0,0,SIZE,SIZE);
-      // fit image into square canvas, preserving aspect via cover-fit
       const scale = Math.max(SIZE / img.width, SIZE / img.height);
       const w = img.width*scale, h = img.height*scale;
       refCtx.drawImage(img, (SIZE-w)/2, (SIZE-h)/2, w, h);
@@ -996,6 +1120,7 @@
   // ---------------- CLEAR BORDERS ----------------
   document.getElementById('btnClearBorders').addEventListener('click', () => {
     if (!confirm('Стерти усі чорні лінії-кордони? Заповнені провінції не постраждають.')) return;
+    pushHistory();
     const imgData = drawCtx.getImageData(0,0,SIZE,SIZE);
     const data = imgData.data;
     for (let i=0; i<data.length; i+=4){
@@ -1029,7 +1154,7 @@
     link.click();
   });
 
-  // ---------------- IMPORT (continue previous work) ----------------
+  // ---------------- IMPORT ----------------
   document.getElementById('importPng').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -1041,6 +1166,7 @@
       }
       drawCtx.clearRect(0,0,SIZE,SIZE);
       drawCtx.drawImage(img, 0, 0);
+      pushHistory();
     };
     img.src = URL.createObjectURL(file);
   });
@@ -1064,6 +1190,7 @@
         nextId = (parsed.meta && parsed.meta.nextId) ? parsed.meta.nextId : (maxId + 1);
         updateNextIdPreview();
         refreshProvinceList();
+        pushHistory();
       } catch(err){
         alert('Не вдалося прочитати JSON: ' + err.message);
       }
@@ -1172,8 +1299,12 @@
 
       if (document.getElementById('geojsonClear').checked){
         drawCtx.clearRect(0,0,SIZE,SIZE);
+        refCtx.clearRect(0,0,SIZE,SIZE);
         provinces = {};
         nextId = 1;
+        undoStack = [];
+      } else {
+        pushHistory();
       }
 
       const keepAspect = document.getElementById('geojsonKeepAspect').checked;
@@ -1205,6 +1336,7 @@
 
       setTimeout(() => {
         const owner = document.getElementById('ownerSelect').value;
+        const baseName = document.getElementById('nextNameInput').value.trim(); // Get predefined prefix
         const manualField = document.getElementById('geojsonNameField').value.trim();
         let created = 0;
 
@@ -1226,8 +1358,6 @@
           drawCtx.fillStyle = rgbCss(color);
           drawCtx.fill(path, 'evenodd');
 
-          // snap anti-aliased edge pixels to an exact ID-color (needed for
-          // pixel-perfect flood-fill / color->ID lookups elsewhere in the app)
           const region = drawCtx.getImageData(bx0, by0, bw, bh);
           const rd = region.data;
           for (let k=0; k<rd.length; k+=4){
@@ -1237,7 +1367,15 @@
           }
           drawCtx.putImageData(region, bx0, by0);
 
-          const name = guessFeatureName(f.properties, manualField) || ('province_' + id);
+          // If baseName is provided, use it as prefix, otherwise try to guess from GeoJSON, otherwise default
+          let name;
+          if (baseName) {
+            name = baseName + ' ' + (created + 1);
+          } else {
+            const geoName = guessFeatureName(f.properties, manualField);
+            name = geoName || ('province_' + id);
+          }
+
           provinces[id] = { name, owner, color };
           nextId++;
           created++;
@@ -1246,6 +1384,10 @@
         updateNextIdPreview();
         refreshProvinceList();
         statusEl.textContent = `Готово: створено ${created} провінцій із ${features.length} геометрій. Можна експортувати PNG.`;
+        
+        // Fix issue #2: Auto zoom fit after import to prevent shrinking/stuck view
+        document.getElementById('zoomFit').click(); 
+        
         e.target.value = '';
       }, 10);
     };
@@ -1263,7 +1405,6 @@
   refreshOwnerSelects();
   updateNextIdPreview();
   refreshProvinceList();
-  setZoom(25);
   refCanvas.style.opacity = 0.55;
   setTool('pen');
   applyBrightMode();
