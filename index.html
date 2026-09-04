@@ -330,6 +330,33 @@
       <div class="province-list" id="provinceList"></div>
     </div>
 
+    <!-- GEOJSON IMPORT -->
+    <div class="section">
+      <h2>Імпорт GeoJSON (кордони → провінції)</h2>
+      <label class="field-label">Файл .geojson / .json</label>
+      <input type="file" id="importGeojson" accept=".json,.geojson,application/geo+json">
+      <div class="row" style="margin-top:8px;">
+        <div class="col" style="flex:1">
+          <label class="field-label">Поле з назвою (властивість, опційно)</label>
+          <input type="text" id="geojsonNameField" placeholder="авто: name, NAME, shapeName…">
+        </div>
+      </div>
+      <div class="row">
+        <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; cursor:pointer;">
+          <input type="checkbox" id="geojsonKeepAspect" checked style="width:auto;">
+          Зберігати географічні пропорції (корекція довготи)
+        </label>
+      </div>
+      <div class="row">
+        <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; cursor:pointer;">
+          <input type="checkbox" id="geojsonClear" style="width:auto;">
+          Очистити полотно й провінції перед імпортом
+        </label>
+      </div>
+      <div class="hint">Кожен Polygon/MultiPolygon стає окремою провінцією з унікальним ID-кольором — заповнюється напряму, без потреби малювати чорні кордони вручну. Власник береться з поля «Власник для нових провінцій» вище. Після імпорту одразу можна натиснути «Завантажити province_map.png».</div>
+      <div class="hint" id="geojsonStatus"></div>
+    </div>
+
     <!-- IMPORT (continue previous work) -->
     <div class="section">
       <h2>Продовжити попередню роботу</h2>
@@ -1040,6 +1067,187 @@
       } catch(err){
         alert('Не вдалося прочитати JSON: ' + err.message);
       }
+    };
+    reader.readAsText(file);
+  });
+
+  // ---------------- GEOJSON IMPORT ----------------
+  function geojsonCoordBounds(features){
+    let minLon=Infinity, maxLon=-Infinity, minLat=Infinity, maxLat=-Infinity;
+    function visit(coords, depth){
+      if (depth === 0){
+        const lon = coords[0], lat = coords[1];
+        if (lon < minLon) minLon = lon;
+        if (lon > maxLon) maxLon = lon;
+        if (lat < minLat) minLat = lat;
+        if (lat > maxLat) maxLat = lat;
+      } else {
+        coords.forEach(c => visit(c, depth-1));
+      }
+    }
+    const depthOf = { Polygon: 2, MultiPolygon: 3 };
+    features.forEach(f => {
+      const g = f.geometry;
+      if (!g || !(g.type in depthOf)) return;
+      visit(g.coordinates, depthOf[g.type]);
+    });
+    return { minLon, maxLon, minLat, maxLat };
+  }
+
+  function guessFeatureName(props, manualField){
+    if (!props) return '';
+    if (manualField && props[manualField] != null && String(props[manualField]).trim() !== '') return String(props[manualField]);
+    const candidates = ['name','Name','NAME','name_en','NAME_EN','shapeName','ADM1_EN','ADM1_UA','name_uk','NAME_UA','name:uk','admin_name'];
+    for (const key of candidates){
+      if (props[key] != null && String(props[key]).trim() !== '') return String(props[key]);
+    }
+    for (const key in props){
+      if (typeof props[key] === 'string' && props[key].trim() !== '') return props[key];
+    }
+    return '';
+  }
+
+  function buildFeaturePath(geometry, projectFn){
+    let polygons = [];
+    if (geometry.type === 'Polygon') polygons = [geometry.coordinates];
+    else if (geometry.type === 'MultiPolygon') polygons = geometry.coordinates;
+    else return null;
+
+    const path = new Path2D();
+    let minPX=Infinity, minPY=Infinity, maxPX=-Infinity, maxPY=-Infinity;
+    let any = false;
+    polygons.forEach(rings => {
+      rings.forEach(ring => {
+        if (!ring || ring.length < 3) return;
+        any = true;
+        const pts = ring.map(pos => projectFn(pos[0], pos[1]));
+        path.moveTo(pts[0].x, pts[0].y);
+        for (let i=1; i<pts.length; i++) path.lineTo(pts[i].x, pts[i].y);
+        path.closePath();
+        pts.forEach(p => {
+          if (p.x < minPX) minPX = p.x;
+          if (p.x > maxPX) maxPX = p.x;
+          if (p.y < minPY) minPY = p.y;
+          if (p.y > maxPY) maxPY = p.y;
+        });
+      });
+    });
+    if (!any) return null;
+    return { path, bbox: { minPX, minPY, maxPX, maxPY } };
+  }
+
+  document.getElementById('importGeojson').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const statusEl = document.getElementById('geojsonStatus');
+    statusEl.textContent = 'Читання файлу…';
+    const reader = new FileReader();
+    reader.onload = () => {
+      let geojson;
+      try {
+        geojson = JSON.parse(reader.result);
+      } catch(err){
+        statusEl.textContent = 'Помилка читання GeoJSON: ' + err.message;
+        return;
+      }
+
+      let features = [];
+      if (geojson.type === 'FeatureCollection') features = geojson.features || [];
+      else if (geojson.type === 'Feature') features = [geojson];
+      else if (geojson.type === 'Polygon' || geojson.type === 'MultiPolygon') features = [{ type:'Feature', properties:{}, geometry: geojson }];
+
+      features = features.filter(f => f.geometry && (f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon'));
+      if (!features.length){
+        statusEl.textContent = 'У файлі не знайдено геометрій Polygon/MultiPolygon.';
+        e.target.value = '';
+        return;
+      }
+
+      const { minLon, maxLon, minLat, maxLat } = geojsonCoordBounds(features);
+      if (![minLon,maxLon,minLat,maxLat].every(isFinite)){
+        statusEl.textContent = 'Не вдалося визначити межі координат у файлі.';
+        e.target.value = '';
+        return;
+      }
+
+      if (document.getElementById('geojsonClear').checked){
+        drawCtx.clearRect(0,0,SIZE,SIZE);
+        provinces = {};
+        nextId = 1;
+      }
+
+      const keepAspect = document.getElementById('geojsonKeepAspect').checked;
+      const centerLat = (minLat + maxLat) / 2;
+      const lonCorrection = keepAspect ? Math.cos(centerLat * Math.PI / 180) : 1;
+
+      let project;
+      if (keepAspect){
+        const lonSpan = Math.max(1e-9, (maxLon - minLon) * lonCorrection);
+        const latSpan = Math.max(1e-9, (maxLat - minLat));
+        const span = Math.max(lonSpan, latSpan);
+        const scale = SIZE / span;
+        const offX = (SIZE - lonSpan * scale) / 2;
+        const offY = (SIZE - latSpan * scale) / 2;
+        project = (lon, lat) => ({
+          x: (lon - minLon) * lonCorrection * scale + offX,
+          y: (maxLat - lat) * scale + offY
+        });
+      } else {
+        const scaleX = SIZE / Math.max(1e-9, (maxLon - minLon));
+        const scaleY = SIZE / Math.max(1e-9, (maxLat - minLat));
+        project = (lon, lat) => ({
+          x: (lon - minLon) * scaleX,
+          y: (maxLat - lat) * scaleY
+        });
+      }
+
+      statusEl.textContent = `Обробка… (${features.length} геометрій)`;
+
+      setTimeout(() => {
+        const owner = document.getElementById('ownerSelect').value;
+        const manualField = document.getElementById('geojsonNameField').value.trim();
+        let created = 0;
+
+        features.forEach((f) => {
+          const rast = buildFeaturePath(f.geometry, project);
+          if (!rast) return;
+          const { path, bbox } = rast;
+
+          const bx0 = Math.max(0, Math.floor(bbox.minPX) - 1);
+          const by0 = Math.max(0, Math.floor(bbox.minPY) - 1);
+          const bx1 = Math.min(SIZE-1, Math.ceil(bbox.maxPX) + 1);
+          const by1 = Math.min(SIZE-1, Math.ceil(bbox.maxPY) + 1);
+          const bw = bx1 - bx0 + 1, bh = by1 - by0 + 1;
+          if (bw <= 0 || bh <= 0) return;
+
+          const id = nextId;
+          const color = idToColor(id);
+
+          drawCtx.fillStyle = rgbCss(color);
+          drawCtx.fill(path, 'evenodd');
+
+          // snap anti-aliased edge pixels to an exact ID-color (needed for
+          // pixel-perfect flood-fill / color->ID lookups elsewhere in the app)
+          const region = drawCtx.getImageData(bx0, by0, bw, bh);
+          const rd = region.data;
+          for (let k=0; k<rd.length; k+=4){
+            if (rd[k+3] > 0){
+              rd[k]=color[0]; rd[k+1]=color[1]; rd[k+2]=color[2]; rd[k+3]=255;
+            }
+          }
+          drawCtx.putImageData(region, bx0, by0);
+
+          const name = guessFeatureName(f.properties, manualField) || ('province_' + id);
+          provinces[id] = { name, owner, color };
+          nextId++;
+          created++;
+        });
+
+        updateNextIdPreview();
+        refreshProvinceList();
+        statusEl.textContent = `Готово: створено ${created} провінцій із ${features.length} геометрій. Можна експортувати PNG.`;
+        e.target.value = '';
+      }, 10);
     };
     reader.readAsText(file);
   });
