@@ -148,7 +148,7 @@
 
   .canvas-viewport {
     flex:1;
-    overflow: hidden; /* Changed from auto to hidden for custom pan/zoom */
+    overflow: hidden;
     background:
       repeating-conic-gradient(#191d23 0% 25%, #14171c 0% 50%) 50% / 24px 24px;
     position: relative;
@@ -215,18 +215,11 @@
       <div class="row">
         <div class="col" style="flex:1">
           <label class="field-label">Розмір карти (px)</label>
-          <select id="canvasSize">
-            <option value="1024">1024 × 1024</option>
-            <option value="2048">2048 × 2048</option>
-            <option value="4096" selected>4096 × 4096</option>
-            <option value="8192">8192 × 8192</option>
-          </select>
+          <input type="number" id="canvasSize" value="4096" min="256" step="256">
         </div>
+        <button class="small" id="btnNewMap" style="align-self:flex-end;">Створити</button>
       </div>
-      <div class="row">
-        <button class="wide" id="btnNewMap">Створити нове полотно</button>
-      </div>
-      <div class="hint">Створення нового полотна очищує всі провінції та підкладку. Розмір 4096 — стандарт для великої карти світу/регіону.</div>
+      <div class="hint">Введіть будь-який кастомний розмір (напр. 5120). Стандарт для великої карти — 4096.</div>
     </div>
 
     <!-- REFERENCE IMAGE -->
@@ -269,7 +262,7 @@
       <div class="row">
         <div class="col" style="flex:1">
           <label class="field-label">Розмір провінцій: <span id="provSizeLabel">90</span>px</label>
-          <input type="range" id="provSize" min="1" max="400" value="90">
+          <input type="range" id="provSize" min="10" max="400" value="90">
         </div>
       </div>
       <div class="row">
@@ -384,6 +377,13 @@
     <!-- EXPORT -->
     <div class="section">
       <h2>Експорт</h2>
+      <div class="row">
+        <div class="col" style="flex:1">
+          <label class="field-label">Розмір для експорту (px)</label>
+          <input type="number" id="exportSize" value="4096" min="64">
+        </div>
+      </div>
+      <div class="hint" style="margin-top:0; margin-bottom:8px;">Вкажіть потрібний розмір файлу. Система автоматично стисне або розтягне карту без втрати кольорових ID (найближчий сусід).</div>
       <div class="row">
         <button class="wide primary" id="btnExportPng">⭳ Завантажити province_map.png</button>
       </div>
@@ -909,7 +909,6 @@
       const owner = document.getElementById('ownerSelect').value;
       const baseName = document.getElementById('nextNameInput').value.trim();
       
-      const mask = visited.slice(minY*SIZE + minX, (minY+bh)*SIZE + minX); // extract local mask
       const localMask = new Uint8Array(bw*bh);
       for(let y=0; y<bh; y++) {
           for(let x=0; x<bw; x++) {
@@ -1105,6 +1104,10 @@
       if (!confirm('Це очистить усі провінції та підкладку. Продовжити?')) return;
     }
     const size = parseInt(document.getElementById('canvasSize').value, 10);
+    if (isNaN(size) || size < 256) {
+        alert("Розмір полотна занадто малий. Мінімум 256.");
+        return;
+    }
     setCanvasSize(size);
     provinces = {};
     nextId = 1;
@@ -1146,14 +1149,24 @@
 
   // ---------------- EXPORT ----------------
   document.getElementById('btnExportPng').addEventListener('click', () => {
+    const exportSize = parseInt(document.getElementById('exportSize').value, 10) || SIZE;
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = exportSize;
+    tempCanvas.height = exportSize;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.imageSmoothingEnabled = false; // Keep pixel-perfect ID colors
+    tempCtx.drawImage(drawCanvas, 0, 0, exportSize, exportSize);
+    
     const link = document.createElement('a');
-    link.download = 'province_map.png';
-    link.href = drawCanvas.toDataURL('image/png');
+    link.download = `province_map_${exportSize}.png`;
+    link.href = tempCanvas.toDataURL('image/png');
     link.click();
   });
+  
   document.getElementById('btnExportJson').addEventListener('click', () => {
+    const exportSize = parseInt(document.getElementById('exportSize').value, 10) || SIZE;
     const out = {
-      meta: { width: SIZE, height: SIZE, nextId: nextId, generated: new Date().toISOString() },
+      meta: { width: exportSize, height: exportSize, originalCanvasSize: SIZE, nextId: nextId, generated: new Date().toISOString() },
       provinces: {}
     };
     Object.keys(provinces).forEach(id => {
@@ -1337,6 +1350,7 @@
           if (targetSize > 8192) targetSize = 8192; // Browser cap
           if (targetSize > SIZE) {
               setCanvasSize(targetSize);
+              document.getElementById('canvasSize').value = targetSize;
           }
       }
 
@@ -1384,7 +1398,6 @@
           if (bw <= 0 || bh <= 0) return;
 
           if (subdivide) {
-              // Draw temp mask, read it, and process with Voronoi
               drawCtx.fillStyle = 'rgba(255,255,255,1)';
               drawCtx.fill(path, 'evenodd');
               
@@ -1397,7 +1410,7 @@
                   }
               }
               
-              drawCtx.clearRect(bx0, by0, bw, bh); // clear temp mask
+              drawCtx.clearRect(bx0, by0, bw, bh);
               
               let namePrefix = baseName;
               if (!namePrefix) {
@@ -1408,7 +1421,6 @@
               provincesCreated += createdCount;
               featuresProcessed++;
           } else {
-              // Single province fill
               const id = nextId;
               const color = idToColor(id);
 
