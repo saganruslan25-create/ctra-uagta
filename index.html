@@ -246,8 +246,11 @@
       <div class="tool-grid">
         <button id="toolPen" class="active">✏️ Кордон (перо)</button>
         <button id="toolEraser">🧽 Ластик</button>
-        <button id="toolFill">🪣 Заливка (нова провінція)</button>
+        <button id="toolFill">🪣 Заливка (одна провінція)</button>
         <button id="toolSelect">🖱️ Вибрати / інфо</button>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <button class="wide" id="toolAutogen">🧩 Розбити на провінції (авто)</button>
       </div>
       <div class="row" style="margin-top:10px;">
         <div class="col" style="flex:1">
@@ -256,6 +259,28 @@
         </div>
       </div>
       <div class="hint" id="toolHint">Малюйте чорні лінії, щоб розділити карту на замкнені області. Незамкнена лінія = провінції зіллються.</div>
+    </div>
+
+    <!-- AUTO-GENERATE PROVINCES -->
+    <div class="section">
+      <h2>Авто-розбиття на провінції</h2>
+      <div class="row">
+        <div class="col" style="flex:1">
+          <label class="field-label">Розмір провінцій: <span id="provSizeLabel">90</span>px</label>
+          <input type="range" id="provSize" min="20" max="400" value="90">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col" style="flex:1">
+          <label class="field-label">Хаотичність форми: <span id="provIrregularityLabel">45</span>%</label>
+          <input type="range" id="provIrregularity" min="0" max="100" value="45">
+        </div>
+      </div>
+      <div class="hint">Спочатку обведіть контур області інструментом «Кордон» (замкнена лінія навколо країни/регіону з фото), потім оберіть «Розбити на провінції» і клікніть всередині контуру. Менший розмір / вища хаотичність = більше дрібних нерівних провінцій, як у HOI4. Владелець і назва-префікс беруться з полів нижче.</div>
+      <div class="row" style="margin-top:8px;">
+        <button class="wide danger small" id="btnUndoAutogen" disabled>Скасувати останню генерацію</button>
+      </div>
+      <div class="hint" id="autogenStatus"></div>
     </div>
 
     <!-- VISIBILITY -->
@@ -477,12 +502,14 @@
     eraser: document.getElementById('toolEraser'),
     fill: document.getElementById('toolFill'),
     select: document.getElementById('toolSelect'),
+    autogen: document.getElementById('toolAutogen'),
   };
   const toolHints = {
     pen: "Малюйте чорні лінії, щоб розділити карту на замкнені області. Незамкнена лінія = провінції зіллються.",
     eraser: "Стирає намальовані лінії (робить піксель знову прозорим).",
-    fill: "Клікніть всередині замкненої області — вона стане новою провінцією з наступним ID.",
-    select: "Клікніть на існуючу провінцію, щоб побачити/змінити її ID, назву та власника."
+    fill: "Клікніть всередині замкненої області — вона стане ОДНІЄЮ новою провінцією з наступним ID.",
+    select: "Клікніть на існуючу провінцію, щоб побачити/змінити її ID, назву та власника.",
+    autogen: "Клікніть всередині замкненого контуру — область автоматично розіб'ється на дрібні провінції за повзунками розміру/хаотичності нижче."
   };
   function setTool(t){
     currentTool = t;
@@ -494,6 +521,14 @@
   toolButtons.eraser.addEventListener('click', () => setTool('eraser'));
   toolButtons.fill.addEventListener('click', () => setTool('fill'));
   toolButtons.select.addEventListener('click', () => setTool('select'));
+  toolButtons.autogen.addEventListener('click', () => setTool('autogen'));
+
+  document.getElementById('provSize').addEventListener('input', (e) => {
+    document.getElementById('provSizeLabel').textContent = e.target.value;
+  });
+  document.getElementById('provIrregularity').addEventListener('input', (e) => {
+    document.getElementById('provIrregularityLabel').textContent = e.target.value;
+  });
 
   document.getElementById('brushSize').addEventListener('input', (e) => {
     document.getElementById('brushSizeLabel').textContent = e.target.value;
@@ -607,6 +642,212 @@
     refreshProvinceList();
   }
 
+  // ---------------- AUTO-GENERATE SUB-PROVINCES (Voronoi via Jump Flooding) ----------------
+  let lastAutogenBatch = [];
+
+  function computeFloodMask(startX, startY){
+    const imgData = drawCtx.getImageData(0, 0, SIZE, SIZE);
+    const data = imgData.data;
+    const idx = (x,y) => (y*SIZE+x)*4;
+    const startIdx = idx(startX, startY);
+    if (data[startIdx+3] !== 0) return { status: 'blocked' };
+
+    const visited = new Uint8Array(SIZE*SIZE);
+    const isEmpty = (x,y) => data[idx(x,y)+3] === 0;
+    let minX=startX, maxX=startX, minY=startY, maxY=startY;
+    const stack = [[startX, startY]];
+    visited[startY*SIZE+startX] = 1;
+
+    while (stack.length){
+      const [x,y] = stack.pop();
+      let xl = x, xr = x;
+      while (xl>0 && isEmpty(xl-1,y) && !visited[y*SIZE+(xl-1)]) xl--;
+      while (xr<SIZE-1 && isEmpty(xr+1,y) && !visited[y*SIZE+(xr+1)]) xr++;
+      for (let i=xl; i<=xr; i++){
+        visited[y*SIZE+i] = 1;
+        if (i<minX) minX=i; if (i>maxX) maxX=i;
+        if (y<minY) minY=y; if (y>maxY) maxY=y;
+        if (y>0 && isEmpty(i,y-1) && !visited[(y-1)*SIZE+i]){ visited[(y-1)*SIZE+i]=1; stack.push([i,y-1]); }
+        if (y<SIZE-1 && isEmpty(i,y+1) && !visited[(y+1)*SIZE+i]){ visited[(y+1)*SIZE+i]=1; stack.push([i,y+1]); }
+      }
+    }
+    return { status:'ok', visited, minX, minY, maxX, maxY };
+  }
+
+  const JFA_OFFSETS = [[-1,-1],[0,-1],[1,-1],[-1,0],[0,0],[1,0],[-1,1],[0,1],[1,1]];
+
+  function runJFA(w, h, seeds){
+    const seedIdx = new Int32Array(w*h).fill(-1);
+    const nx = new Int32Array(w*h).fill(-1);
+    const ny = new Int32Array(w*h).fill(-1);
+    seeds.forEach((s, i) => {
+      const p = s.y*w + s.x;
+      seedIdx[p] = i; nx[p] = s.x; ny[p] = s.y;
+    });
+    let step = 1;
+    while (step*2 < Math.max(w,h)) step *= 2;
+    while (step >= 1){
+      for (let y=0; y<h; y++){
+        for (let x=0; x<w; x++){
+          const p = y*w + x;
+          let bestX = nx[p], bestY = ny[p], bestSeed = seedIdx[p];
+          let bestDist = bestX!==-1 ? (bestX-x)*(bestX-x)+(bestY-y)*(bestY-y) : Infinity;
+          for (const [ox,oy] of JFA_OFFSETS){
+            const qx = x+ox*step, qy = y+oy*step;
+            if (qx<0||qx>=w||qy<0||qy>=h) continue;
+            const q = qy*w+qx;
+            const cx = nx[q];
+            if (cx===-1) continue;
+            const cy = ny[q];
+            const d = (cx-x)*(cx-x)+(cy-y)*(cy-y);
+            if (d < bestDist){ bestDist=d; bestX=cx; bestY=cy; bestSeed=seedIdx[q]; }
+          }
+          if (bestX !== nx[p] || bestY !== ny[p]){ nx[p]=bestX; ny[p]=bestY; seedIdx[p]=bestSeed; }
+        }
+      }
+      if (step === 1) break;
+      step = Math.floor(step/2);
+    }
+    return seedIdx;
+  }
+
+  function generateSubProvinces(startX, startY){
+    const status = document.getElementById('autogenStatus');
+    const maskResult = computeFloodMask(startX, startY);
+    if (maskResult.status === 'blocked'){
+      const px = drawCtx.getImageData(startX, startY, 1, 1).data;
+      if (px[3] === 255 && !(px[0]===0 && px[1]===0 && px[2]===0)){
+        const id = colorToId(px[0], px[1], px[2]);
+        if (provinces[id]) showInfoCard(id);
+      }
+      return;
+    }
+    const { visited, minX, minY, maxX, maxY } = maskResult;
+    const bw = maxX - minX + 1, bh = maxY - minY + 1;
+    if (bw < 6 || bh < 6){
+      status.textContent = 'Область занадто мала для розбиття.';
+      return;
+    }
+
+    status.textContent = 'Генерація…';
+
+    setTimeout(() => {
+      const avgSize = Math.max(8, parseInt(document.getElementById('provSize').value, 10));
+      const irregularity = parseInt(document.getElementById('provIrregularity').value, 10) / 100;
+
+      // work-resolution cap for performance on huge areas
+      const WORK_MAX = 1500;
+      const scale = Math.min(1, WORK_MAX / Math.max(bw, bh));
+      const ww = Math.max(2, Math.round(bw*scale));
+      const wh = Math.max(2, Math.round(bh*scale));
+
+      // seed generation: jittered grid, restricted to points actually inside the mask
+      const spacingGlobal = avgSize;
+      const seeds = [];
+      for (let gy = minY + spacingGlobal/2; gy < maxY; gy += spacingGlobal){
+        for (let gx = minX + spacingGlobal/2; gx < maxX; gx += spacingGlobal){
+          const jitterMag = spacingGlobal * irregularity * 0.8;
+          const jx = (Math.random()-0.5) * jitterMag;
+          const jy = (Math.random()-0.5) * jitterMag;
+          const sx = Math.round(gx + jx), sy = Math.round(gy + jy);
+          if (sx < minX || sx > maxX || sy < minY || sy > maxY) continue;
+          if (!visited[sy*SIZE + sx]) continue;
+          const lx = Math.min(ww-1, Math.round((sx-minX)*scale));
+          const ly = Math.min(wh-1, Math.round((sy-minY)*scale));
+          seeds.push({x: lx, y: ly});
+        }
+      }
+      if (seeds.length === 0){
+        const cx = Math.min(ww-1, Math.round((startX-minX)*scale));
+        const cy = Math.min(wh-1, Math.round((startY-minY)*scale));
+        seeds.push({x: cx, y: cy});
+      }
+
+      const clusterGrid = runJFA(ww, wh, seeds);
+
+      // count masked pixels per cluster, to skip empty/unused seeds
+      const counts = new Array(seeds.length).fill(0);
+      for (let y=0; y<bh; y++){
+        const gy = minY + y;
+        const wy = Math.min(wh-1, Math.round(y*scale));
+        for (let x=0; x<bw; x++){
+          const gx = minX + x;
+          if (!visited[gy*SIZE + gx]) continue;
+          const wx = Math.min(ww-1, Math.round(x*scale));
+          const c = clusterGrid[wy*ww + wx];
+          if (c >= 0) counts[c]++;
+        }
+      }
+
+      const owner = document.getElementById('ownerSelect').value;
+      const baseName = document.getElementById('nextNameInput').value.trim();
+      const clusterToId = new Array(seeds.length).fill(-1);
+      const batch = [];
+      let counter = 1;
+      for (let c=0; c<seeds.length; c++){
+        if (counts[c] < 4) continue; // skip negligible slivers
+        const id = nextId;
+        const color = idToColor(id);
+        const name = baseName ? (baseName + ' ' + counter) : ('province_' + id);
+        provinces[id] = { name, owner, color };
+        clusterToId[c] = id;
+        batch.push(id);
+        nextId++;
+        counter++;
+      }
+
+      // write pixel data for the bbox region
+      const region = drawCtx.getImageData(minX, minY, bw, bh);
+      const rdata = region.data;
+      const clusterAt = (x, y) => {
+        const wx = Math.min(ww-1, Math.round(x*scale));
+        const wy = Math.min(wh-1, Math.round(y*scale));
+        return clusterGrid[wy*ww + wx];
+      };
+      for (let y=0; y<bh; y++){
+        const gy = minY + y;
+        for (let x=0; x<bw; x++){
+          const gx = minX + x;
+          if (!visited[gy*SIZE + gx]) continue;
+          const c = clusterAt(x, y);
+          const pid = c>=0 ? clusterToId[c] : -1;
+          if (pid === -1) continue;
+
+          // border check against 4-neighbors (only within mask)
+          let isBorder = false;
+          if (x>0 && visited[gy*SIZE+(gx-1)]){ const c2=clusterAt(x-1,y); if (c2>=0 && clusterToId[c2]!==pid) isBorder=true; }
+          if (!isBorder && x<bw-1 && visited[gy*SIZE+(gx+1)]){ const c2=clusterAt(x+1,y); if (c2>=0 && clusterToId[c2]!==pid) isBorder=true; }
+          if (!isBorder && y>0 && visited[(gy-1)*SIZE+gx]){ const c2=clusterAt(x,y-1); if (c2>=0 && clusterToId[c2]!==pid) isBorder=true; }
+          if (!isBorder && y<bh-1 && visited[(gy+1)*SIZE+gx]){ const c2=clusterAt(x,y+1); if (c2>=0 && clusterToId[c2]!==pid) isBorder=true; }
+
+          const ri = (y*bw + x) * 4;
+          if (isBorder){
+            rdata[ri]=0; rdata[ri+1]=0; rdata[ri+2]=0; rdata[ri+3]=255;
+          } else {
+            const col = provinces[pid].color;
+            rdata[ri]=col[0]; rdata[ri+1]=col[1]; rdata[ri+2]=col[2]; rdata[ri+3]=255;
+          }
+        }
+      }
+      drawCtx.putImageData(region, minX, minY);
+
+      lastAutogenBatch = batch;
+      document.getElementById('btnUndoAutogen').disabled = batch.length === 0;
+      status.textContent = `Створено провінцій: ${batch.length}`;
+      updateNextIdPreview();
+      refreshProvinceList();
+    }, 10);
+  }
+
+  document.getElementById('btnUndoAutogen').addEventListener('click', () => {
+    if (!lastAutogenBatch.length) return;
+    if (!confirm(`Скасувати останню генерацію (${lastAutogenBatch.length} провінцій)?`)) return;
+    lastAutogenBatch.forEach(id => deleteProvince(id));
+    lastAutogenBatch = [];
+    document.getElementById('btnUndoAutogen').disabled = true;
+    document.getElementById('autogenStatus').textContent = 'Скасовано.';
+  });
+
   // ---------------- INFO CARD ----------------
   function showInfoCard(id){
     selectedProvinceId = id;
@@ -651,6 +892,8 @@
       strokeAt(x, y, currentTool === 'eraser');
     } else if (currentTool === 'fill'){
       floodFillAt(x, y);
+    } else if (currentTool === 'autogen'){
+      generateSubProvinces(x, y);
     } else if (currentTool === 'select'){
       const px = drawCtx.getImageData(x, y, 1, 1).data;
       if (px[3] === 255 && !(px[0]===0 && px[1]===0 && px[2]===0)){
