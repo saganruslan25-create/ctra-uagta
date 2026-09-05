@@ -312,11 +312,17 @@
       </div>
       <div class="row">
         <div class="col" style="flex:1">
+          <label class="field-label">Тип для нових провінцій</label>
+          <select id="typeSelect"></select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col" style="flex:1">
           <label class="field-label">Назва для наступної провінції (опційно)</label>
           <input type="text" id="nextNameInput" placeholder="напр. Волинська область">
         </div>
       </div>
-      <div class="hint">Клік інструментом «Заливка» всередині замкненої області створить нову провінцію з ID <b id="nextIdPreview">1</b>, кольором <span id="nextColorPreview" style="font-family:var(--mono)">(1,0,0)</span> і власником, обраним вище. Ці параметри також застосовуються до імпорту GeoJSON та авто-розбиття.</div>
+      <div class="hint">Клік інструментом «Заливка» всередині замкненої області створить нову провінцію з ID <b id="nextIdPreview">1</b>, кольором <span id="nextColorPreview" style="font-family:var(--mono)">(1,0,0)</span>, власником і типом, обраними вище. Ці параметри також застосовуються до імпорту GeoJSON та авто-розбиття.</div>
     </div>
 
     <!-- PROVINCE LIST -->
@@ -438,6 +444,10 @@
     <label class="field-label">Власник</label>
     <select id="infoOwner"></select>
   </div>
+  <div class="field">
+    <label class="field-label">Тип</label>
+    <select id="infoType"></select>
+  </div>
   <div class="field" style="font-family:var(--mono); font-size:11px; color:var(--text-dim);">
     RGB: <span id="infoRgb"></span>
   </div>
@@ -456,7 +466,15 @@
   let SIZE = 4096;
   let nextId = 1;
   let owners = ["Без власника"];
-  let provinces = {}; // id -> {name, owner, color:[r,g,b]}
+  const TYPES = [
+    { value: "city",     label: "Місто" },
+    { value: "province", label: "Провінція / область" },
+    { value: "village",  label: "Село" },
+    { value: "water",    label: "Вода" },
+    { value: "bridge",   label: "Міст" }
+  ];
+  const DEFAULT_TYPE = TYPES[1].value; // "province"
+  let provinces = {}; // id -> {name, owner, type, color:[r,g,b]}
   let currentTool = "pen";
   let selectedProvinceId = null;
 
@@ -528,6 +546,25 @@
     });
   }
 
+  function typeLabel(value){
+    const t = TYPES.find(t => t.value === value);
+    return t ? t.label : (value || DEFAULT_TYPE);
+  }
+
+  function refreshTypeSelects(){
+    const sels = [document.getElementById('typeSelect'), document.getElementById('infoType')];
+    sels.forEach(sel => {
+      const prev = sel.value;
+      sel.innerHTML = '';
+      TYPES.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.value; opt.textContent = t.label;
+        sel.appendChild(opt);
+      });
+      sel.value = TYPES.some(t => t.value === prev) ? prev : DEFAULT_TYPE;
+    });
+  }
+
   function refreshProvinceList(){
     const list = document.getElementById('provinceList');
     list.innerHTML = '';
@@ -542,7 +579,7 @@
         <span class="swatch" style="background:${rgbCss(p.color)}"></span>
         <span class="pid">#${id}</span>
         <span class="pname">${p.name || ('province_' + id)}</span>
-        <span class="powner">${p.owner}</span>
+        <span class="powner">${p.owner} · ${typeLabel(p.type)}</span>
       `;
       item.addEventListener('click', () => showInfoCard(id));
       list.appendChild(item);
@@ -712,9 +749,10 @@
     drawCtx.putImageData(imgData, 0, 0);
 
     const owner = document.getElementById('ownerSelect').value;
+    const type = document.getElementById('typeSelect').value;
     const nameInput = document.getElementById('nextNameInput');
     const name = nameInput.value.trim() || ('province_' + nextId);
-    provinces[nextId] = { name, owner, color: fillColor };
+    provinces[nextId] = { name, owner, type, color: fillColor };
 
     nextId++;
     updateNextIdPreview();
@@ -809,7 +847,7 @@
   }
 
   // Reusable Voronoi processing function for both manual click and GeoJSON import
-  function processMaskVoronoi(mask, bx0, by0, bw, bh, namePrefix, owner) {
+  function processMaskVoronoi(mask, bx0, by0, bw, bh, namePrefix, owner, type) {
     const WORK_MAX = 1500;
     const scale = Math.min(1, WORK_MAX / Math.max(bw, bh));
     const ww = Math.max(2, Math.round(bw*scale));
@@ -857,7 +895,7 @@
       const id = nextId;
       const color = idToColor(id);
       const name = namePrefix ? (namePrefix + ' ' + counter) : ('province_' + id);
-      provinces[id] = { name, owner, color };
+      provinces[id] = { name, owner, type, color };
       clusterToId[c] = id;
       nextId++;
       counter++;
@@ -907,6 +945,7 @@
     setTimeout(() => {
       pushHistory();
       const owner = document.getElementById('ownerSelect').value;
+      const type = document.getElementById('typeSelect').value;
       const baseName = document.getElementById('nextNameInput').value.trim();
       
       const localMask = new Uint8Array(bw*bh);
@@ -916,7 +955,7 @@
           }
       }
       
-      const createdCount = processMaskVoronoi(localMask, minX, minY, bw, bh, baseName, owner);
+      const createdCount = processMaskVoronoi(localMask, minX, minY, bw, bh, baseName, owner, type);
       
       lastAutogenBatch = Object.keys(provinces).map(Number).filter(id => id >= nextId - createdCount);
       document.getElementById('btnUndoAutogen').disabled = createdCount === 0;
@@ -947,6 +986,8 @@
     document.getElementById('infoRgb').textContent = `(${p.color[0]}, ${p.color[1]}, ${p.color[2]})`;
     refreshOwnerSelects();
     document.getElementById('infoOwner').value = p.owner;
+    refreshTypeSelects();
+    document.getElementById('infoType').value = p.type || DEFAULT_TYPE;
     refreshProvinceList();
   }
   document.getElementById('infoClose').addEventListener('click', () => {
@@ -960,6 +1001,7 @@
     const p = provinces[selectedProvinceId];
     p.name = document.getElementById('infoName').value.trim() || p.name;
     p.owner = document.getElementById('infoOwner').value;
+    p.type = document.getElementById('infoType').value;
     refreshProvinceList();
   });
   document.getElementById('infoDelete').addEventListener('click', () => {
@@ -1171,7 +1213,7 @@
     };
     Object.keys(provinces).forEach(id => {
       const p = provinces[id];
-      out.provinces[id] = { name: p.name, owner: p.owner, color: p.color };
+      out.provinces[id] = { name: p.name, owner: p.owner, type: p.type || DEFAULT_TYPE, color: p.color };
     });
     const blob = new Blob([JSON.stringify(out, null, 2)], {type: 'application/json'});
     const link = document.createElement('a');
@@ -1207,11 +1249,12 @@
         provinces = {};
         Object.keys(parsed.provinces || {}).forEach(id => {
           const p = parsed.provinces[id];
-          provinces[id] = { name: p.name, owner: p.owner, color: p.color };
+          provinces[id] = { name: p.name, owner: p.owner, type: p.type || DEFAULT_TYPE, color: p.color };
           importedOwners.add(p.owner);
         });
         owners = Array.from(importedOwners);
         refreshOwnerSelects();
+        refreshTypeSelects();
         const maxId = Object.keys(provinces).map(Number).reduce((a,b)=>Math.max(a,b), 0);
         nextId = (parsed.meta && parsed.meta.nextId) ? parsed.meta.nextId : (maxId + 1);
         updateNextIdPreview();
@@ -1379,6 +1422,7 @@
 
       setTimeout(() => {
         const owner = document.getElementById('ownerSelect').value;
+        const type = document.getElementById('typeSelect').value;
         const baseName = document.getElementById('nextNameInput').value.trim();
         const manualField = document.getElementById('geojsonNameField').value.trim();
         const subdivide = document.getElementById('geojsonSubdivide').checked;
@@ -1417,7 +1461,7 @@
                   namePrefix = guessFeatureName(f.properties, manualField) || '';
               }
               
-              const createdCount = processMaskVoronoi(mask, bx0, by0, bw, bh, namePrefix, owner);
+              const createdCount = processMaskVoronoi(mask, bx0, by0, bw, bh, namePrefix, owner, type);
               provincesCreated += createdCount;
               featuresProcessed++;
           } else {
@@ -1444,7 +1488,7 @@
                   name = geoName || ('province_' + id);
               }
 
-              provinces[id] = { name, owner, color };
+              provinces[id] = { name, owner, type, color };
               nextId++;
               provincesCreated++;
               featuresProcessed++;
@@ -1472,6 +1516,7 @@
   // ---------------- INIT ----------------
   setCanvasSize(4096);
   refreshOwnerSelects();
+  refreshTypeSelects();
   updateNextIdPreview();
   refreshProvinceList();
   refCanvas.style.opacity = 0.55;
